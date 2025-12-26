@@ -33,6 +33,9 @@ class AuthViewModel(
             
             result.fold(
                 onSuccess = { user ->
+                    // Update last login timestamp
+                    firestoreRepository.updateLastLogin(user.uid)
+                    
                     setState {
                         copy(
                             isLoading = false,
@@ -64,6 +67,22 @@ class AuthViewModel(
             
             result.fold(
                 onSuccess = { user ->
+                    // Create user profile in Firestore
+                    val profile = com.example.codelearnapp.domain.model.UserProfile(
+                        userId = user.uid,
+                        email = user.email ?: email,
+                        displayName = user.displayName ?: email.substringBefore("@"),
+                        photoUrl = user.photoUrl?.toString(),
+                        totalXp = 0,
+                        currentStreak = 0,
+                        longestStreak = 0,
+                        coursesCompleted = 0,
+                        lessonsCompleted = 0,
+                        createdAt = System.currentTimeMillis(),
+                        lastLoginAt = System.currentTimeMillis()
+                    )
+                    firestoreRepository.saveUserProfile(user.uid, profile)
+                    
                     setState {
                         copy(
                             isLoading = false,
@@ -95,6 +114,22 @@ class AuthViewModel(
             
             result.fold(
                 onSuccess = { user ->
+                    // Create or update user profile in Firestore
+                    val profile = com.example.codelearnapp.domain.model.UserProfile(
+                        userId = user.uid,
+                        email = user.email ?: "",
+                        displayName = user.displayName ?: user.email?.substringBefore("@") ?: "User",
+                        photoUrl = user.photoUrl?.toString(),
+                        totalXp = 0,
+                        currentStreak = 0,
+                        longestStreak = 0,
+                        coursesCompleted = 0,
+                        lessonsCompleted = 0,
+                        createdAt = System.currentTimeMillis(),
+                        lastLoginAt = System.currentTimeMillis()
+                    )
+                    firestoreRepository.saveUserProfile(user.uid, profile)
+                    
                     setState {
                         copy(
                             isLoading = false,

@@ -16,7 +16,18 @@ class FirestoreRepository(
     
     suspend fun saveUserProfile(userId: String, profile: UserProfile): Result<Unit> {
         return try {
-            usersCollection.document(userId).set(profile).await()
+            usersCollection.document(userId).set(profile, com.google.firebase.firestore.SetOptions.merge()).await()
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+    
+    suspend fun updateLastLogin(userId: String): Result<Unit> {
+        return try {
+            usersCollection.document(userId)
+                .update("lastLoginAt", System.currentTimeMillis())
+                .await()
             Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e)
