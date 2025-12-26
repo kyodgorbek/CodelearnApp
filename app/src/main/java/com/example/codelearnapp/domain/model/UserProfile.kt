@@ -1,5 +1,8 @@
 package com.example.codelearnapp.domain.model
 
+import com.google.firebase.firestore.IgnoreExtraProperties
+
+@IgnoreExtraProperties
 data class UserProfile(
     val userId: String = "",
     val email: String = "",
