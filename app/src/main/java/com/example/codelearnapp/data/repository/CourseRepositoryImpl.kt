@@ -55,6 +55,18 @@ class CourseRepositoryImpl : CourseRepository {
         }
     }
 
+    override fun searchLessons(query: String): Flow<List<Lesson>> {
+        TODO("Not yet implemented")
+    }
+
+    override fun getBookmarkedLessons(): Flow<List<Lesson>> {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun toggleBookmark(lessonId: String, isBookmarked: Boolean) {
+        TODO("Not yet implemented")
+    }
+
     private fun getMockCourses() = listOf(
         Course(
             id = "python-basics",

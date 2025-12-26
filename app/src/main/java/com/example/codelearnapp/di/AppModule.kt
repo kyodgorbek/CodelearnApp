@@ -25,4 +25,5 @@ val appModule = module {
     viewModel { HomeViewModel(get()) }
     viewModel { CourseDetailViewModel(get(), get()) }
     viewModel { LessonViewModel(get(), get()) }
+
 }

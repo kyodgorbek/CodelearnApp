@@ -10,4 +10,7 @@ interface CourseRepository {
     fun getLessonsByCourse(courseId: String): Flow<List<Lesson>>
     fun getLessonById(lessonId: String): Flow<Lesson?>
     suspend fun updateLessonProgress(lessonId: String, isCompleted: Boolean)
+    fun searchLessons(query: String): Flow<List<Lesson>>
+    fun getBookmarkedLessons(): Flow<List<Lesson>>
+    suspend fun toggleBookmark(lessonId: String, isBookmarked: Boolean)
 }

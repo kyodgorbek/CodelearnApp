@@ -75,6 +75,43 @@ dependencies {
     implementation(libs.androidx.compose.foundation)
     ksp("androidx.room:room-compiler:2.6.0")  // <-- KSP
 
+    // DataStore (for preferences)
+    implementation("androidx.datastore:datastore-preferences:1.0.0")
+
+    // Firebase
+    implementation(platform("com.google.firebase:firebase-bom:32.7.0"))
+    implementation("com.google.firebase:firebase-auth-ktx")
+    implementation("com.google.firebase:firebase-firestore-ktx")
+    implementation("com.google.firebase:firebase-storage-ktx")
+    implementation("com.google.firebase:firebase-analytics-ktx")
+
+    // Google Play Services
+    implementation("com.google.android.gms:play-services-auth:20.7.0")
+
+    // WorkManager (for offline sync)
+    implementation("androidx.work:work-runtime-ktx:2.9.0")
+
+    // ExoPlayer (for video lessons)
+    implementation("androidx.media3:media3-exoplayer:1.2.0")
+    implementation("androidx.media3:media3-ui:1.2.0")
+
+    // Coil (image loading)
+    implementation("io.coil-kt:coil-compose:2.5.0")
+
+    // Accompanist (additional compose utilities)
+    implementation("com.google.accompanist:accompanist-permissions:0.32.0")
+    implementation("com.google.accompanist:accompanist-systemuicontroller:0.32.0")
+
+    // Kotlin Scripting (for code execution)
+    implementation("org.jetbrains.kotlin:kotlin-scripting-jsr223:1.9.22")
+    implementation("org.jetbrains.kotlin:kotlin-compiler-embeddable:1.9.22")
+
+    // Gson (for JSON parsing)
+    implementation("com.google.code.gson:gson:2.10.1")
+
+    // Lottie (for animations/achievements)
+    implementation("com.airbnb.android:lottie-compose:6.1.0")
+
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
