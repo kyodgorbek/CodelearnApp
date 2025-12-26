@@ -7,19 +7,12 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-
-import androidx.compose.runtime.setValue
-
-import androidx.compose.runtime.getValue
-
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.codelearnapp.domain.model.Lesson
 import org.koin.androidx.compose.koinViewModel
-import com.example.codelearnapp.presentation.bookmarks.BookmarksViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BookmarksScreen(
@@ -28,6 +21,15 @@ fun BookmarksScreen(
     onLessonClick: (String) -> Unit
 ) {
     val state by viewModel.state.collectAsState()
+    
+    LaunchedEffect(Unit) {
+        viewModel.effect.collect { effect ->
+            when (effect) {
+                is BookmarksEffect.NavigateToLesson -> onLessonClick(effect.lessonId)
+                is BookmarksEffect.ShowMessage -> { /* Could show snackbar */ }
+            }
+        }
+    }
     
     Scaffold(
         topBar = {
@@ -74,7 +76,9 @@ fun BookmarksScreen(
                 items(state.bookmarkedLessons) { lesson ->
                     BookmarkedLessonItem(
                         lesson = lesson,
-                        onLessonClick = { onLessonClick(lesson.id) },
+                        onLessonClick = { 
+                            viewModel.sendIntent(BookmarksIntent.LessonClicked(lesson.id)) 
+                        },
                         onRemoveBookmark = {
                             viewModel.sendIntent(BookmarksIntent.RemoveBookmark(lesson.id))
                         }

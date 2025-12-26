@@ -5,6 +5,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -19,7 +21,12 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun HomeScreen(
     viewModel: HomeViewModel = koinViewModel(),
-    onNavigateToCourse: (String) -> Unit
+    onNavigateToCourse: (String) -> Unit,
+    onNavigateToSearch: () -> Unit = {},
+    onNavigateToBookmarks: () -> Unit = {},
+    onNavigateToAchievements: () -> Unit = {},
+    onNavigateToLeaderboard: () -> Unit = {},
+    onNavigateToSettings: () -> Unit = {}
 ) {
     val state by viewModel.state.collectAsState()
     
@@ -43,8 +50,44 @@ fun HomeScreen(
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primaryContainer
-                )
+                ),
+                actions = {
+                    IconButton(onClick = onNavigateToSearch) {
+                        Icon(Icons.Default.Search, "Search")
+                    }
+                    IconButton(onClick = onNavigateToSettings) {
+                        Icon(Icons.Default.Settings, "Settings")
+                    }
+                }
             )
+        },
+        bottomBar = {
+            NavigationBar {
+                NavigationBarItem(
+                    icon = { Icon(Icons.Default.Home, contentDescription = "Home") },
+                    label = { Text("Home") },
+                    selected = true,
+                    onClick = { }
+                )
+                NavigationBarItem(
+                    icon = { Icon(Icons.Default.Bookmark, contentDescription = "Bookmarks") },
+                    label = { Text("Bookmarks") },
+                    selected = false,
+                    onClick = onNavigateToBookmarks
+                )
+                NavigationBarItem(
+                    icon = { Icon(Icons.Default.Star, contentDescription = "Achievements") },
+                    label = { Text("Achievements") },
+                    selected = false,
+                    onClick = onNavigateToAchievements
+                )
+                NavigationBarItem(
+                    icon = { Icon(Icons.Default.EmojiEvents, contentDescription = "Leaderboard") },
+                    label = { Text("Leaderboard") },
+                    selected = false,
+                    onClick = onNavigateToLeaderboard
+                )
+            }
         }
     ) { padding ->
         if (state.isLoading) {

@@ -56,15 +56,28 @@ class CourseRepositoryImpl : CourseRepository {
     }
 
     override fun searchLessons(query: String): Flow<List<Lesson>> {
-        TODO("Not yet implemented")
+        val lowerQuery = query.lowercase()
+        return lessonsFlow.map { lessons ->
+            lessons.filter { lesson ->
+                lesson.title.lowercase().contains(lowerQuery) ||
+                lesson.content.lowercase().contains(lowerQuery)
+            }
+        }
     }
 
     override fun getBookmarkedLessons(): Flow<List<Lesson>> {
-        TODO("Not yet implemented")
+        return lessonsFlow.map { lessons ->
+            lessons.filter { lesson ->
+                // In mock data, we'll track bookmarks via a separate set
+                // For now, return empty list - real implementation would use BookmarkDao
+                false
+            }
+        }
     }
 
     override suspend fun toggleBookmark(lessonId: String, isBookmarked: Boolean) {
-        TODO("Not yet implemented")
+        // For mock implementation, we could track bookmarks separately
+        // In real implementation, this would use BookmarkDao
     }
 
     private fun getMockCourses() = listOf(
