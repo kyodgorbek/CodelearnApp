@@ -103,7 +103,7 @@ fun AuthScreen(
             if (state.error != null) {
                 Spacer(modifier = Modifier.height(16.dp))
                 Text(
-                    text = state.error,
+                    text = state.error!!,
                     color = MaterialTheme.colorScheme.error,
                     style = MaterialTheme.typography.bodySmall
                 )
