@@ -31,6 +31,26 @@ android {
             )
         }
     }
+
+    packaging {
+        resources {
+            // This is the specific file causing your error
+            pickFirsts.add("kotlin/coroutines/coroutines.kotlin_builtins")
+
+            // 2. This handles the previous error
+            pickFirsts.add("kotlin/reflect/reflect.kotlin_builtins")
+
+            // 3. BEST PRACTICE: Use a wildcard to catch ALL other similar conflicts
+            // from the compiler-embeddable jar
+            pickFirsts.add("**/*.kotlin_builtins")
+            pickFirsts.add("**/*.kotlin_module")
+
+            // Other common duplicates in this specific setup
+            pickFirsts.add("META-INF/io.netty.versions.properties")
+            excludes.add("META-INF/kotlin.kotlin_builtins")
+        }
+    }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
@@ -104,8 +124,8 @@ dependencies {
     implementation("com.google.accompanist:accompanist-systemuicontroller:0.32.0")
 
     // Kotlin Scripting (for code execution)
-    implementation("org.jetbrains.kotlin:kotlin-scripting-jsr223:1.9.22")
-    implementation("org.jetbrains.kotlin:kotlin-compiler-embeddable:1.9.22")
+    implementation("org.jetbrains.kotlin:kotlin-scripting-jsr223:2.0.21")
+    implementation("org.jetbrains.kotlin:kotlin-compiler-embeddable:2.0.21")
 
     // Gson (for JSON parsing)
     implementation("com.google.code.gson:gson:2.10.1")
