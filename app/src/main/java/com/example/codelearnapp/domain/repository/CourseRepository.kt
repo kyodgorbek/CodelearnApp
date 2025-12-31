@@ -13,4 +13,5 @@ interface CourseRepository {
     fun searchLessons(query: String): Flow<List<Lesson>>
     fun getBookmarkedLessons(): Flow<List<Lesson>>
     suspend fun toggleBookmark(lessonId: String, isBookmarked: Boolean)
+    fun getUserProgress(): Flow<com.example.codelearnapp.domain.model.UserProgress?>
 }

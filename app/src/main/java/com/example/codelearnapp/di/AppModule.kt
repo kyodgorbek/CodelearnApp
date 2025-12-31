@@ -63,11 +63,12 @@ val appModule = module {
     factory { ToggleBookmarkUseCase(get()) }
     factory { GetAchievementsUseCase(get()) }
     factory { GetLeaderboardUseCase(get()) }
+    factory { GetUserProgressUseCase(get()) }
 
     // ViewModels
     viewModel { HomeViewModel(get()) }
     viewModel { CourseDetailViewModel(get(), get()) }
-    viewModel { LessonViewModel(get(), get()) }
+    viewModel { LessonViewModel(get(), get(), get()) }
     viewModel { SearchViewModel(get()) }
     viewModel { BookmarksViewModel(get(), get()) }
     viewModel { AchievementsViewModel(get()) }

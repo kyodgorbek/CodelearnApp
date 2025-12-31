@@ -18,10 +18,12 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.codelearnapp.domain.model.LessonType
 import com.example.codelearnapp.domain.model.Quiz
+import com.airbnb.lottie.compose.*
 import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -182,6 +184,99 @@ fun LessonScreen(
                         ) {
                             Text(
                                 if (lesson.type == LessonType.QUIZ && !state.showQuizResult) "Check Answer" else "Complete & Continue",
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                    }
+                }
+            }
+        }
+
+        if (state.showCelebration) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.Black.copy(alpha = 0.85f)),
+                contentAlignment = Alignment.Center
+            ) {
+                // Background Confetti for Major Milestones
+                if (state.isMajorMilestone) {
+                    val confettiComposition by rememberLottieComposition(
+                        LottieCompositionSpec.Url("https://lottie.host/c9f9571d-5369-42b7-9759-3a3411e737c3/7M6b0m9k8S.json")
+                    )
+                    LottieAnimation(
+                        composition = confettiComposition,
+                        iterations = LottieConstants.IterateForever,
+                        modifier = Modifier.fillMaxSize()
+                    )
+                }
+
+                val mainComposition by rememberLottieComposition(
+                    LottieCompositionSpec.Url(
+                        if (state.isMajorMilestone) 
+                            "https://lottie.host/76046e7f-4740-4206-8809-77567793d59e/J1L1N5Y7vF.json" // Trophy
+                        else 
+                            "https://lottie.host/9e419b4b-3d60-496b-88e3-0b04756574a4/kS9Y6N0E8p.json" // Character
+                    )
+                )
+                
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth(0.9f)
+                        .padding(bottom = 32.dp),
+                    shape = RoundedCornerShape(32.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surface
+                    ),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 12.dp)
+                ) {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier
+                            .padding(32.dp)
+                            .fillMaxWidth()
+                    ) {
+                        LottieAnimation(
+                            composition = mainComposition,
+                            iterations = if (state.isMajorMilestone) LottieConstants.IterateForever else 1,
+                            modifier = Modifier.size(if (state.isMajorMilestone) 280.dp else 240.dp)
+                        )
+                        
+                        Text(
+                            text = if (state.isMajorMilestone) "MASTER CATEGORY!" else "Lesson Complete!",
+                            style = MaterialTheme.typography.headlineLarge,
+                            fontWeight = FontWeight.ExtraBold,
+                            color = if (state.isMajorMilestone) Color(0xFFFFD700) else MaterialTheme.colorScheme.primary, // Gold for major
+                            textAlign = TextAlign.Center
+                        )
+                        
+                        state.milestoneReached?.let { milestone ->
+                            Spacer(modifier = Modifier.height(16.dp))
+                            Text(
+                                text = milestone,
+                                style = MaterialTheme.typography.titleLarge,
+                                color = MaterialTheme.colorScheme.onSurface,
+                                textAlign = TextAlign.Center,
+                                fontWeight = FontWeight.Medium,
+                                lineHeight = 28.sp
+                            )
+                        }
+                        
+                        Spacer(modifier = Modifier.height(32.dp))
+                        
+                        Button(
+                            onClick = { viewModel.sendIntent(LessonIntent.DismissCelebration) },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(60.dp),
+                            shape = RoundedCornerShape(16.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.primary
+                            )
+                        ) {
+                            Text(
+                                "Continue".uppercase(), 
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.Bold
                             )

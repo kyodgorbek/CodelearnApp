@@ -8,5 +8,8 @@ data class LessonState(
     val lesson: Lesson? = null,
     val selectedAnswer: Int? = null,
     val showQuizResult: Boolean = false,
+    val showCelebration: Boolean = false,
+    val isMajorMilestone: Boolean = false,
+    val milestoneReached: String? = null,
     val error: String? = null
 ) : UiState

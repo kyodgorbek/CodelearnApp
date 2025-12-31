@@ -7,7 +7,7 @@ import com.example.codelearnapp.data.remote.FirebaseAuthRepository
 import com.example.codelearnapp.data.remote.FirestoreRepository
 import com.example.codelearnapp.domain.model.Course
 import com.example.codelearnapp.domain.model.Lesson
-import com.example.codelearnapp.domain.repository.CourseRepository
+import com.example.codelearnapp.domain.model.UserProgress
 import kotlinx.coroutines.flow.*
 import java.util.concurrent.TimeUnit
 
@@ -114,6 +114,11 @@ class EnhancedCourseRepositoryImpl(
         } else {
             bookmarkDao.deleteBookmark(lessonId)
         }
+    }
+    
+    override fun getUserProgress(): Flow<UserProgress?> {
+        return userProgressDao.getUserProgress()
+            .map { it?.toDomain() }
     }
     
     private suspend fun updateCourseProgress(courseId: String) {
