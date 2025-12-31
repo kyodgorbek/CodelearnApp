@@ -1,5 +1,6 @@
 package com.example.codelearnapp.presentation.home
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -12,6 +13,8 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.codelearnapp.domain.model.Course
@@ -41,22 +44,23 @@ fun HomeScreen(
     
     Scaffold(
         topBar = {
-            TopAppBar(
+            CenterAlignedTopAppBar(
                 title = { 
                     Text(
                         "CodeLearn",
-                        fontWeight = FontWeight.Bold
+                        style = MaterialTheme.typography.headlineMedium,
+                        fontWeight = FontWeight.ExtraBold
                     ) 
                 },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer
+                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                    containerColor = Color.Transparent
                 ),
                 actions = {
                     IconButton(onClick = onNavigateToSearch) {
                         Icon(Icons.Default.Search, "Search")
                     }
                     IconButton(onClick = onNavigateToSettings) {
-                        Icon(Icons.Default.Settings, "Settings")
+                        Icon(Icons.Default.Settings, "Settings", tint = MaterialTheme.colorScheme.primary)
                     }
                 }
             )
@@ -90,36 +94,49 @@ fun HomeScreen(
             }
         }
     ) { padding ->
-        if (state.isLoading) {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                CircularProgressIndicator()
-            }
-        } else {
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(padding),
-                contentPadding = PaddingValues(16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                item {
-                    Text(
-                        "Your Courses",
-                        style = MaterialTheme.typography.headlineSmall,
-                        fontWeight = FontWeight.Bold
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(
+                    Brush.verticalGradient(
+                        listOf(
+                            MaterialTheme.colorScheme.background,
+                            MaterialTheme.colorScheme.surface
+                        )
                     )
+                )
+        ) {
+            if (state.isLoading) {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
                 }
-                
-                items(state.courses) { course ->
-                    CourseCard(
-                        course = course,
-                        onClick = { 
-                            viewModel.sendIntent(HomeIntent.CourseClicked(course.id)) 
-                        }
-                    )
+            } else {
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(padding),
+                    contentPadding = PaddingValues(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(20.dp)
+                ) {
+                    item {
+                        Text(
+                            "Continue Learning",
+                            style = MaterialTheme.typography.titleLarge,
+                            color = MaterialTheme.colorScheme.onBackground
+                        )
+                    }
+                    
+                    items(state.courses) { course ->
+                        CourseCard(
+                            course = course,
+                            onClick = { 
+                                viewModel.sendIntent(HomeIntent.CourseClicked(course.id)) 
+                            }
+                        )
+                    }
                 }
             }
         }
@@ -132,52 +149,103 @@ fun CourseCard(course: Course, onClick: () -> Unit) {
         modifier = Modifier
             .fillMaxWidth()
             .clickable(onClick = onClick),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        shape = RoundedCornerShape(24.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.7f)
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
+        border = CardDefaults.outlinedCardBorder().copy(
+            brush = Brush.linearGradient(
+                listOf(
+                    MaterialTheme.colorScheme.primary.copy(alpha = 0.5f),
+                    MaterialTheme.colorScheme.secondary.copy(alpha = 0.5f)
+                )
+            )
+        )
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
+        Column(modifier = Modifier.padding(20.dp)) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(
-                        course.icon,
-                        style = MaterialTheme.typography.headlineMedium
-                    )
-                    Spacer(modifier = Modifier.width(12.dp))
-                    Column {
+                Surface(
+                    modifier = Modifier.size(56.dp),
+                    shape = RoundedCornerShape(16.dp),
+                    color = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
+                ) {
+                    Box(contentAlignment = Alignment.Center) {
                         Text(
-                            course.title,
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold
-                        )
-                        Text(
-                            "${course.completedLessons}/${course.totalLessons} lessons",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                            course.icon,
+                            style = MaterialTheme.typography.headlineSmall
                         )
                     }
                 }
+                Spacer(modifier = Modifier.width(16.dp))
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        course.title,
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Text(
+                        course.category.name,
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
+                Text(
+                    "${(course.progress * 100).toInt()}%",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.primary
+                )
             }
             
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(16.dp))
             
             Text(
                 course.description,
                 style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                maxLines = 2
             )
             
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(20.dp))
             
-            LinearProgressIndicator(
-                progress = { course.progress },
+            Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(8.dp)
-                    .clip(RoundedCornerShape(4.dp)),
-            )
+                    .height(10.dp)
+                    .clip(RoundedCornerShape(5.dp))
+                    .background(MaterialTheme.colorScheme.surfaceVariant)
+            ) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth(course.progress)
+                        .fillMaxHeight()
+                        .clip(RoundedCornerShape(5.dp))
+                        .background(
+                            Brush.horizontalGradient(
+                                listOf(
+                                    MaterialTheme.colorScheme.primary,
+                                    MaterialTheme.colorScheme.secondary
+                                )
+                            )
+                        )
+                )
+            }
+            
+            Spacer(modifier = Modifier.height(8.dp))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    "${course.completedLessons} / ${course.totalLessons} Lessons",
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
         }
     }
 }

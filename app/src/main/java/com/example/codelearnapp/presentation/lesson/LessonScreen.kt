@@ -7,15 +7,19 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Bookmark
+import androidx.compose.material.icons.filled.BookmarkBorder
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.codelearnapp.domain.model.LessonType
 import com.example.codelearnapp.domain.model.Quiz
 import org.koin.androidx.compose.koinViewModel
@@ -46,90 +50,142 @@ fun LessonScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(state.lesson?.title ?: "Lesson") },
+                title = { 
+                    Column {
+                        Text(
+                            state.lesson?.title ?: "Lesson",
+                            style = MaterialTheme.typography.titleMedium
+                        )
+                    }
+                },
                 navigationIcon = {
                     IconButton(onClick = { 
                         viewModel.sendIntent(LessonIntent.BackPressed) 
                     }) {
                         Icon(Icons.Default.ArrowBack, "Back")
                     }
-                }
+                },
+                actions = {
+                    IconButton(onClick = { /* Toggle bookmark */ }) {
+                        Icon(Icons.Default.BookmarkBorder, "Bookmark")
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.background
+                )
             )
         }
     ) { padding ->
-        if (state.isLoading) {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                CircularProgressIndicator()
-            }
-        } else {
-            state.lesson?.let { lesson ->
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(padding)
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background)
+                .padding(padding)
+        ) {
+            // Horizontal Progress Bar
+            LinearProgressIndicator(
+                progress = { 0.5f }, // Mock progress for now
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(4.dp),
+                color = MaterialTheme.colorScheme.primary,
+                trackColor = MaterialTheme.colorScheme.surfaceVariant
+            )
+
+            if (state.isLoading) {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
                 ) {
+                    CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
+                }
+            } else {
+                state.lesson?.let { lesson ->
                     Column(
-                        modifier = Modifier
-                            .weight(1f)
-                            .verticalScroll(rememberScrollState())
-                            .padding(16.dp),
-                        verticalArrangement = Arrangement.spacedBy(16.dp)
+                        modifier = Modifier.fillMaxSize()
                     ) {
-                        // Lesson Type Badge
-                        Surface(
-                            color = MaterialTheme.colorScheme.secondaryContainer,
-                            shape = RoundedCornerShape(8.dp)
+                        Column(
+                            modifier = Modifier
+                                .weight(1f)
+                                .verticalScroll(rememberScrollState())
+                                .padding(20.dp),
+                            verticalArrangement = Arrangement.spacedBy(24.dp)
+                        ) {
+                            // Lesson Type Badge
+                            Surface(
+                                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
+                                shape = RoundedCornerShape(12.dp),
+                                border = ButtonDefaults.outlinedButtonBorder.copy(
+                                    brush = Brush.linearGradient(
+                                        listOf(MaterialTheme.colorScheme.primary, MaterialTheme.colorScheme.secondary)
+                                    )
+                                )
+                            ) {
+                                Text(
+                                    text = lesson.type.name,
+                                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                                    style = MaterialTheme.typography.labelLarge,
+                                    color = MaterialTheme.colorScheme.primary,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
+                            
+                            // Content
+                            Text(
+                                text = lesson.content,
+                                style = MaterialTheme.typography.bodyLarge,
+                                lineHeight = 28.sp,
+                                color = MaterialTheme.colorScheme.onBackground
+                            )
+                            
+                            // Code Example
+                            lesson.codeExample?.let { code ->
+                                Text(
+                                    "Example",
+                                    style = MaterialTheme.typography.titleMedium,
+                                    fontWeight = FontWeight.Bold
+                                )
+                                CodeBlock(code)
+                            }
+                            
+                            // Quiz
+                            if (lesson.type == LessonType.QUIZ && lesson.quiz != null) {
+                                QuizSection(
+                                    quiz = lesson.quiz,
+                                    selectedAnswer = state.selectedAnswer,
+                                    showResult = state.showQuizResult,
+                                    onAnswerSelected = { index ->
+                                        viewModel.sendIntent(LessonIntent.AnswerQuiz(index))
+                                    }
+                                )
+                            }
+                        }
+                        
+                        // Action Button
+                        Button(
+                            onClick = {
+                                viewModel.sendIntent(LessonIntent.CompleteLesson)
+                            },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(20.dp)
+                                .height(56.dp),
+                            shape = RoundedCornerShape(16.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.primary
+                            ),
+                            enabled = when (lesson.type) {
+                                LessonType.QUIZ -> state.showQuizResult && 
+                                    state.selectedAnswer == lesson.quiz?.correctAnswer
+                                else -> true
+                            }
                         ) {
                             Text(
-                                text = lesson.type.name,
-                                modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
-                                style = MaterialTheme.typography.labelMedium,
-                                color = MaterialTheme.colorScheme.onSecondaryContainer
+                                if (lesson.type == LessonType.QUIZ && !state.showQuizResult) "Check Answer" else "Complete & Continue",
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.Bold
                             )
                         }
-                        
-                        // Content
-                        Text(
-                            text = lesson.content,
-                            style = MaterialTheme.typography.bodyLarge
-                        )
-                        
-                        // Code Example
-                        lesson.codeExample?.let { code ->
-                            CodeBlock(code)
-                        }
-                        
-                        // Quiz
-                        if (lesson.type == LessonType.QUIZ && lesson.quiz != null) {
-                            QuizSection(
-                                quiz = lesson.quiz,
-                                selectedAnswer = state.selectedAnswer,
-                                showResult = state.showQuizResult,
-                                onAnswerSelected = { index ->
-                                    viewModel.sendIntent(LessonIntent.AnswerQuiz(index))
-                                }
-                            )
-                        }
-                    }
-                    
-                    // Complete Button
-                    Button(
-                        onClick = {
-                            viewModel.sendIntent(LessonIntent.CompleteLesson)
-                        },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp),
-                        enabled = when (lesson.type) {
-                            LessonType.QUIZ -> state.showQuizResult && 
-                                state.selectedAnswer == lesson.quiz?.correctAnswer
-                            else -> true
-                        }
-                    ) {
-                        Text("Complete Lesson")
                     }
                 }
             }

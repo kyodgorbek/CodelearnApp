@@ -11,76 +11,9 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
 
-class CourseRepositoryImpl : CourseRepository {
+object CourseRepositoryImpl {
 
-    private val coursesFlow = MutableStateFlow(getMockCourses())
-    private val lessonsFlow = MutableStateFlow(getMockLessons())
-
-    override fun getAllCourses(): Flow<List<Course>> = coursesFlow
-
-    override fun getCourseById(id: String): Flow<Course?> =
-        coursesFlow.map { courses -> courses.find { it.id == id } }
-
-    override fun getLessonsByCourse(courseId: String): Flow<List<Lesson>> =
-        lessonsFlow.map { lessons -> lessons.filter { it.courseId == courseId } }
-
-    override fun getLessonById(lessonId: String): Flow<Lesson?> =
-        lessonsFlow.map { lessons -> lessons.find { it.id == lessonId } }
-
-    override suspend fun updateLessonProgress(lessonId: String, isCompleted: Boolean) {
-        val updatedLessons = lessonsFlow.value.map { lesson ->
-            if (lesson.id == lessonId) lesson.copy(isCompleted = isCompleted)
-            else lesson
-        }
-        lessonsFlow.value = updatedLessons
-
-        // Update course progress
-        val lesson = lessonsFlow.value.find { it.id == lessonId }
-        lesson?.let {
-            val courseId = it.courseId
-            val courseLessons = lessonsFlow.value.filter { l -> l.courseId == courseId }
-            val completed = courseLessons.count { l -> l.isCompleted }
-            val total = courseLessons.size
-            val progress = completed.toFloat() / total.toFloat()
-
-            val updatedCourses = coursesFlow.value.map { course ->
-                if (course.id == courseId) {
-                    course.copy(
-                        completedLessons = completed,
-                        progress = progress
-                    )
-                } else course
-            }
-            coursesFlow.value = updatedCourses
-        }
-    }
-
-    override fun searchLessons(query: String): Flow<List<Lesson>> {
-        val lowerQuery = query.lowercase()
-        return lessonsFlow.map { lessons ->
-            lessons.filter { lesson ->
-                lesson.title.lowercase().contains(lowerQuery) ||
-                lesson.content.lowercase().contains(lowerQuery)
-            }
-        }
-    }
-
-    override fun getBookmarkedLessons(): Flow<List<Lesson>> {
-        return lessonsFlow.map { lessons ->
-            lessons.filter { lesson ->
-                // In mock data, we'll track bookmarks via a separate set
-                // For now, return empty list - real implementation would use BookmarkDao
-                false
-            }
-        }
-    }
-
-    override suspend fun toggleBookmark(lessonId: String, isBookmarked: Boolean) {
-        // For mock implementation, we could track bookmarks separately
-        // In real implementation, this would use BookmarkDao
-    }
-
-    private fun getMockCourses() = listOf(
+    fun getMockCourses() = listOf(
         Course(
             id = "python-basics",
             title = "Python Basics",
@@ -133,7 +66,7 @@ class CourseRepositoryImpl : CourseRepository {
         )
     )
 
-    private fun getMockLessons(): List<Lesson> {
+    fun getMockLessons(): List<Lesson> {
         return getPythonLessons() +
                 getKotlinLessons() +
                 getJavaLessons() +

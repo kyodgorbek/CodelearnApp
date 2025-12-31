@@ -8,6 +8,7 @@ import com.example.codelearnapp.data.remote.FirebaseAuthRepository
 import com.example.codelearnapp.data.remote.FirestoreRepository
 import com.example.codelearnapp.data.repository.AchievementRepositoryImpl
 import com.example.codelearnapp.data.repository.CourseRepositoryImpl
+import com.example.codelearnapp.data.repository.EnhancedCourseRepositoryImpl
 import com.example.codelearnapp.data.sync.SyncManager
 import com.example.codelearnapp.domain.repository.AchievementRepository
 import com.example.codelearnapp.domain.repository.CourseRepository
@@ -45,7 +46,7 @@ val appModule = module {
     // Repositories
     single { FirebaseAuthRepository(get()) }
     single { FirestoreRepository(get()) }
-    single<CourseRepository> { CourseRepositoryImpl() }
+    single<CourseRepository> { EnhancedCourseRepositoryImpl(get(), get(), get(), get()) }
     single<AchievementRepository> { AchievementRepositoryImpl(get()) }
     single { PreferencesManager(androidContext()) }
     single { SyncManager(androidContext(), get(), get()) }

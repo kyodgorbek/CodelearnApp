@@ -2,10 +2,17 @@ package com.example.codelearnapp.data.local
 
 import com.example.codelearnapp.data.local.entity.AchievementEntity
 import com.example.codelearnapp.data.local.entity.UserProgressEntity
+import com.example.codelearnapp.data.local.entity.toEntity
+import com.example.codelearnapp.data.repository.CourseRepositoryImpl
+import kotlinx.coroutines.flow.firstOrNull
 
 object DatabaseInitializer {
     
     suspend fun initializeDatabase(database: AppDatabase) {
+        // Only initialize if empty
+        val existingProgress = database.userProgressDao().getUserProgress().firstOrNull()
+        if (existingProgress != null) return
+
         // Initialize user progress
         database.userProgressDao().insertProgress(
             UserProgressEntity(
@@ -20,6 +27,14 @@ object DatabaseInitializer {
         
         // Initialize achievements
         database.achievementDao().insertAchievements(getInitialAchievements())
+
+        // Initialize courses
+        val courses = CourseRepositoryImpl.getMockCourses().map { it.toEntity() }
+        database.courseDao().insertCourses(courses)
+
+        // Initialize lessons
+        val lessons = CourseRepositoryImpl.getMockLessons().map { it.toEntity() }
+        database.lessonDao().insertLessons(lessons)
     }
     
     private fun getInitialAchievements() = listOf(

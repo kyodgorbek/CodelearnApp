@@ -8,9 +8,7 @@ plugins {
 
 android {
     namespace = "com.example.codelearnapp"
-    compileSdk {
-        version = release(36)
-    }
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.example.codelearnapp"
@@ -75,7 +73,12 @@ dependencies {
 
         implementation ("androidx.compose.material:material-icons-extended:1.5.0")
 
-
+    val ktorVersion = "2.3.7"
+    implementation("io.ktor:ktor-client-core:$ktorVersion")
+    implementation("io.ktor:ktor-client-android:$ktorVersion")
+    implementation("io.ktor:ktor-client-content-negotiation:$ktorVersion")
+    implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
+    implementation("io.ktor:ktor-client-logging:$ktorVersion")
 
 // Navigation
     implementation("androidx.navigation:navigation-compose:2.7.5")
