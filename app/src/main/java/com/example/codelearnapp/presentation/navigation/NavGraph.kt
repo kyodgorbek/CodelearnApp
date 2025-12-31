@@ -20,16 +20,24 @@ import com.example.codelearnapp.presentation.onboarding.OnboardingScreen
 @Composable
 fun NavGraph(
     navController: NavHostController,
-    isOnboardingCompleted: Boolean
+    isOnboardingCompleted: Boolean,
+    isUserLoggedIn: Boolean
 ) {
+    val startDestination = when {
+        !isOnboardingCompleted -> Screen.Onboarding.route
+        !isUserLoggedIn -> Screen.Auth.route
+        else -> Screen.Home.route
+    }
+
     NavHost(
         navController = navController,
-        startDestination = if (isOnboardingCompleted) Screen.Home.route else Screen.Onboarding.route
+        startDestination = startDestination
     ) {
         composable(Screen.Onboarding.route) {
             OnboardingScreen(
                 onFinish = {
-                    navController.navigate(Screen.Home.route) {
+                    val nextDestination = if (isUserLoggedIn) Screen.Home.route else Screen.Auth.route
+                    navController.navigate(nextDestination) {
                         popUpTo(Screen.Onboarding.route) { inclusive = true }
                     }
                 }
