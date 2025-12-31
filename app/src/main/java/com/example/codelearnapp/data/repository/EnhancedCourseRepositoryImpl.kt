@@ -8,6 +8,7 @@ import com.example.codelearnapp.data.remote.FirestoreRepository
 import com.example.codelearnapp.domain.model.Course
 import com.example.codelearnapp.domain.model.Lesson
 import com.example.codelearnapp.domain.model.UserProgress
+import com.example.codelearnapp.domain.repository.CourseRepository
 import kotlinx.coroutines.flow.*
 import java.util.concurrent.TimeUnit
 

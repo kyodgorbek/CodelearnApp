@@ -13,4 +13,23 @@ data class UserProgressEntity(
     val coursesCompleted: Int = 0,
     val lessonsCompleted: Int = 0,
     val lastActivityDate: Long = System.currentTimeMillis()
-)
+) {
+    fun toDomain(): com.example.codelearnapp.domain.model.UserProgress = 
+        com.example.codelearnapp.domain.model.UserProgress(
+            totalXp = totalXp,
+            currentStreak = currentStreak,
+            longestStreak = longestStreak,
+            coursesCompleted = coursesCompleted,
+            lessonsCompleted = lessonsCompleted
+        )
+}
+
+fun com.example.codelearnapp.domain.model.UserProgress.toEntity(userId: String = "local_user"): UserProgressEntity = 
+    UserProgressEntity(
+        userId = userId,
+        totalXp = totalXp,
+        currentStreak = currentStreak,
+        longestStreak = longestStreak,
+        coursesCompleted = coursesCompleted,
+        lessonsCompleted = lessonsCompleted
+    )
