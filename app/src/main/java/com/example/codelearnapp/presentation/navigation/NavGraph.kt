@@ -15,13 +15,26 @@ import com.example.codelearnapp.presentation.leaderboard.LeaderboardScreen
 import com.example.codelearnapp.presentation.lesson.LessonScreen
 import com.example.codelearnapp.presentation.search.SearchScreen
 import com.example.codelearnapp.presentation.settings.SettingsScreen
+import com.example.codelearnapp.presentation.onboarding.OnboardingScreen
 
 @Composable
-fun NavGraph(navController: NavHostController) {
+fun NavGraph(
+    navController: NavHostController,
+    isOnboardingCompleted: Boolean
+) {
     NavHost(
         navController = navController,
-        startDestination = Screen.Home.route
+        startDestination = if (isOnboardingCompleted) Screen.Home.route else Screen.Onboarding.route
     ) {
+        composable(Screen.Onboarding.route) {
+            OnboardingScreen(
+                onFinish = {
+                    navController.navigate(Screen.Home.route) {
+                        popUpTo(Screen.Onboarding.route) { inclusive = true }
+                    }
+                }
+            )
+        }
         composable(Screen.Home.route) {
             HomeScreen(
                 onNavigateToCourse = { courseId ->

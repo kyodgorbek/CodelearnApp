@@ -22,6 +22,7 @@ import com.example.codelearnapp.presentation.leaderboard.LeaderboardViewModel
 import com.example.codelearnapp.presentation.lesson.LessonViewModel
 import com.example.codelearnapp.presentation.search.SearchViewModel
 import com.example.codelearnapp.presentation.settings.SettingsViewModel
+import com.example.codelearnapp.presentation.onboarding.OnboardingViewModel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import org.koin.android.ext.koin.androidContext
@@ -73,5 +74,6 @@ val appModule = module {
     viewModel { LeaderboardViewModel(get(), get()) }
     viewModel { AuthViewModel(get(), get()) }
     viewModel { SettingsViewModel(get(), get(), get(), get()) }
+    viewModel { OnboardingViewModel(get()) }
 
 }

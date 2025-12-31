@@ -16,7 +16,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.rememberNavController
 import com.example.codelearnapp.ui.theme.CodelearnAppTheme
 import com.example.codelearnapp.presentation.navigation.NavGraph
+import com.example.codelearnapp.data.local.PreferencesManager
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import org.koin.android.ext.android.inject
+
 class MainActivity : ComponentActivity() {
+    private val preferencesManager: PreferencesManager by inject()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -27,7 +33,11 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     val navController = rememberNavController()
-                    NavGraph(navController = navController)
+                    val isOnboardingCompleted by preferencesManager.isOnboardingCompleted.collectAsState(initial = true)
+                    NavGraph(
+                        navController = navController,
+                        isOnboardingCompleted = isOnboardingCompleted
+                    )
                 }
             }
         }

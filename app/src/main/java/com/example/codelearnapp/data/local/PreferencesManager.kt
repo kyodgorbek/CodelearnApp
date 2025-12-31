@@ -18,6 +18,7 @@ class PreferencesManager(private val context: Context) {
         private val NOTIFICATION_ENABLED = booleanPreferencesKey("notification_enabled")
         private val DAILY_GOAL = intPreferencesKey("daily_goal")
         private val AUTO_PLAY_VIDEO = booleanPreferencesKey("auto_play_video")
+        private val ONBOARDING_COMPLETED = booleanPreferencesKey("onboarding_completed")
     }
     
     val isDarkMode: Flow<Boolean> = context.dataStore.data
@@ -37,6 +38,9 @@ class PreferencesManager(private val context: Context) {
     
     val autoPlayVideo: Flow<Boolean> = context.dataStore.data
         .map { preferences -> preferences[AUTO_PLAY_VIDEO] ?: true }
+    
+    val isOnboardingCompleted: Flow<Boolean> = context.dataStore.data
+        .map { preferences -> preferences[ONBOARDING_COMPLETED] ?: false }
     
     suspend fun setDarkMode(enabled: Boolean) {
         context.dataStore.edit { preferences ->
@@ -71,6 +75,12 @@ class PreferencesManager(private val context: Context) {
     suspend fun setAutoPlayVideo(enabled: Boolean) {
         context.dataStore.edit { preferences ->
             preferences[AUTO_PLAY_VIDEO] = enabled
+        }
+    }
+
+    suspend fun setOnboardingCompleted(completed: Boolean) {
+        context.dataStore.edit { preferences ->
+            preferences[ONBOARDING_COMPLETED] = completed
         }
     }
 }
