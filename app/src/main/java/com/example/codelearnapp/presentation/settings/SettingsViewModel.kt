@@ -13,9 +13,8 @@ class SettingsViewModel(
     private val authRepository: FirebaseAuthRepository,
     private val syncManager: SyncManager,
     private val firebaseAuth: com.google.firebase.auth.FirebaseAuth
-) : MviViewModel<SettingsIntent, SettingsState, SettingsEffect>() {
+) : MviViewModel<SettingsIntent, SettingsState, SettingsEffect>(SettingsState()) {
 
-    override fun createInitialState(): SettingsState = SettingsState()
 
     init {
         sendIntent(SettingsIntent.LoadSettings)

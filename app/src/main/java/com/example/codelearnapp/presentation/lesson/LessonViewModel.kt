@@ -10,9 +10,7 @@ import kotlinx.coroutines.launch
 class LessonViewModel(
     private val getLessonByIdUseCase: GetLessonByIdUseCase,
     private val completeLessonUseCase: CompleteLessonUseCase
-) : MviViewModel<LessonIntent, LessonState, LessonEffect>() {
-    
-    override fun createInitialState(): LessonState = LessonState()
+) : MviViewModel<LessonIntent, LessonState, LessonEffect>(LessonState()) {
     
     override fun handleIntent(intent: LessonIntent) {
         when (intent) {

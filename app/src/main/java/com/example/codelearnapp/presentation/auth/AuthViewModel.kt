@@ -9,12 +9,12 @@ import kotlinx.coroutines.launch
 class AuthViewModel(
     private val authRepository: FirebaseAuthRepository,
     private val firestoreRepository: FirestoreRepository
-) : MviViewModel<AuthIntent, AuthState, AuthEffect>() {
-    
-    override fun createInitialState(): AuthState = AuthState(
+) : MviViewModel<AuthIntent, AuthState, AuthEffect>(
+    AuthState(
         isSignedIn = authRepository.isSignedIn(),
         userEmail = authRepository.currentUser?.email
     )
+) {
     
     override fun handleIntent(intent: AuthIntent) {
         when (intent) {

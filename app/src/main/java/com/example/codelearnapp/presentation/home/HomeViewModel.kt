@@ -8,9 +8,7 @@ import kotlinx.coroutines.launch
 
 class HomeViewModel(
     private val getCoursesUseCase: GetCoursesUseCase
-) : MviViewModel<HomeIntent, HomeState, HomeEffect>() {
-    
-    override fun createInitialState(): HomeState = HomeState()
+) : MviViewModel<HomeIntent, HomeState, HomeEffect>(HomeState()) {
     
     init {
         sendIntent(HomeIntent.LoadCourses)

@@ -8,9 +8,7 @@ import kotlinx.coroutines.launch
 
 class SearchViewModel(
     private val searchLessonsUseCase: SearchLessonsUseCase
-) : MviViewModel<SearchIntent, SearchState, SearchEffect>() {
-    
-    override fun createInitialState(): SearchState = SearchState()
+) : MviViewModel<SearchIntent, SearchState, SearchEffect>(SearchState()) {
     
     override fun handleIntent(intent: SearchIntent) {
         when (intent) {

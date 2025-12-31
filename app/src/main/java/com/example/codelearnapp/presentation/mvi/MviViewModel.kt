@@ -5,10 +5,9 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
-abstract class MviViewModel<Intent : UiIntent, State : UiState, Effect : UiEffect> : ViewModel() {
-    
-    private val initialState: State by lazy { createInitialState() }
-    abstract fun createInitialState(): State
+abstract class MviViewModel<Intent : UiIntent, State : UiState, Effect : UiEffect>(
+    initialState: State
+) : ViewModel() {
     
     private val _state: MutableStateFlow<State> = MutableStateFlow(initialState)
     val state: StateFlow<State> = _state.asStateFlow()

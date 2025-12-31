@@ -8,9 +8,7 @@ import kotlinx.coroutines.launch
 
 class AchievementsViewModel(
     private val getAchievementsUseCase: GetAchievementsUseCase
-) : MviViewModel<AchievementsIntent, AchievementsState, AchievementsEffect>() {
-    
-    override fun createInitialState(): AchievementsState = AchievementsState()
+) : MviViewModel<AchievementsIntent, AchievementsState, AchievementsEffect>(AchievementsState()) {
     
     init {
         sendIntent(AchievementsIntent.LoadAchievements)

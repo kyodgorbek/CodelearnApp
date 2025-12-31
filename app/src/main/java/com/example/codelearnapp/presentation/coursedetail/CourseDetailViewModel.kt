@@ -12,9 +12,7 @@ import kotlinx.coroutines.launch
 class CourseDetailViewModel(
     private val getCourseByIdUseCase: GetCourseByIdUseCase,
     private val getLessonsUseCase: GetLessonsUseCase
-) : MviViewModel<CourseDetailIntent, CourseDetailState, CourseDetailEffect>() {
-    
-    override fun createInitialState(): CourseDetailState = CourseDetailState()
+) : MviViewModel<CourseDetailIntent, CourseDetailState, CourseDetailEffect>(CourseDetailState()) {
     
     override fun handleIntent(intent: CourseDetailIntent) {
         when (intent) {

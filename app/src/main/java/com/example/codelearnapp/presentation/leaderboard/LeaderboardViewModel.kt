@@ -10,11 +10,9 @@ import kotlinx.coroutines.launch
 class LeaderboardViewModel(
     private val getLeaderboardUseCase: GetLeaderboardUseCase,
     private val firebaseAuth: FirebaseAuth
-) : MviViewModel<LeaderboardIntent, LeaderboardState, LeaderboardEffect>() {
-    
-    override fun createInitialState(): LeaderboardState = LeaderboardState(
-        currentUserId = firebaseAuth.currentUser?.uid
-    )
+) : MviViewModel<LeaderboardIntent, LeaderboardState, LeaderboardEffect>(
+    LeaderboardState(currentUserId = firebaseAuth.currentUser?.uid)
+) {
     
     init {
         sendIntent(LeaderboardIntent.LoadLeaderboard)

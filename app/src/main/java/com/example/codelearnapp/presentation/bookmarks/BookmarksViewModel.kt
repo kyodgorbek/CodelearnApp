@@ -10,9 +10,7 @@ import kotlinx.coroutines.launch
 class BookmarksViewModel(
     private val getBookmarkedLessonsUseCase: GetBookmarkedLessonsUseCase,
     private val toggleBookmarkUseCase: ToggleBookmarkUseCase
-) : MviViewModel<BookmarksIntent, BookmarksState, BookmarksEffect>() {
-    
-    override fun createInitialState(): BookmarksState = BookmarksState()
+) : MviViewModel<BookmarksIntent, BookmarksState, BookmarksEffect>(BookmarksState()) {
     
     init {
         sendIntent(BookmarksIntent.LoadBookmarks)
