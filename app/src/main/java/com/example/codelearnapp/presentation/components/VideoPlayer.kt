@@ -11,6 +11,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.VolumeOff
+import androidx.compose.material.icons.filled.VolumeUp
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -132,7 +134,7 @@ fun VideoPlayer(
                             .size(40.dp)
                     ) {
                         Icon(
-                            imageVector = if (isMuted) androidx.compose.material.icons.filled.VolumeOff else androidx.compose.material.icons.filled.VolumeUp,
+                            imageVector = if (isMuted) Icons.Default.VolumeOff else Icons.Default.VolumeUp,
                             contentDescription = "Mute",
                             tint = Color.White,
                             modifier = Modifier.size(20.dp)

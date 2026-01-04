@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.airbnb.lottie.compose.*
 import androidx.compose.ui.platform.LocalContext
+import com.example.codelearnapp.presentation.components.VideoPlayer
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
