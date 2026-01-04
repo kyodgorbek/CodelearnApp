@@ -261,31 +261,38 @@ fun PathSelectionStep(
 
 @Composable
 fun WelcomeStep() {
-    val composition by rememberLottieComposition(LottieCompositionSpec.Url("https://lottie.host/9e419b4b-3d60-496b-88e3-0b04756574a4/kS9Y6N0E8p.json"))
-    
     Column(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        LottieAnimation(
-            composition = composition,
-            iterations = LottieConstants.IterateForever,
-            modifier = Modifier.size(280.dp)
+        // App Icon
+        androidx.compose.foundation.Image(
+            painter = androidx.compose.ui.res.painterResource(id = com.example.codelearnapp.R.mipmap.ic_launcher),
+            contentDescription = "App Icon",
+            modifier = Modifier
+                .size(120.dp)
+                .clip(RoundedCornerShape(24.dp))
         )
+        
         Spacer(modifier = Modifier.height(32.dp))
+        
         Text(
-            text = "Welcome to Codelearn",
+            text = "Welcome to Codelearn!",
             style = MaterialTheme.typography.displaySmall,
-            fontWeight = FontWeight.Bold,
-            textAlign = TextAlign.Center
+            fontWeight = FontWeight.ExtraBold,
+            textAlign = TextAlign.Center,
+            color = MaterialTheme.colorScheme.onBackground
         )
+        
         Spacer(modifier = Modifier.height(16.dp))
+        
         Text(
-            text = "Let's personalize your learning experience to help you reach your goals faster.",
+            text = "To build your personal curriculum, we'll ask you a few questions.",
             style = MaterialTheme.typography.bodyLarge,
             textAlign = TextAlign.Center,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.padding(horizontal = 32.dp)
         )
     }
 }
