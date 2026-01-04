@@ -9,30 +9,31 @@ import kotlinx.coroutines.flow.firstOrNull
 object DatabaseInitializer {
     
     suspend fun initializeDatabase(database: AppDatabase) {
-        // Only initialize if empty
+        // Initialize user progress if empty
         val existingProgress = database.userProgressDao().getUserProgress().firstOrNull()
-        if (existingProgress != null) return
-
-        // Initialize user progress
-        database.userProgressDao().insertProgress(
-            UserProgressEntity(
-                userId = "local_user",
-                totalXp = 0,
-                currentStreak = 0,
-                longestStreak = 0,
-                coursesCompleted = 0,
-                lessonsCompleted = 0
+        if (existingProgress == null) {
+            database.userProgressDao().insertProgress(
+                UserProgressEntity(
+                    userId = "local_user",
+                    totalXp = 0,
+                    currentStreak = 0,
+                    longestStreak = 0,
+                    coursesCompleted = 0,
+                    lessonsCompleted = 0
+                )
             )
-        )
+        }
         
-        // Initialize achievements
-        database.achievementDao().insertAchievements(getInitialAchievements())
+        // Initialize achievements if empty
+        val existingAchievements = database.achievementDao().getAllAchievements().firstOrNull()
+        if (existingAchievements.isNullOrEmpty()) {
+            database.achievementDao().insertAchievements(getInitialAchievements())
+        }
 
-        // Initialize courses
+        // Always ensure courses and lessons are up to date with mock data
         val courses = CourseRepositoryImpl.getMockCourses().map { it.toEntity() }
         database.courseDao().insertCourses(courses)
 
-        // Initialize lessons
         val lessons = CourseRepositoryImpl.getMockLessons().map { it.toEntity() }
         database.lessonDao().insertLessons(lessons)
     }
