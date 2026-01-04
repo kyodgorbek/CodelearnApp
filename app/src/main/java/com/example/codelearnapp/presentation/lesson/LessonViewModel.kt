@@ -48,6 +48,7 @@ class LessonViewModel(
             }
             .collect { (lesson, autoPlay) ->
                 setState {
+                    copy(
                         isLoading = false,
                         lesson = lesson,
                         autoPlayVideo = autoPlay,
