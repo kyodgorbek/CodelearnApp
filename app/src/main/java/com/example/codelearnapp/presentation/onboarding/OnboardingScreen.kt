@@ -1,12 +1,15 @@
 package com.example.codelearnapp.presentation.onboarding
-
 import androidx.compose.animation.*
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.pager.HorizontalPager
-import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -22,183 +25,382 @@ import com.airbnb.lottie.compose.*
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
-@OptIn(androidx.compose.foundation.ExperimentalFoundationApi::class)
+@Composable
 @Composable
 fun OnboardingScreen(
     viewModel: OnboardingViewModel = koinViewModel(),
     onFinish: () -> Unit
 ) {
-    val slides = listOf(
-        OnboardingSlide(
-            title = "Empower Your Career",
-            description = "Master coding at your own pace with our comprehensive curriculum designed by industry experts.",
-            lottieUrl = "https://lottie.host/9e419b4b-3d60-496b-88e3-0b04756574a4/kS9Y6N0E8p.json"
-        ),
-        OnboardingSlide(
-            title = "Interactive Practice",
-            description = "Solve real-world coding challenges and get instant feedback with our built-in code runner.",
-            lottieUrl = "https://lottie.host/8c6f4320-f472-4d1a-8c4d-9d413364f3d2/kF9jS5X7p9.json"
-        ),
-        OnboardingSlide(
-            title = "Join the Community",
-            description = "Connect with fellow learners, share your progress, and climb the global leaderboard.",
-            lottieUrl = "https://lottie.host/677b1070-8263-424a-9e75-6e069632890d/8m8K9P2J7r.json"
-        )
-    )
-
-    val pagerState = rememberPagerState(pageCount = { slides.size })
+    val state by viewModel.state.collectAsState()
+    var currentStep by remember { mutableIntStateOf(0) }
     val scope = rememberCoroutineScope()
-    val composition by rememberLottieComposition(
-        LottieCompositionSpec.Url(slides[pagerState.currentPage].lottieUrl)
-    )
-    val progress by animateLottieCompositionAsState(
-        composition = composition,
-        iterations = LottieConstants.IterateForever
-    )
+
+    // 0: Welcome
+    // 1: Motivation
+    // 2: Role
+    // 3: Interest Type
+    // 4: Interest Topic
+    // 5: Experience
+    // 6: Career Path (Recommendation)
+    // 7: Daily Goal
+    // 8: Reminder
 
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(
-                Brush.verticalGradient(
-                    listOf(
-                        MaterialTheme.colorScheme.background,
-                        MaterialTheme.colorScheme.surface
-                    )
-                )
-            )
+            .background(MaterialTheme.colorScheme.background)
     ) {
         Column(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(24.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            HorizontalPager(
-                state = pagerState,
-                modifier = Modifier
-                    .weight(0.7f)
-                    .fillMaxWidth()
-            ) { page ->
-                val slide = slides[page]
-                val currentComposition by rememberLottieComposition(
-                    LottieCompositionSpec.Url(slide.lottieUrl)
-                )
-                
-                Column(
+            // Progress Bar (skip on welcome)
+            if (currentStep > 0) {
+                LinearProgressIndicator(
+                    progress = { currentStep / 8f },
                     modifier = Modifier
-                        .fillMaxSize()
-                        .padding(24.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center
-                ) {
-                    LottieAnimation(
-                        composition = currentComposition,
-                        iterations = LottieConstants.IterateForever,
-                        modifier = Modifier
-                            .size(300.dp)
-                            .padding(bottom = 32.dp)
+                        .fillMaxWidth()
+                        .padding(bottom = 24.dp)
+                        .clip(RoundedCornerShape(4.dp)),
+                    color = MaterialTheme.colorScheme.primary,
+                    trackColor = MaterialTheme.colorScheme.primaryContainer,
+                )
+            }
+
+            AnimatedContent(
+                targetState = currentStep,
+                label = "onboarding_steps",
+                modifier = Modifier.weight(1f)
+            ) { step ->
+                when (step) {
+                    0 -> WelcomeStep()
+                    1 -> QuestionStep(
+                        question = "Why are you learning to code?",
+                        options = listOf(
+                            OptionItem("career", "Become a professional developer", "💼"),
+                            OptionItem("fun", "Just for fun", "🎮"),
+                            OptionItem("skill", "Improve my current job skills", "📈"),
+                            OptionItem("project", "Build a specific project", "🚀")
+                        ),
+                        selectedId = state.motivation,
+                        onOptionSelected = { viewModel.updateMotivation(it) }
                     )
-                    
-                    Text(
-                        text = slide.title,
-                        style = MaterialTheme.typography.displaySmall,
-                        fontWeight = FontWeight.ExtraBold,
-                        textAlign = TextAlign.Center,
-                        color = MaterialTheme.colorScheme.onBackground
+                    2 -> QuestionStep(
+                        question = "Which of these describes you best?",
+                        options = listOf(
+                            OptionItem("student_hs", "High school student", "🎒"),
+                            OptionItem("student_uni", "University student", "🎓"),
+                            OptionItem("employee", "Employee", "💼"),
+                            OptionItem("self_employed", "Self-employed", "💻"),
+                            OptionItem("other", "None of these", "🌿")
+                        ),
+                        selectedId = state.role,
+                        onOptionSelected = { viewModel.updateRole(it) }
                     )
-                    
-                    Spacer(modifier = Modifier.height(16.dp))
-                    
-                    Text(
-                        text = slide.description,
-                        style = MaterialTheme.typography.bodyLarge,
-                        textAlign = TextAlign.Center,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.padding(horizontal = 16.dp)
+                    3 -> QuestionStep(
+                        question = "Which aspect of coding captivates you?",
+                        options = listOf(
+                            OptionItem("visual", "How things look (appearance)", "🖼️"),
+                            OptionItem("logic", "How things work (logic)", "⚙️"),
+                            OptionItem("both", "I'm intrigued by both", "✨")
+                        ),
+                        selectedId = state.interestType,
+                        onOptionSelected = { viewModel.updateInterestType(it) }
+                    )
+                    4 -> QuestionStep(
+                        question = "What do you find the most interesting?",
+                        options = listOf(
+                            OptionItem("web", "Web apps", "🌐"),
+                            OptionItem("games", "Games", "👾"),
+                            OptionItem("data", "Data science", "📊"),
+                            OptionItem("ai", "AI / Machine learning", "🤖"),
+                            OptionItem("auto", "Automating tasks", "⚡")
+                        ),
+                        selectedId = state.interestTopic,
+                        onOptionSelected = { viewModel.updateInterestTopic(it) }
+                    )
+                    5 -> QuestionStep(
+                        question = "How much coding experience do you have?",
+                        options = listOf(
+                            OptionItem("none", "None", "🌱"),
+                            OptionItem("basic", "A little bit", "🌿"),
+                            OptionItem("intermediate", "I know the basics", "🌳")
+                        ),
+                        selectedId = state.experience,
+                        onOptionSelected = { viewModel.updateExperience(it) }
+                    )
+                    6 -> PathSelectionStep(
+                        recommendedPath = state.recommendedPath,
+                        selectedId = state.careerPath,
+                        onOptionSelected = { viewModel.updateCareerPath(it) }
+                    )
+                    7 -> QuestionStep(
+                        question = "How much time do you want to spend learning?",
+                        options = listOf(
+                            OptionItem("5", "Casual (5 min/day)", "☕"),
+                            OptionItem("10", "Regular (10 min/day)", "📚"),
+                            OptionItem("20", "Serious (20 min/day)", "🚀")
+                        ),
+                        selectedId = state.dailyGoal.toString(),
+                        onOptionSelected = { viewModel.updateDailyGoal(it.toIntOrNull() ?: 10) }
+                    )
+                    8 -> ReminderStep(
+                        onTimeSelected = { viewModel.updateReminderTime(it) }
                     )
                 }
             }
 
-            // Bottom controls
-            Column(
+            Spacer(modifier = Modifier.height(24.dp))
+
+            Button(
+                onClick = {
+                    if (currentStep < 8) {
+                        currentStep++
+                    } else {
+                        viewModel.completeOnboarding()
+                        onFinish()
+                    }
+                },
                 modifier = Modifier
-                    .weight(0.3f)
                     .fillMaxWidth()
-                    .padding(horizontal = 24.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
+                    .height(56.dp),
+                shape = RoundedCornerShape(16.dp),
+                enabled = when (currentStep) {
+                    1 -> state.motivation.isNotEmpty()
+                    2 -> state.role.isNotEmpty()
+                    3 -> state.interestType.isNotEmpty()
+                    4 -> state.interestTopic.isNotEmpty()
+                    5 -> state.experience.isNotEmpty()
+                    6 -> state.careerPath.isNotEmpty()
+                    7 -> state.dailyGoal > 0 
+                    else -> true
+                }
             ) {
-                // Page Indicator
-                Row(
-                    Modifier
-                        .height(32.dp)
-                        .fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Center
-                ) {
-                    repeat(slides.size) { iteration ->
-                        val color = if (pagerState.currentPage == iteration) 
-                            MaterialTheme.colorScheme.primary 
-                        else 
-                            MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)
-                        
-                        Box(
-                            modifier = Modifier
-                                .padding(4.dp)
-                                .clip(CircleShape)
-                                .background(color)
-                                .size(if (pagerState.currentPage == iteration) 12.dp else 8.dp)
-                        )
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(32.dp))
-
-                Button(
+                Text(
+                    text = if (currentStep == 0) "Let's go" else if (currentStep == 8) "Yes, turn on" else "Continue",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+            
+            if (currentStep == 8) {
+                 TextButton(
                     onClick = {
-                        if (pagerState.currentPage < slides.size - 1) {
-                            scope.launch {
-                                pagerState.animateScrollToPage(pagerState.currentPage + 1)
-                            }
-                        } else {
-                            viewModel.completeOnboarding()
-                            onFinish()
-                        }
+                        viewModel.completeOnboarding()
+                        onFinish()
                     },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(56.dp),
-                    shape = RoundedCornerShape(16.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.primary
-                    )
+                    modifier = Modifier.padding(top = 8.dp)
                 ) {
-                    Text(
-                        text = if (pagerState.currentPage == slides.size - 1) "Get Started" else "Next",
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
-
-                if (pagerState.currentPage < slides.size - 1) {
-                    TextButton(
-                        onClick = {
-                            viewModel.completeOnboarding()
-                            onFinish()
-                        }
-                    ) {
-                        Text(
-                            "Skip",
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            style = MaterialTheme.typography.labelLarge
-                        )
-                    }
+                    Text("Set later", color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
             }
         }
     }
 }
 
-data class OnboardingSlide(
-    val title: String,
-    val description: String,
-    val lottieUrl: String
-)
+// Reuse WelcomeStep, QuestionStep, ReminderStep, SelectionCard...
+// Add PathSelectionStep logic
+
+@Composable
+fun PathSelectionStep(
+    recommendedPath: String,
+    selectedId: String,
+    onOptionSelected: (String) -> Unit
+) {
+     Column(modifier = Modifier.fillMaxSize()) {
+        Text(
+            text = "What do you want to learn?",
+            style = MaterialTheme.typography.headlineSmall,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(vertical = 16.dp)
+        )
+        Text(
+            text = "You can switch paths at any time.",
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.padding(bottom = 16.dp)
+        )
+
+        LazyColumn(
+            itemContent = {
+                val paths = listOf(
+                    OptionItem("web", "Full-Stack Developer", "🌐"),
+                    OptionItem("python", "Python Developer", "🐍"),
+                    OptionItem("mobile", "Mobile Developer", "📱")
+                )
+                
+                items(paths) { option ->
+                    val isRecommended = option.id == recommendedPath
+                    
+                    if (isRecommended) {
+                        Surface(
+                            shape = RoundedCornerShape(4.dp),
+                            color = MaterialTheme.colorScheme.tertiaryContainer,
+                            modifier = Modifier.padding(bottom = 4.dp).align(Alignment.End)
+                        ) {
+                             Text(
+                                "RECOMMENDED",
+                                style = MaterialTheme.typography.labelSmall,
+                                fontWeight = FontWeight.Bold,
+                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp),
+                                color = MaterialTheme.colorScheme.onTertiaryContainer
+                            )
+                        }
+                    }
+                    
+                    SelectionCard(
+                        option = option,
+                        isSelected = option.id == selectedId,
+                        onClick = { onOptionSelected(option.id) }
+                    )
+                    Spacer(modifier = Modifier.height(12.dp))
+                }
+            }
+        )
+    }
+}
+
+@Composable
+fun WelcomeStep() {
+    val composition by rememberLottieComposition(LottieCompositionSpec.Url("https://lottie.host/9e419b4b-3d60-496b-88e3-0b04756574a4/kS9Y6N0E8p.json"))
+    
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        LottieAnimation(
+            composition = composition,
+            iterations = LottieConstants.IterateForever,
+            modifier = Modifier.size(280.dp)
+        )
+        Spacer(modifier = Modifier.height(32.dp))
+        Text(
+            text = "Welcome to Codelearn",
+            style = MaterialTheme.typography.displaySmall,
+            fontWeight = FontWeight.Bold,
+            textAlign = TextAlign.Center
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+        Text(
+            text = "Let's personalize your learning experience to help you reach your goals faster.",
+            style = MaterialTheme.typography.bodyLarge,
+            textAlign = TextAlign.Center,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+    }
+}
+
+@Composable
+fun QuestionStep(
+    question: String,
+    options: List<OptionItem>,
+    selectedId: String?,
+    onOptionSelected: (String) -> Unit
+) {
+    Column(modifier = Modifier.fillMaxSize()) {
+        Text(
+            text = question,
+            style = MaterialTheme.typography.headlineSmall,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(vertical = 16.dp)
+        )
+        
+        LazyColumn(
+            itemContent = {
+                items(options) { option ->
+                    SelectionCard(
+                        option = option,
+                        isSelected = option.id == selectedId,
+                        onClick = { onOptionSelected(option.id) }
+                    )
+                    Spacer(modifier = Modifier.height(12.dp))
+                }
+            }
+        )
+    }
+}
+
+@Composable
+fun ReminderStep(onTimeSelected: (String) -> Unit) {
+    // Simplified reminder visual for now
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            text = "Build a Habit",
+            style = MaterialTheme.typography.headlineMedium,
+            fontWeight = FontWeight.Bold
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+        Text(
+            text = "Learning a little every day is the key to success. We'll remind you to practice.",
+            textAlign = TextAlign.Center,
+            style = MaterialTheme.typography.bodyLarge,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+        Spacer(modifier = Modifier.height(48.dp))
+        
+        // Mock Time Picker Visual
+        Surface(
+            shape = RoundedCornerShape(16.dp),
+            color = MaterialTheme.colorScheme.primaryContainer,
+            modifier = Modifier.padding(16.dp)
+        ) {
+            Text(
+                text = "18:00",
+                style = MaterialTheme.typography.displayLarge,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onPrimaryContainer,
+                modifier = Modifier.padding(vertical = 32.dp, horizontal = 48.dp)
+            )
+        }
+    }
+}
+
+@Composable
+fun SelectionCard(
+    option: OptionItem,
+    isSelected: Boolean,
+    onClick: () -> Unit
+) {
+    Card(
+        modifier = Modifier.fillMaxWidth().clickable(onClick = onClick),
+        shape = RoundedCornerShape(16.dp),
+        border = if (isSelected) BorderStroke(2.dp, MaterialTheme.colorScheme.primary) else null,
+        colors = CardDefaults.cardColors(
+            containerColor = if (isSelected) MaterialTheme.colorScheme.primary.copy(alpha = 0.1f) 
+                           else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+        )
+    ) {
+        Row(
+            modifier = Modifier.padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = option.icon,
+                style = MaterialTheme.typography.headlineMedium,
+                modifier = Modifier.padding(end = 16.dp)
+            )
+            Text(
+                text = option.text,
+                style = MaterialTheme.typography.bodyLarge,
+                fontWeight = FontWeight.Medium,
+                modifier = Modifier.weight(1f)
+            )
+            if (isSelected) {
+                Icon(
+                    imageVector = Icons.Default.Check,
+                    contentDescription = "Selected",
+                    tint = MaterialTheme.colorScheme.primary
+                )
+            }
+        }
+    }
+}
+
+data class OptionItem(val id: String, val text: String, val icon: String)

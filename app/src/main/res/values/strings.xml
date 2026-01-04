@@ -1,3 +1,19 @@
 <resources>
     <string name="app_name">CodelearnApp</string>
+
+    <!-- Achievements -->
+    <string name="ach_first_steps_title">First Steps</string>
+    <string name="ach_first_steps_desc">Complete your first lesson</string>
+    
+    <string name="ach_scholar_title">Scholar</string>
+    <string name="ach_scholar_desc">Complete 10 lessons</string>
+    
+    <string name="ach_on_fire_title">On Fire!</string>
+    <string name="ach_on_fire_desc">Reach a 3-day streak</string>
+    
+    <string name="ach_dedicated_title">Dedicated</string>
+    <string name="ach_dedicated_desc">Reach 1000 XP</string>
+    
+    <string name="ach_course_master_title">Course Master</string>
+    <string name="ach_course_master_desc">Complete your first course</string>
 </resources>

@@ -19,6 +19,12 @@ class PreferencesManager(private val context: Context) {
         private val DAILY_GOAL = intPreferencesKey("daily_goal")
         private val AUTO_PLAY_VIDEO = booleanPreferencesKey("auto_play_video")
         private val ONBOARDING_COMPLETED = booleanPreferencesKey("onboarding_completed")
+    private val USER_MOTIVATION = stringPreferencesKey("user_motivation")
+    private val USER_EXPERIENCE = stringPreferencesKey("user_experience")
+    private val USER_CAREER_PATH = stringPreferencesKey("user_career_path")
+    private val USER_ROLE = stringPreferencesKey("user_role")
+    private val USER_INTEREST_TYPE = stringPreferencesKey("user_interest_type")
+    private val USER_INTEREST_TOPIC = stringPreferencesKey("user_interest_topic")
     }
     
     val isDarkMode: Flow<Boolean> = context.dataStore.data
@@ -81,6 +87,48 @@ class PreferencesManager(private val context: Context) {
     suspend fun setOnboardingCompleted(completed: Boolean) {
         context.dataStore.edit { preferences ->
             preferences[ONBOARDING_COMPLETED] = completed
+        }
+    }
+
+    suspend fun setUserMotivation(motivation: String) {
+        context.dataStore.edit { preferences ->
+            preferences[USER_MOTIVATION] = motivation
+        }
+    }
+
+    suspend fun setUserExperience(experience: String) {
+        context.dataStore.edit { preferences ->
+            preferences[USER_EXPERIENCE] = experience
+        }
+    }
+
+    suspend fun setUserCareerPath(path: String) {
+        context.dataStore.edit { preferences ->
+            preferences[USER_CAREER_PATH] = path
+        }
+    }
+
+    suspend fun setUserRole(role: String) {
+        context.dataStore.edit { preferences ->
+            preferences[USER_ROLE] = role
+        }
+    }
+
+    suspend fun setUserInterestType(type: String) {
+        context.dataStore.edit { preferences ->
+            preferences[USER_INTEREST_TYPE] = type
+        }
+    }
+
+    suspend fun setUserInterestTopic(topic: String) {
+        context.dataStore.edit { preferences ->
+            preferences[USER_INTEREST_TOPIC] = topic
+        }
+    }
+
+    suspend fun setDailyGoal(minutes: Int) {
+        context.dataStore.edit { preferences ->
+            preferences[DAILY_GOAL] = minutes
         }
     }
 }

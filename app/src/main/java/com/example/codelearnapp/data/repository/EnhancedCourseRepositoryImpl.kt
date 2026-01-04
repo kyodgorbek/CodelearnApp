@@ -40,7 +40,7 @@ class EnhancedCourseRepositoryImpl(
         if (achievementDao.getAllAchievements().first().isEmpty()) {
             val achievements = listOf(
                 com.example.codelearnapp.data.local.entity.AchievementEntity(
-                    id = java.util.UUID.randomUUID().toString(),
+                    id = "ach_first_steps",
                     title = "First Steps",
                     description = "Complete your first lesson",
                     icon = "🎯",
@@ -48,7 +48,7 @@ class EnhancedCourseRepositoryImpl(
                     type = "LESSONS"
                 ),
                 com.example.codelearnapp.data.local.entity.AchievementEntity(
-                    id = java.util.UUID.randomUUID().toString(),
+                    id = "ach_on_fire",
                     title = "On Fire!",
                     description = "Reach a 3-day streak",
                     icon = "🔥",
@@ -56,7 +56,7 @@ class EnhancedCourseRepositoryImpl(
                     type = "STREAK"
                 ),
                 com.example.codelearnapp.data.local.entity.AchievementEntity(
-                    id = java.util.UUID.randomUUID().toString(),
+                    id = "ach_scholar",
                     title = "Scholar",
                     description = "Complete 10 lessons",
                     icon = "📚",
@@ -64,7 +64,7 @@ class EnhancedCourseRepositoryImpl(
                     type = "LESSONS"
                 ),
                 com.example.codelearnapp.data.local.entity.AchievementEntity(
-                    id = java.util.UUID.randomUUID().toString(),
+                    id = "ach_dedicated",
                     title = "Dedicated",
                     description = "Reach 1000 XP",
                     icon = "⚡",
@@ -72,7 +72,7 @@ class EnhancedCourseRepositoryImpl(
                     type = "XP"
                 ),
                 com.example.codelearnapp.data.local.entity.AchievementEntity(
-                    id = java.util.UUID.randomUUID().toString(),
+                    id = "ach_course_master",
                     title = "Course Master",
                     description = "Complete your first course",
                     icon = "🏆",

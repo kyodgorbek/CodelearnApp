@@ -14,6 +14,8 @@ import androidx.compose.ui.unit.dp
 import com.airbnb.lottie.compose.*
 import com.example.codelearnapp.data.local.entity.AchievementEntity
 import org.koin.androidx.compose.koinViewModel
+import androidx.compose.ui.res.stringResource
+import com.example.codelearnapp.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -46,6 +48,30 @@ fun AchievementsScreen(
                 AchievementItem(achievement)
             }
         }
+    }
+}
+
+@Composable
+fun getAchievementTitle(id: String, fallback: String): String {
+    return when(id) {
+        "ach_first_steps" -> stringResource(R.string.ach_first_steps_title)
+        "ach_scholar" -> stringResource(R.string.ach_scholar_title)
+        "ach_on_fire" -> stringResource(R.string.ach_on_fire_title)
+        "ach_dedicated" -> stringResource(R.string.ach_dedicated_title)
+        "ach_course_master" -> stringResource(R.string.ach_course_master_title)
+        else -> fallback
+    }
+}
+
+@Composable
+fun getAchievementDesc(id: String, fallback: String): String {
+    return when(id) {
+        "ach_first_steps" -> stringResource(R.string.ach_first_steps_desc)
+        "ach_scholar" -> stringResource(R.string.ach_scholar_desc)
+        "ach_on_fire" -> stringResource(R.string.ach_on_fire_desc)
+        "ach_dedicated" -> stringResource(R.string.ach_dedicated_desc)
+        "ach_course_master" -> stringResource(R.string.ach_course_master_desc)
+        else -> fallback
     }
 }
 
@@ -89,12 +115,12 @@ fun AchievementItem(achievement: AchievementEntity) {
             
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = achievement.title,
+                    text = getAchievementTitle(achievement.id, achievement.title),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold
                 )
                 Text(
-                    text = achievement.description,
+                    text = getAchievementDesc(achievement.id, achievement.description),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
