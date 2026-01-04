@@ -16,6 +16,8 @@ import com.example.codelearnapp.presentation.lesson.LessonScreen
 import com.example.codelearnapp.presentation.search.SearchScreen
 import com.example.codelearnapp.presentation.settings.SettingsScreen
 import com.example.codelearnapp.presentation.onboarding.OnboardingScreen
+import com.example.codelearnapp.presentation.privacypolicy.PrivacyPolicyScreen
+import com.example.codelearnapp.presentation.terms.TermsOfServiceScreen
 
 @Composable
 fun NavGraph(
@@ -125,6 +127,7 @@ fun NavGraph(
             )
         }
         
+        
         composable(Screen.Settings.route) {
             SettingsScreen(
                 onNavigateBack = { navController.popBackStack() },
@@ -132,6 +135,12 @@ fun NavGraph(
                     navController.navigate(Screen.Auth.route) {
                         popUpTo(Screen.Settings.route) { inclusive = true }
                     }
+                },
+                onNavigateToPrivacyPolicy = {
+                    navController.navigate(Screen.PrivacyPolicy.route)
+                },
+                onNavigateToTerms = {
+                    navController.navigate(Screen.TermsOfService.route)
                 }
             )
         }
@@ -143,6 +152,18 @@ fun NavGraph(
                         popUpTo(0) { inclusive = true }
                     }
                 },
+                onNavigateBack = { navController.popBackStack() }
+            )
+        }
+        
+        composable(Screen.PrivacyPolicy.route) {
+            PrivacyPolicyScreen(
+                onNavigateBack = { navController.popBackStack() }
+            )
+        }
+        
+        composable(Screen.TermsOfService.route) {
+            TermsOfServiceScreen(
                 onNavigateBack = { navController.popBackStack() }
             )
         }

@@ -13,7 +13,7 @@ import com.example.codelearnapp.data.local.entity.*
         AchievementEntity::class,
         BookmarkEntity::class
     ],
-    version = 1,
+    version = 2,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {

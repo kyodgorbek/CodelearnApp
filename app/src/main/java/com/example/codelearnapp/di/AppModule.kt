@@ -37,7 +37,9 @@ val appModule = module {
             androidContext(),
             AppDatabase::class.java,
             "codelearn_database"
-        ).build()
+        )
+        .fallbackToDestructiveMigration()
+        .build()
     }
 
     // Firebase
@@ -51,6 +53,7 @@ val appModule = module {
     single<AchievementRepository> { AchievementRepositoryImpl(get()) }
     single { PreferencesManager(androidContext()) }
     single { SyncManager(androidContext(), get(), get()) }
+    single { com.example.codelearnapp.data.local.ReminderManager(androidContext()) }
 
     // Use Cases
     factory { GetCoursesUseCase(get()) }
@@ -68,13 +71,13 @@ val appModule = module {
     // ViewModels
     viewModel { HomeViewModel(get()) }
     viewModel { CourseDetailViewModel(get(), get()) }
-    viewModel { LessonViewModel(get(), get(), get()) }
+    viewModel { LessonViewModel(get(), get(), get(), get()) }
     viewModel { SearchViewModel(get()) }
     viewModel { BookmarksViewModel(get(), get()) }
     viewModel { AchievementsViewModel(get()) }
     viewModel { LeaderboardViewModel(get(), get()) }
     viewModel { AuthViewModel(get(), get()) }
-    viewModel { SettingsViewModel(get(), get(), get(), get()) }
+    viewModel { SettingsViewModel(get(), get(), get(), get(), get()) }
     viewModel { OnboardingViewModel(get()) }
 
 }

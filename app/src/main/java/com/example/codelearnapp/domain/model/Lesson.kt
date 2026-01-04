@@ -9,7 +9,8 @@ data class Lesson(
     val order: Int,
     val isCompleted: Boolean,
     val codeExample: String? = null,
-    val quiz: Quiz? = null
+    val quiz: Quiz? = null,
+    val videoUrl: String? = null
 )
 enum class LessonType {
     THEORY, CODE_PRACTICE, QUIZ, CHALLENGE

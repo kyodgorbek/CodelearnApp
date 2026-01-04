@@ -11,5 +11,6 @@ data class LessonState(
     val showCelebration: Boolean = false,
     val isMajorMilestone: Boolean = false,
     val milestoneReached: String? = null,
+    val autoPlayVideo: Boolean = true,
     val error: String? = null
 ) : UiState

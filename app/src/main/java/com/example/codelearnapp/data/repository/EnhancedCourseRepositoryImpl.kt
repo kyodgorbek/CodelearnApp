@@ -10,6 +10,9 @@ import com.example.codelearnapp.domain.model.Lesson
 import com.example.codelearnapp.domain.model.UserProgress
 import com.example.codelearnapp.domain.repository.CourseRepository
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
 
 class EnhancedCourseRepositoryImpl(
@@ -27,8 +30,76 @@ class EnhancedCourseRepositoryImpl(
     
     // Initialize with mock data on first launch
     init {
-        // This should be called once in Application class
-        // initializeDatabase()
+        CoroutineScope(Dispatchers.IO).launch {
+            initializeDatabase()
+        }
+    }
+    
+    private suspend fun initializeDatabase() {
+        // Seed Achievements
+        if (achievementDao.getAllAchievements().first().isEmpty()) {
+            val achievements = listOf(
+                com.example.codelearnapp.data.local.entity.AchievementEntity(
+                    id = java.util.UUID.randomUUID().toString(),
+                    title = "First Steps",
+                    description = "Complete your first lesson",
+                    icon = "🎯",
+                    requiredProgress = 1,
+                    type = "LESSONS"
+                ),
+                com.example.codelearnapp.data.local.entity.AchievementEntity(
+                    id = java.util.UUID.randomUUID().toString(),
+                    title = "On Fire!",
+                    description = "Reach a 3-day streak",
+                    icon = "🔥",
+                    requiredProgress = 3,
+                    type = "STREAK"
+                ),
+                com.example.codelearnapp.data.local.entity.AchievementEntity(
+                    id = java.util.UUID.randomUUID().toString(),
+                    title = "Scholar",
+                    description = "Complete 10 lessons",
+                    icon = "📚",
+                    requiredProgress = 10,
+                    type = "LESSONS"
+                ),
+                com.example.codelearnapp.data.local.entity.AchievementEntity(
+                    id = java.util.UUID.randomUUID().toString(),
+                    title = "Dedicated",
+                    description = "Reach 1000 XP",
+                    icon = "⚡",
+                    requiredProgress = 1000,
+                    type = "XP"
+                ),
+                com.example.codelearnapp.data.local.entity.AchievementEntity(
+                    id = java.util.UUID.randomUUID().toString(),
+                    title = "Course Master",
+                    description = "Complete your first course",
+                    icon = "🏆",
+                    requiredProgress = 1,
+                    type = "COURSES"
+                )
+            )
+            achievementDao.insertAchievements(achievements)
+        }
+        
+        // Seed Mock Lessons if needed (just updates one for demo)
+        // In a real app, this would be part of a proper Course seeding strategy
+        val existingLessons = lessonDao.getAllLessons().firstOrNull()
+        if (existingLessons.isNullOrEmpty()) {
+             // If lessons are empty, we might want to seed Courses and Lessons here 
+             // but that relies on logic likely elsewhere or pre-populated DB
+             // For now, let's assume lessons adhere to what's coming from API or other sources
+        } else {
+             // For the sake of "Autoplay video" demo, let's add a video URL to the first lesson
+             val firstLesson = existingLessons.firstOrNull()
+             if (firstLesson != null && firstLesson.videoUrl == null) {
+                 val updatedLesson = firstLesson.copy(
+                     videoUrl = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
+                 )
+                 lessonDao.insertLesson(updatedLesson) // Replace on conflict
+             }
+        }
     }
     
     override fun getAllCourses(): Flow<List<Course>> {
@@ -81,7 +152,8 @@ class EnhancedCourseRepositoryImpl(
             checkAndUnlockAchievements()
             
             // Sync to Firebase if signed in
-            if (authRepository.isSignedIn()) {
+            val isOffline = preferencesManager.isOfflineMode.first()
+            if (authRepository.isSignedIn() && !isOffline) {
                 val user = authRepository.currentUser
                 user?.let { u ->
                     firestoreRepository.syncLessonProgress(u.uid, lessonId, isCompleted)

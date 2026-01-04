@@ -8,6 +8,9 @@ import kotlinx.coroutines.flow.Flow
 interface LessonDao {
     @Query("SELECT * FROM lessons WHERE courseId = :courseId ORDER BY `order` ASC")
     fun getLessonsByCourse(courseId: String): Flow<List<LessonEntity>>
+
+    @Query("SELECT * FROM lessons")
+    fun getAllLessons(): Flow<List<LessonEntity>>
     
     @Query("SELECT * FROM lessons WHERE id = :lessonId")
     fun getLessonById(lessonId: String): Flow<LessonEntity?>

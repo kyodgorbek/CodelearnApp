@@ -15,4 +15,6 @@ sealed class Screen(val route: String) {
     object Leaderboard : Screen("leaderboard")
     object Settings : Screen("settings")
     object Auth : Screen("auth")
+    object PrivacyPolicy : Screen("privacy_policy")
+    object TermsOfService : Screen("terms_of_service")
 }

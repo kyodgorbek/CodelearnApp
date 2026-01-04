@@ -18,18 +18,23 @@ import org.koin.androidx.compose.koinViewModel
 fun SettingsScreen(
     viewModel: SettingsViewModel = koinViewModel(),
     onNavigateBack: () -> Unit,
-    onNavigateToSignIn: () -> Unit
+    onNavigateToSignIn: () -> Unit,
+    onNavigateToPrivacyPolicy: () -> Unit = {},
+    onNavigateToTerms: () -> Unit = {}
 ) {
     val state by viewModel.state.collectAsState()
+    val snackbarHostState = remember { SnackbarHostState() }
     
     LaunchedEffect(Unit) {
         viewModel.effect.collect { effect ->
             when (effect) {
                 is SettingsEffect.NavigateToSignIn -> onNavigateToSignIn()
                 is SettingsEffect.NavigateToProfile -> { /* Navigate to profile */ }
-                is SettingsEffect.NavigateToPrivacyPolicy -> { /* Show privacy policy */ }
-                is SettingsEffect.NavigateToTerms -> { /* Show terms */ }
-                is SettingsEffect.ShowMessage -> { /* Show snackbar */ }
+                is SettingsEffect.NavigateToPrivacyPolicy -> onNavigateToPrivacyPolicy()
+                is SettingsEffect.NavigateToTerms -> onNavigateToTerms()
+                is SettingsEffect.ShowMessage -> {
+                    snackbarHostState.showSnackbar(effect.message)
+                }
             }
         }
     }
@@ -44,7 +49,8 @@ fun SettingsScreen(
                     }
                 }
             )
-        }
+        },
+        snackbarHost = { SnackbarHost(snackbarHostState) }
     ) { padding ->
         LazyColumn(
             modifier = Modifier

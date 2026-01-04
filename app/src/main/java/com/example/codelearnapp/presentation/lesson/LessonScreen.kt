@@ -21,6 +21,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.codelearnapp.presentation.components.VideoPlayer
 import com.example.codelearnapp.domain.model.LessonType
 import com.example.codelearnapp.domain.model.Quiz
 import com.airbnb.lottie.compose.*
@@ -129,6 +130,14 @@ fun LessonScreen(
                                     style = MaterialTheme.typography.labelLarge,
                                     color = MaterialTheme.colorScheme.primary,
                                     fontWeight = FontWeight.Bold
+                                )
+                            }
+                            
+                            // Video Player
+                            lesson.videoUrl?.let { url ->
+                                VideoPlayer(
+                                    url = url,
+                                    autoPlay = state.autoPlayVideo
                                 )
                             }
                             

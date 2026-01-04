@@ -9,10 +9,14 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 
+import com.example.codelearnapp.data.local.PreferencesManager
+import kotlinx.coroutines.flow.combine
+
 class LessonViewModel(
     private val getLessonByIdUseCase: GetLessonByIdUseCase,
     private val completeLessonUseCase: CompleteLessonUseCase,
-    private val getUserProgressUseCase: GetUserProgressUseCase
+    private val getUserProgressUseCase: GetUserProgressUseCase,
+    private val preferencesManager: PreferencesManager
 ) : MviViewModel<LessonIntent, LessonState, LessonEffect>(LessonState()) {
     
     override fun handleIntent(intent: LessonIntent) {
@@ -27,19 +31,25 @@ class LessonViewModel(
     
     private fun loadLesson(lessonId: String) {
         viewModelScope.launch {
-            getLessonByIdUseCase(lessonId)
-                .catch { e ->
-                    setState { copy(isLoading = false, error = e.message) }
+            combine(
+                getLessonByIdUseCase(lessonId),
+                preferencesManager.autoPlayVideo
+            ) { lesson, autoPlay ->
+                Pair(lesson, autoPlay)
+            }
+            .catch { e ->
+                setState { copy(isLoading = false, error = e.message) }
+            }
+            .collect { (lesson, autoPlay) ->
+                setState {
+                    copy(
+                        isLoading = false,
+                        lesson = lesson,
+                        autoPlayVideo = autoPlay,
+                        error = null
+                    )
                 }
-                .collect { lesson ->
-                    setState {
-                        copy(
-                            isLoading = false,
-                            lesson = lesson,
-                            error = null
-                        )
-                    }
-                }
+            }
         }
     }
     

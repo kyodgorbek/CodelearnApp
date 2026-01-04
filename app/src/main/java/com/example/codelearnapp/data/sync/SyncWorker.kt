@@ -18,9 +18,14 @@ class SyncWorker(
     private val database: AppDatabase by inject()
     private val authRepository: FirebaseAuthRepository by inject()
     private val firestoreRepository: FirestoreRepository by inject()
+    private val preferencesManager: com.example.codelearnapp.data.local.PreferencesManager by inject()
     
     override suspend fun doWork(): Result {
         return try {
+            if (preferencesManager.isOfflineMode.first()) {
+                return Result.success() // Respect offline mode
+            }
+            
             val user = authRepository.currentUser ?: return Result.success()
             
             // Sync user progress

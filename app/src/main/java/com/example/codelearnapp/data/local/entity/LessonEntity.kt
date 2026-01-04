@@ -20,7 +20,8 @@ data class LessonEntity(
     val codeExample: String?,
     val quizJson: String?,
     val isBookmarked: Boolean = false,
-    val completedAt: Long? = null
+    val completedAt: Long? = null,
+    val videoUrl: String? = null
 ) {
     fun toDomain(): Lesson {
         val quiz = if (quizJson != null) {
@@ -36,7 +37,8 @@ data class LessonEntity(
             order = order,
             isCompleted = isCompleted,
             codeExample = codeExample,
-            quiz = quiz
+            quiz = quiz,
+            videoUrl = videoUrl
         )
     }
 }
@@ -50,5 +52,6 @@ fun Lesson.toEntity(): LessonEntity = LessonEntity(
     order = order,
     isCompleted = isCompleted,
     codeExample = codeExample,
-    quizJson = quiz?.let { Gson().toJson(it) }
+    quizJson = quiz?.let { Gson().toJson(it) },
+    videoUrl = videoUrl
 )

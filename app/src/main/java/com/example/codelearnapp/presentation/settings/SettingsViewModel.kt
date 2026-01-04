@@ -8,13 +8,15 @@ import com.example.codelearnapp.presentation.mvi.MviViewModel
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 
+import com.example.codelearnapp.data.local.ReminderManager
+
 class SettingsViewModel(
     private val preferencesManager: PreferencesManager,
     private val authRepository: FirebaseAuthRepository,
     private val syncManager: SyncManager,
-    private val firebaseAuth: com.google.firebase.auth.FirebaseAuth
+    private val firebaseAuth: com.google.firebase.auth.FirebaseAuth,
+    private val reminderManager: ReminderManager
 ) : MviViewModel<SettingsIntent, SettingsState, SettingsEffect>(SettingsState()) {
-
 
     init {
         sendIntent(SettingsIntent.LoadSettings)
@@ -95,6 +97,7 @@ class SettingsViewModel(
     private fun toggleNotifications(enabled: Boolean) {
         viewModelScope.launch {
             preferencesManager.setNotificationEnabled(enabled)
+            reminderManager.scheduleReminder(enabled)
         }
     }
 
