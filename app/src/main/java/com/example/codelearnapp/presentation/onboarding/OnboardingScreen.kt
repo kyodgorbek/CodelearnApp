@@ -268,7 +268,7 @@ fun WelcomeStep() {
     ) {
         // App Icon
         androidx.compose.foundation.Image(
-            painter = androidx.compose.ui.res.painterResource(id = com.example.codelearnapp.R.mipmap.ic_launcher),
+            painter = androidx.compose.ui.res.painterResource(id = com.example.codelearnapp.R.mipmap.ic_launcher_round),
             contentDescription = "App Icon",
             modifier = Modifier
                 .size(120.dp)
