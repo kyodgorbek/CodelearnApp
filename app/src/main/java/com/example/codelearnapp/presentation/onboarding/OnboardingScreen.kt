@@ -22,6 +22,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.airbnb.lottie.compose.*
+import androidx.compose.ui.platform.LocalContext
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
@@ -76,10 +77,14 @@ fun OnboardingScreen(
                 modifier = Modifier.weight(1f)
             ) { step ->
                 when (step) {
-                    0 -> IntroStep(
-                        title = "Master Coding Skills",
-                        description = "Learn Python, Web Development, and Data Science from scratch."
-                    )
+                    0 -> {
+                        val videoId = LocalContext.current.resources.getIdentifier("intro_video", "raw", LocalContext.current.packageName)
+                        IntroStep(
+                            title = "Master Coding Skills",
+                            description = "Learn Python, Web Development, and Data Science from scratch.",
+                            videoRawId = if (videoId != 0) videoId else null
+                        )
+                    }
                     1 -> IntroStep(
                         title = "Build Real Projects",
                         description = "Create your own apps and websites to build a professional portfolio."
@@ -275,21 +280,32 @@ fun PathSelectionStep(
 @Composable
 fun IntroStep(
     title: String,
-    description: String
+    description: String,
+    videoRawId: Int? = null
 ) {
+    val context = LocalContext.current
     Column(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // App Logo
-        androidx.compose.foundation.Image(
-            painter = androidx.compose.ui.res.painterResource(id = com.example.codelearnapp.R.drawable.logo_codelearn),
-            contentDescription = "App Logo",
-            modifier = Modifier
-                .size(180.dp) 
-                .padding(bottom = 32.dp)
-        )
+        if (videoRawId != null) {
+            val videoUri = "android.resource://${context.packageName}/$videoRawId"
+            VideoPlayer(
+                url = videoUri,
+                autoPlay = true
+            )
+            Spacer(modifier = Modifier.height(32.dp))
+        } else {
+            // App Logo as fallback
+            androidx.compose.foundation.Image(
+                painter = androidx.compose.ui.res.painterResource(id = com.example.codelearnapp.R.drawable.logo_codelearn),
+                contentDescription = "App Logo",
+                modifier = Modifier
+                    .size(180.dp) 
+                    .padding(bottom = 32.dp)
+            )
+        }
         
         Text(
             text = title,

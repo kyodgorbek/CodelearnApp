@@ -94,8 +94,10 @@ class EnhancedCourseRepositoryImpl(
              // For the sake of "Autoplay video" demo, let's add a video URL to the first lesson
              val firstLesson = existingLessons.firstOrNull()
              if (firstLesson != null && firstLesson.videoUrl == null) {
+                 val context = database.openHelper.readableDatabase.path // Getting context is tricky here, usually better to pass it in or use a resource ID directly
+                 // We'll use a standard path for the local resource
                  val updatedLesson = firstLesson.copy(
-                     videoUrl = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
+                     videoUrl = "android.resource://com.example.codelearnapp/raw/intro_video"
                  )
                  lessonDao.insertLesson(updatedLesson) // Replace on conflict
              }
