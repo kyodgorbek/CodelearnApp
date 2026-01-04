@@ -190,7 +190,11 @@ fun LessonScreen(
                                         )
                                     ) {
                                         if (state.isExecuting) {
-                                            CircularProgressIndicator(size = 18.dp, color = Color.White)
+                                            CircularProgressIndicator(
+                                                modifier = Modifier.size(18.dp),
+                                                color = Color.White,
+                                                strokeWidth = 2.dp
+                                            )
                                         } else {
                                             Text("Run Code")
                                         }
