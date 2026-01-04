@@ -29,7 +29,8 @@ fun HomeScreen(
     onNavigateToBookmarks: () -> Unit = {},
     onNavigateToAchievements: () -> Unit = {},
     onNavigateToLeaderboard: () -> Unit = {},
-    onNavigateToSettings: () -> Unit = {}
+    onNavigateToSettings: () -> Unit = {},
+    onNavigateToPlayground: () -> Unit = {}
 ) {
     val state by viewModel.state.collectAsState()
     
@@ -56,6 +57,9 @@ fun HomeScreen(
                     containerColor = Color.Transparent
                 ),
                 actions = {
+                    IconButton(onClick = onNavigateToPlayground) {
+                        Icon(Icons.Default.Code, "Playground", tint = MaterialTheme.colorScheme.primary)
+                    }
                     IconButton(onClick = onNavigateToSearch) {
                         Icon(Icons.Default.Search, "Search")
                     }
@@ -127,6 +131,45 @@ fun HomeScreen(
                             style = MaterialTheme.typography.titleLarge,
                             color = MaterialTheme.colorScheme.onBackground
                         )
+                    }
+                    
+                    item {
+                        Card(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable(onClick = onNavigateToPlayground),
+                            shape = RoundedCornerShape(24.dp),
+                            colors = CardDefaults.cardColors(
+                                containerColor = MaterialTheme.colorScheme.primaryContainer
+                            )
+                        ) {
+                            Row(
+                                modifier = Modifier.padding(20.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Surface(
+                                    modifier = Modifier.size(48.dp),
+                                    shape = RoundedCornerShape(12.dp),
+                                    color = MaterialTheme.colorScheme.primary
+                                ) {
+                                    Box(contentAlignment = Alignment.Center) {
+                                        Icon(Icons.Default.Terminal, "Terminal", tint = Color.White)
+                                    }
+                                }
+                                Spacer(Modifier.width(16.dp))
+                                Column {
+                                    Text(
+                                        "Code Playground",
+                                        style = MaterialTheme.typography.titleMedium,
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                    Text(
+                                        "Write and run code in multiple languages",
+                                        style = MaterialTheme.typography.bodySmall
+                                    )
+                                }
+                            }
+                        }
                     }
                     
                     items(state.courses) { course ->

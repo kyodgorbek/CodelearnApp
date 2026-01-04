@@ -23,6 +23,8 @@ import com.example.codelearnapp.presentation.lesson.LessonViewModel
 import com.example.codelearnapp.presentation.search.SearchViewModel
 import com.example.codelearnapp.presentation.settings.SettingsViewModel
 import com.example.codelearnapp.presentation.onboarding.OnboardingViewModel
+import com.example.codelearnapp.presentation.playground.PlaygroundViewModel
+import com.example.codelearnapp.domain.codeexecution.CodeExecutor
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import org.koin.android.ext.koin.androidContext
@@ -54,6 +56,7 @@ val appModule = module {
     single { PreferencesManager(androidContext()) }
     single { SyncManager(androidContext(), get(), get()) }
     single { com.example.codelearnapp.data.local.ReminderManager(androidContext()) }
+    single { CodeExecutor() }
 
     // Use Cases
     factory { GetCoursesUseCase(get()) }
@@ -79,5 +82,6 @@ val appModule = module {
     viewModel { AuthViewModel(get(), get()) }
     viewModel { SettingsViewModel(get(), get(), get(), get(), get()) }
     viewModel { OnboardingViewModel(get()) }
+    viewModel { PlaygroundViewModel(get()) }
 
 }

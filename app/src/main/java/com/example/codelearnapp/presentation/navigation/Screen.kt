@@ -14,6 +14,7 @@ sealed class Screen(val route: String) {
     object Achievements : Screen("achievements")
     object Leaderboard : Screen("leaderboard")
     object Settings : Screen("settings")
+    object Playground : Screen("playground")
     object Auth : Screen("auth")
     object PrivacyPolicy : Screen("privacy_policy")
     object TermsOfService : Screen("terms_of_service")

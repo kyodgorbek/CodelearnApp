@@ -15,6 +15,7 @@ import com.example.codelearnapp.presentation.leaderboard.LeaderboardScreen
 import com.example.codelearnapp.presentation.lesson.LessonScreen
 import com.example.codelearnapp.presentation.search.SearchScreen
 import com.example.codelearnapp.presentation.settings.SettingsScreen
+import com.example.codelearnapp.presentation.playground.PlaygroundScreen
 import com.example.codelearnapp.presentation.onboarding.OnboardingScreen
 import com.example.codelearnapp.presentation.privacypolicy.PrivacyPolicyScreen
 import com.example.codelearnapp.presentation.terms.TermsOfServiceScreen
@@ -64,6 +65,9 @@ fun NavGraph(
                 },
                 onNavigateToSettings = {
                     navController.navigate(Screen.Settings.route)
+                },
+                onNavigateToPlayground = {
+                    navController.navigate(Screen.Playground.route)
                 }
             )
         }
@@ -127,6 +131,10 @@ fun NavGraph(
             )
         }
         
+        
+        composable(Screen.Playground.route) {
+            PlaygroundScreen()
+        }
         
         composable(Screen.Settings.route) {
             SettingsScreen(
