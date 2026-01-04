@@ -11,26 +11,31 @@ class CodeExecutor {
         return withContext(Dispatchers.IO) {
             try {
                 val output = StringBuilder()
-                val lines = code.lines()
-                val variables = mutableMapOf<String, Any>()
+                val variables = mutableMapOf<String, String>()
                 
-                lines.forEach { line ->
+                code.lines().forEach { line ->
                     val trimmed = line.trim()
-                    // Simulation of variable assignment
+                    // Variable assignment: val x = "value" or val x = 10
                     if (trimmed.startsWith("val ") || trimmed.startsWith("var ")) {
-                        val parts = trimmed.substring(4).split("=")
-                        if (parts.size == 2) {
-                            val name = parts[0].trim()
-                            val value = parts[1].trim().trim('"')
+                        val assignment = trimmed.substringAfter("val ").substringAfter("var ")
+                        if (assignment.contains("=")) {
+                            val name = assignment.substringBefore("=").trim().split(":").first().trim()
+                            val value = assignment.substringAfter("=").trim().trim(';').trim('"')
                             variables[name] = value
                         }
                     }
                     
-                    // Simulation of println
-                    if (trimmed.startsWith("println(")) {
-                        val content = trimmed.substringAfter("println(").substringBeforeLast(")")
+                    if (trimmed.contains("println(")) {
+                        var content = trimmed.substringAfter("println(").substringBeforeLast(")")
                             .trim().trim('"').trim('\'')
                         
+                        // Resolve simple variables: $name or ${name}
+                        variables.forEach { (name, value) ->
+                            content = content.replace("${'$'}$name", value)
+                            content = content.replace("${'$'}{$name}", value)
+                        }
+                        
+                        // If it's just a variable name by itself (not in a string)
                         if (variables.containsKey(content)) {
                             output.append(variables[content]).append("\n")
                         } else {
@@ -39,12 +44,11 @@ class CodeExecutor {
                     }
                 }
                 
-                if (output.isEmpty() && !code.contains("fun main")) {
-                    CodeExecutionResult.Success("Code check complete: Syntax looks good!")
-                } else if (output.isEmpty()) {
-                    CodeExecutionResult.Success("Executed (No output produced)")
+                val finalOutput = output.toString()
+                if (finalOutput.isEmpty()) {
+                    CodeExecutionResult.Success("Code executed successfully")
                 } else {
-                    CodeExecutionResult.Success(output.toString())
+                    CodeExecutionResult.Success(finalOutput)
                 }
             } catch (e: Exception) {
                 CodeExecutionResult.Error(e.message ?: "Execution failed")
@@ -56,23 +60,30 @@ class CodeExecutor {
         return withContext(Dispatchers.IO) {
             try {
                 val output = StringBuilder()
-                val lines = code.lines()
-                val variables = mutableMapOf<String, Any>()
+                val variables = mutableMapOf<String, String>()
 
-                lines.forEach { line ->
+                code.lines().forEach { line ->
                     val trimmed = line.trim()
                     
-                    // Assignment
-                    if (trimmed.contains("=") && !trimmed.startsWith("if") && !trimmed.startsWith("print(")) {
-                        val parts = trimmed.split("=")
-                        val name = parts[0].trim()
-                        val value = parts[1].trim().trim('"')
+                    if (trimmed.contains("=") && !trimmed.startsWith("print") && !trimmed.startsWith("if")) {
+                        val name = trimmed.substringBefore("=").trim()
+                        val value = trimmed.substringAfter("=").trim().trim('"').trim('\'')
                         variables[name] = value
                     }
 
                     if (trimmed.startsWith("print(")) {
-                        val content = trimmed.substringAfter("print(").substringBeforeLast(")")
+                        var content = trimmed.substringAfter("print(").substringBeforeLast(")")
                             .trim().trim('"').trim('\'')
+                        
+                        // Support for f-strings: f"{name}"
+                        if (content.startsWith("f")) {
+                            content = content.substring(1).trim('"').trim('\'')
+                        }
+
+                        // Resolve variables in {name}
+                        variables.forEach { (name, value) ->
+                            content = content.replace("{$name}", value)
+                        }
                         
                         if (variables.containsKey(content)) {
                             output.append(variables[content]).append("\n")
@@ -81,7 +92,7 @@ class CodeExecutor {
                         }
                     }
                 }
-                CodeExecutionResult.Success(if (output.isEmpty()) "Script finished with no output" else output.toString())
+                CodeExecutionResult.Success(if (output.isEmpty()) "Script finished" else output.toString())
             } catch (e: Exception) {
                 CodeExecutionResult.Error(e.message ?: "Python Execution failed")
             }
@@ -92,15 +103,14 @@ class CodeExecutor {
         return withContext(Dispatchers.IO) {
             try {
                 val output = StringBuilder()
-                val lines = code.lines()
-                lines.forEach { line ->
+                code.lines().forEach { line ->
                     if (line.trim().contains("console.log(")) {
                         val content = line.substringAfter("console.log(").substringBeforeLast(")")
                             .trim().trim('"').trim('\'')
                         output.append(content).append("\n")
                     }
                 }
-                CodeExecutionResult.Success(if (output.isEmpty()) "JS executed successfully" else output.toString())
+                CodeExecutionResult.Success(if (output.isEmpty()) "JS executed" else output.toString())
             } catch (e: Exception) {
                 CodeExecutionResult.Error(e.message ?: "JS Execution failed")
             }
@@ -111,32 +121,37 @@ class CodeExecutor {
         return withContext(Dispatchers.IO) {
             try {
                 val output = StringBuilder()
-                val lines = code.lines()
-                val variables = mutableMapOf<String, Any>()
+                val variables = mutableMapOf<String, String>()
 
-                lines.forEach { line ->
+                code.lines().forEach { line ->
                     val trimmed = line.trim()
                     
-                    // Basic Assignment simulation (e.g., int x = 10;)
-                    if (trimmed.contains("=") && (trimmed.startsWith("int ") || trimmed.startsWith("double ") || trimmed.startsWith("String "))) {
-                        val parts = trimmed.split("=")
-                        val namePart = parts[0].trim().split(" ").last()
-                        val valuePart = parts[1].trim().trim(';').trim('"')
+                    if (trimmed.contains("=") && (trimmed.startsWith("int ") || trimmed.startsWith("double ") || trimmed.startsWith("String ") || trimmed.startsWith("boolean "))) {
+                        val namePart = trimmed.substringBefore("=").trim().split(" ").last()
+                        val valuePart = trimmed.substringAfter("=").trim().trim(';').trim('"')
                         variables[namePart] = valuePart
                     }
 
                     if (trimmed.contains("System.out.println(")) {
-                        val content = trimmed.substringAfter("System.out.println(").substringBeforeLast(")")
+                        var content = trimmed.substringAfter("System.out.println(").substringBeforeLast(")")
                             .trim().trim('"').trim('\'')
                         
-                        if (variables.containsKey(content)) {
+                        // Basic concatenation support: "Hello " + name
+                        if (content.contains("+")) {
+                            val parts = content.split("+")
+                            val resolvedPats = parts.map { part ->
+                                val p = part.trim().trim('"').trim('\'')
+                                variables[p] ?: p
+                            }
+                            output.append(resolvedPats.joinToString("")).append("\n")
+                        } else if (variables.containsKey(content)) {
                             output.append(variables[content]).append("\n")
                         } else {
                             output.append(content).append("\n")
                         }
                     }
                 }
-                CodeExecutionResult.Success(if (output.isEmpty()) "Java program finished" else output.toString())
+                CodeExecutionResult.Success(if (output.isEmpty()) "Java execution finished" else output.toString())
             } catch (e: Exception) {
                 CodeExecutionResult.Error(e.message ?: "Java Execution failed")
             }
