@@ -34,15 +34,17 @@ fun OnboardingScreen(
     var currentStep by remember { mutableIntStateOf(0) }
     val scope = rememberCoroutineScope()
 
-    // 0: Welcome
-    // 1: Motivation
-    // 2: Role
-    // 3: Interest Type
-    // 4: Interest Topic
-    // 5: Experience
-    // 6: Career Path (Recommendation)
-    // 7: Daily Goal
-    // 8: Reminder
+    // 0: Intro 1 (Master Skills)
+    // 1: Intro 2 (Build Projects)
+    // 2: Intro 3 (Welcome / Curriculum)
+    // 3: Motivation
+    // 4: Role
+    // 5: Interest Type
+    // 6: Interest Topic
+    // 7: Experience
+    // 8: Career Path (Recommendation)
+    // 9: Daily Goal
+    // 10: Reminder
 
     Box(
         modifier = Modifier
@@ -55,10 +57,10 @@ fun OnboardingScreen(
                 .padding(24.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Progress Bar (skip on welcome)
-            if (currentStep > 0) {
+            // Progress Bar (show only during questionnaire: steps 3 to 10)
+            if (currentStep >= 3) {
                 LinearProgressIndicator(
-                    progress = { currentStep / 8f },
+                    progress = { (currentStep - 3) / 8f },
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(bottom = 24.dp)
@@ -74,8 +76,19 @@ fun OnboardingScreen(
                 modifier = Modifier.weight(1f)
             ) { step ->
                 when (step) {
-                    0 -> WelcomeStep()
-                    1 -> QuestionStep(
+                    0 -> IntroStep(
+                        title = "Master Coding Skills",
+                        description = "Learn Python, Web Development, and Data Science from scratch."
+                    )
+                    1 -> IntroStep(
+                        title = "Build Real Projects",
+                        description = "Create your own apps and websites to build a professional portfolio."
+                    )
+                    2 -> IntroStep(
+                        title = "Welcome to CodeLearn!",
+                        description = "To build your personal curriculum, we'll ask you a few questions."
+                    )
+                    3 -> QuestionStep(
                         question = "Why are you learning to code?",
                         options = listOf(
                             OptionItem("career", "Become a professional developer", "💼"),
@@ -86,7 +99,7 @@ fun OnboardingScreen(
                         selectedId = state.motivation,
                         onOptionSelected = { viewModel.updateMotivation(it) }
                     )
-                    2 -> QuestionStep(
+                    4 -> QuestionStep(
                         question = "Which of these describes you best?",
                         options = listOf(
                             OptionItem("student_hs", "High school student", "🎒"),
@@ -98,7 +111,7 @@ fun OnboardingScreen(
                         selectedId = state.role,
                         onOptionSelected = { viewModel.updateRole(it) }
                     )
-                    3 -> QuestionStep(
+                    5 -> QuestionStep(
                         question = "Which aspect of coding captivates you?",
                         options = listOf(
                             OptionItem("visual", "How things look (appearance)", "🖼️"),
@@ -108,7 +121,7 @@ fun OnboardingScreen(
                         selectedId = state.interestType,
                         onOptionSelected = { viewModel.updateInterestType(it) }
                     )
-                    4 -> QuestionStep(
+                    6 -> QuestionStep(
                         question = "What do you find the most interesting?",
                         options = listOf(
                             OptionItem("web", "Web apps", "🌐"),
@@ -120,7 +133,7 @@ fun OnboardingScreen(
                         selectedId = state.interestTopic,
                         onOptionSelected = { viewModel.updateInterestTopic(it) }
                     )
-                    5 -> QuestionStep(
+                    7 -> QuestionStep(
                         question = "How much coding experience do you have?",
                         options = listOf(
                             OptionItem("none", "None", "🌱"),
@@ -130,12 +143,12 @@ fun OnboardingScreen(
                         selectedId = state.experience,
                         onOptionSelected = { viewModel.updateExperience(it) }
                     )
-                    6 -> PathSelectionStep(
+                    8 -> PathSelectionStep(
                         recommendedPath = state.recommendedPath,
                         selectedId = state.careerPath,
                         onOptionSelected = { viewModel.updateCareerPath(it) }
                     )
-                    7 -> QuestionStep(
+                    9 -> QuestionStep(
                         question = "How much time do you want to spend learning?",
                         options = listOf(
                             OptionItem("5", "Casual (5 min/day)", "☕"),
@@ -145,7 +158,7 @@ fun OnboardingScreen(
                         selectedId = state.dailyGoal.toString(),
                         onOptionSelected = { viewModel.updateDailyGoal(it.toIntOrNull() ?: 10) }
                     )
-                    8 -> ReminderStep(
+                    10 -> ReminderStep(
                         onTimeSelected = { viewModel.updateReminderTime(it) }
                     )
                 }
@@ -155,7 +168,7 @@ fun OnboardingScreen(
 
             Button(
                 onClick = {
-                    if (currentStep < 8) {
+                    if (currentStep < 10) {
                         currentStep++
                     } else {
                         viewModel.completeOnboarding()
@@ -167,24 +180,24 @@ fun OnboardingScreen(
                     .height(56.dp),
                 shape = RoundedCornerShape(16.dp),
                 enabled = when (currentStep) {
-                    1 -> state.motivation.isNotEmpty()
-                    2 -> state.role.isNotEmpty()
-                    3 -> state.interestType.isNotEmpty()
-                    4 -> state.interestTopic.isNotEmpty()
-                    5 -> state.experience.isNotEmpty()
-                    6 -> state.careerPath.isNotEmpty()
-                    7 -> state.dailyGoal > 0 
-                    else -> true
+                    3 -> state.motivation.isNotEmpty()
+                    4 -> state.role.isNotEmpty()
+                    5 -> state.interestType.isNotEmpty()
+                    6 -> state.interestTopic.isNotEmpty()
+                    7 -> state.experience.isNotEmpty()
+                    8 -> state.careerPath.isNotEmpty()
+                    9 -> state.dailyGoal > 0 
+                    else -> true // Enabled for Intro steps (0-2) and Reminder (10)
                 }
             ) {
                 Text(
-                    text = if (currentStep == 0) "Let's go" else if (currentStep == 8) "Yes, turn on" else "Continue",
+                    text = if (currentStep == 2) "Let's go" else if (currentStep == 10) "Yes, turn on" else "Continue",
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold
                 )
             }
             
-            if (currentStep == 8) {
+            if (currentStep == 10) {
                  TextButton(
                     onClick = {
                         viewModel.completeOnboarding()
@@ -260,25 +273,26 @@ fun PathSelectionStep(
 }
 
 @Composable
-fun WelcomeStep() {
+fun IntroStep(
+    title: String,
+    description: String
+) {
     Column(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // App Icon
+        // App Logo
         androidx.compose.foundation.Image(
-            painter = androidx.compose.ui.res.painterResource(id = com.example.codelearnapp.R.mipmap.ic_launcher_round),
-            contentDescription = "App Icon",
+            painter = androidx.compose.ui.res.painterResource(id = com.example.codelearnapp.R.drawable.logo_codelearn),
+            contentDescription = "App Logo",
             modifier = Modifier
-                .size(120.dp)
-                .clip(RoundedCornerShape(24.dp))
+                .size(180.dp) 
+                .padding(bottom = 32.dp)
         )
         
-        Spacer(modifier = Modifier.height(32.dp))
-        
         Text(
-            text = "Welcome to Codelearn!",
+            text = title,
             style = MaterialTheme.typography.displaySmall,
             fontWeight = FontWeight.ExtraBold,
             textAlign = TextAlign.Center,
@@ -288,7 +302,7 @@ fun WelcomeStep() {
         Spacer(modifier = Modifier.height(16.dp))
         
         Text(
-            text = "To build your personal curriculum, we'll ask you a few questions.",
+            text = description,
             style = MaterialTheme.typography.bodyLarge,
             textAlign = TextAlign.Center,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
