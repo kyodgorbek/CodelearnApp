@@ -32,12 +32,18 @@ fun AuthScreen(
     var password by remember { mutableStateOf("") }
     var showPassword by remember { mutableStateOf(false) }
     
+    val snackbarHostState = remember { SnackbarHostState() }
+    
     LaunchedEffect(Unit) {
         viewModel.effect.collect { effect ->
             when (effect) {
                 is AuthEffect.NavigateToHome -> onNavigateToHome()
-                is AuthEffect.ShowError -> { /* Could show snackbar */ }
-                is AuthEffect.ShowSuccess -> { /* Could show snackbar */ }
+                is AuthEffect.ShowError -> {
+                    snackbarHostState.showSnackbar(effect.message)
+                }
+                is AuthEffect.ShowSuccess -> {
+                    snackbarHostState.showSnackbar(effect.message)
+                }
             }
         }
     }
@@ -56,6 +62,7 @@ fun AuthScreen(
     ) {
         Scaffold(
             containerColor = Color.Transparent,
+            snackbarHost = { SnackbarHost(snackbarHostState) },
             topBar = {
                 TopAppBar(
                     title = { },
@@ -134,6 +141,26 @@ fun AuthScreen(
                     },
                     enabled = !state.isLoading
                 )
+                
+                if (!isSignUp) {
+                    Box(
+                        modifier = Modifier.fillMaxWidth(),
+                        contentAlignment = Alignment.CenterEnd
+                    ) {
+                        TextButton(
+                            onClick = { 
+                                viewModel.sendIntent(AuthIntent.ResetPassword(email))
+                            },
+                            enabled = !state.isLoading
+                        ) {
+                            Text(
+                                "Forgot Password?",
+                                style = MaterialTheme.typography.labelMedium,
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                        }
+                    }
+                }
                 
                 if (state.error != null) {
                     Spacer(modifier = Modifier.height(16.dp))

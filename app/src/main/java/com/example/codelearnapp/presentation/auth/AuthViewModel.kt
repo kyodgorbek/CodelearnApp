@@ -21,6 +21,7 @@ class AuthViewModel(
             is AuthIntent.SignInWithEmail -> signInWithEmail(intent.email, intent.password)
             is AuthIntent.SignUpWithEmail -> signUpWithEmail(intent.email, intent.password)
             is AuthIntent.SignInWithGoogle -> signInWithGoogle(intent.idToken)
+            is AuthIntent.ResetPassword -> resetPassword(intent.email)
             is AuthIntent.SignOut -> signOut()
         }
     }
@@ -162,5 +163,34 @@ class AuthViewModel(
             )
         }
         sendEffect(AuthEffect.ShowSuccess("Signed out"))
+    }
+    
+    private fun resetPassword(email: String) {
+        if (email.isBlank()) {
+            sendEffect(AuthEffect.ShowError("Please enter your email address"))
+            return
+        }
+        
+        setState { copy(isLoading = true, error = null) }
+        
+        viewModelScope.launch {
+            val result = authRepository.resetPassword(email)
+            
+            result.fold(
+                onSuccess = {
+                    setState { copy(isLoading = false) }
+                    sendEffect(AuthEffect.ShowSuccess("Password reset email sent to $email"))
+                },
+                onFailure = { error ->
+                    setState { 
+                        copy(
+                            isLoading = false,
+                            error = error.message
+                        )
+                    }
+                    sendEffect(AuthEffect.ShowError(error.message ?: "Failed to send reset email"))
+                }
+            )
+        }
     }
 }
