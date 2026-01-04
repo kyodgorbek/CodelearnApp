@@ -126,9 +126,4 @@ class PreferencesManager(private val context: Context) {
         }
     }
 
-    suspend fun setDailyGoal(minutes: Int) {
-        context.dataStore.edit { preferences ->
-            preferences[DAILY_GOAL] = minutes
-        }
-    }
 }

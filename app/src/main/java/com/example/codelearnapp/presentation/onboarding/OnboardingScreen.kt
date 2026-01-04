@@ -26,7 +26,6 @@ import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
-@Composable
 fun OnboardingScreen(
     viewModel: OnboardingViewModel = koinViewModel(),
     onFinish: () -> Unit
@@ -223,42 +222,40 @@ fun PathSelectionStep(
             modifier = Modifier.padding(bottom = 16.dp)
         )
 
-        LazyColumn(
-            itemContent = {
-                val paths = listOf(
-                    OptionItem("web", "Full-Stack Developer", "🌐"),
-                    OptionItem("python", "Python Developer", "🐍"),
-                    OptionItem("mobile", "Mobile Developer", "📱")
-                )
-                
-                items(paths) { option ->
-                    val isRecommended = option.id == recommendedPath
-                    
-                    if (isRecommended) {
-                        Surface(
-                            shape = RoundedCornerShape(4.dp),
-                            color = MaterialTheme.colorScheme.tertiaryContainer,
-                            modifier = Modifier.padding(bottom = 4.dp).align(Alignment.End)
-                        ) {
-                             Text(
-                                "RECOMMENDED",
-                                style = MaterialTheme.typography.labelSmall,
-                                fontWeight = FontWeight.Bold,
-                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp),
-                                color = MaterialTheme.colorScheme.onTertiaryContainer
-                            )
-                        }
-                    }
-                    
-                    SelectionCard(
-                        option = option,
-                        isSelected = option.id == selectedId,
-                        onClick = { onOptionSelected(option.id) }
-                    )
-                    Spacer(modifier = Modifier.height(12.dp))
-                }
-            }
+        val paths = listOf(
+            OptionItem("web", "Full-Stack Developer", "🌐"),
+            OptionItem("python", "Python Developer", "🐍"),
+            OptionItem("mobile", "Mobile Developer", "📱")
         )
+
+        LazyColumn {
+            items(paths) { option ->
+                val isRecommended = option.id == recommendedPath
+                
+                if (isRecommended) {
+                    Surface(
+                        shape = RoundedCornerShape(4.dp),
+                        color = MaterialTheme.colorScheme.tertiaryContainer,
+                        modifier = Modifier.padding(bottom = 4.dp).align(Alignment.End)
+                    ) {
+                        Text(
+                            "RECOMMENDED",
+                            style = MaterialTheme.typography.labelSmall,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp),
+                            color = MaterialTheme.colorScheme.onTertiaryContainer
+                        )
+                    }
+                }
+                
+                SelectionCard(
+                    option = option,
+                    isSelected = option.id == selectedId,
+                    onClick = { onOptionSelected(option.id) }
+                )
+                Spacer(modifier = Modifier.height(12.dp))
+            }
+        }
     }
 }
 
@@ -308,18 +305,16 @@ fun QuestionStep(
             modifier = Modifier.padding(vertical = 16.dp)
         )
         
-        LazyColumn(
-            itemContent = {
-                items(options) { option ->
-                    SelectionCard(
-                        option = option,
-                        isSelected = option.id == selectedId,
-                        onClick = { onOptionSelected(option.id) }
-                    )
-                    Spacer(modifier = Modifier.height(12.dp))
-                }
+        LazyColumn {
+            items(options) { option ->
+                SelectionCard(
+                    option = option,
+                    isSelected = option.id == selectedId,
+                    onClick = { onOptionSelected(option.id) }
+                )
+                Spacer(modifier = Modifier.height(12.dp))
             }
-        )
+        }
     }
 }
 
