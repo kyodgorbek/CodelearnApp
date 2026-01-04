@@ -14,35 +14,50 @@ class CodeExecutor {
                 val variables = mutableMapOf<String, String>()
                 val arrayVars = mutableMapOf<String, List<String>>()
                 
+                fun resolveValue(content: String, currentVars: Map<String, String>): String {
+                    var resolved = content.trim()
+                    
+                    // String interpolation: $name or ${name}
+                    currentVars.forEach { (name, value) ->
+                        resolved = resolved.replace("${'$'}$name", value)
+                        resolved = resolved.replace("${'$'}{$name}", value)
+                    }
+
+                    // Concatenation: "Hello " + name
+                    if (resolved.contains("+") && (resolved.contains("\"") || resolved.contains("'"))) {
+                        return resolved.split("+").joinToString("") { part ->
+                            val p = part.trim().trim('"').trim('\'')
+                            currentVars[p] ?: p
+                        }
+                    }
+
+                    return currentVars[resolved] ?: resolved
+                }
+
                 fun processBlock(lines: List<String>, localVars: Map<String, String>) {
                     lines.forEach { line ->
                         val trimmed = line.trim()
+                        if (trimmed.isEmpty() || trimmed.startsWith("//")) return@forEach
+                        
                         val currentVars = variables + localVars
                         
-                        // Assignment
-                        if (trimmed.startsWith("val ") || trimmed.startsWith("var ")) {
-                            val assignment = trimmed.substringAfter("val ").substringAfter("var ")
-                            if (assignment.contains("=")) {
-                                val name = assignment.substringBefore("=").trim().split(":").first().trim()
-                                val value = assignment.substringAfter("=").trim().trim(';').trim('"')
-                                variables[name] = value
+                        // Assignment or Reassignment
+                        if (trimmed.contains("=") && !trimmed.contains("(")) {
+                            val assignmentPart = if (trimmed.startsWith("val ") || trimmed.startsWith("var ")) {
+                                trimmed.substringAfter("val ").substringAfter("var ")
+                            } else {
+                                trimmed
                             }
+                            val name = assignmentPart.substringBefore("=").trim().split(":").first().trim()
+                            val rawValue = assignmentPart.substringAfter("=").trim().trim(';')
+                            val value = resolveValue(rawValue, currentVars).trim('"')
+                            variables[name] = value
                         }
                         
                         if (trimmed.contains("println(")) {
-                            var content = trimmed.substringAfter("println(").substringBeforeLast(")")
-                                .trim().trim('"').trim('\'')
-                            
-                            currentVars.forEach { (name, value) ->
-                                content = content.replace("${'$'}$name", value)
-                                content = content.replace("${'$'}{$name}", value)
-                            }
-                            
-                            if (currentVars.containsKey(content)) {
-                                output.append(currentVars[content]).append("\n")
-                            } else {
-                                output.append(content).append("\n")
-                            }
+                            val rawContent = trimmed.substringAfter("println(").substringBeforeLast(")")
+                            val content = resolveValue(rawContent, currentVars)
+                            output.append(content).append("\n")
                         }
                     }
                 }
@@ -51,15 +66,14 @@ class CodeExecutor {
                 var i = 0
                 while (i < allLines.size) {
                     val line = allLines[i].trim()
+                    if (line.isEmpty() || line.startsWith("//")) { i++; continue }
                     
-                    // Array/List
                     if (line.contains("listOf(") || line.contains("arrayOf(")) {
                         val name = line.substringBefore("=").trim().split(" ").last()
                         val items = line.substringAfter("(").substringBeforeLast(")").split(",")
                             .map { it.trim().trim('"').trim('\'') }
                         arrayVars[name] = items
                     }
-                    // Loop: for (i in 0..4)
                     else if (line.startsWith("for") && line.contains(" in ")) {
                         val valName = line.substringAfter("(").substringBefore(" in ").trim()
                         val rangePart = line.substringAfter(" in ").substringBefore(")").trim()
@@ -102,31 +116,43 @@ class CodeExecutor {
                 val variables = mutableMapOf<String, String>()
                 val listVars = mutableMapOf<String, List<String>>()
 
+                fun resolveValue(content: String, currentVars: Map<String, String>): String {
+                    var resolved = content.trim()
+                    
+                    // f-strings or simple {var}
+                    val inFString = content.startsWith("f\"") || content.startsWith("f'")
+                    val cleanContent = if (inFString) resolved.substring(1).trim('"').trim('\'') else resolved.trim('"').trim('\'')
+                    
+                    var finalValue = cleanContent
+                    currentVars.forEach { (name, value) ->
+                        finalValue = finalValue.replace("{$name}", value)
+                    }
+                    
+                    if (!inFString && currentVars.containsKey(cleanContent) && !resolved.contains(" ")) {
+                        return currentVars[cleanContent] ?: cleanContent
+                    }
+                    
+                    return finalValue
+                }
+
                 fun processBlock(lines: List<String>, localVars: Map<String, String>) {
                     lines.forEach { line ->
                         val trimmed = line.trim()
+                        if (trimmed.isEmpty() || trimmed.startsWith("#")) return@forEach
+                        
                         val currentVars = variables + localVars
                         
-                        if (trimmed.contains("=") && !trimmed.startsWith("print") && !trimmed.startsWith("if")) {
+                        if (trimmed.contains("=") && !trimmed.contains("(")) {
                             val name = trimmed.substringBefore("=").trim()
-                            val value = trimmed.substringAfter("=").trim().trim('"').trim('\'')
+                            val rawValue = trimmed.substringAfter("=").trim()
+                            val value = resolveValue(rawValue, currentVars)
                             variables[name] = value
                         }
 
                         if (trimmed.startsWith("print(")) {
-                            var content = trimmed.substringAfter("print(").substringBeforeLast(")")
-                                .trim().trim('"').trim('\'')
-                            if (content.startsWith("f")) content = content.substring(1).trim('"').trim('\'')
-
-                            currentVars.forEach { (name, value) ->
-                                content = content.replace("{$name}", value)
-                            }
-                            
-                            if (currentVars.containsKey(content)) {
-                                output.append(currentVars[content]).append("\n")
-                            } else {
-                                output.append(content).append("\n")
-                            }
+                            val rawContent = trimmed.substringAfter("print(").substringBeforeLast(")")
+                            val content = resolveValue(rawContent, currentVars)
+                            output.append(content).append("\n")
                         }
                     }
                 }
@@ -135,29 +161,30 @@ class CodeExecutor {
                 var i = 0
                 while (i < allLines.size) {
                     val line = allLines[i].trim()
+                    if (line.isEmpty() || line.startsWith("#")) { i++; continue }
                     
                     if (line.contains("=") && line.contains("[") && line.contains("]")) {
                         val name = line.substringBefore("=").trim()
-                        val items = line.substringAfter("[").substringBefore("]").split(",")
+                        val items = line.substringAfter("[").substringBeforeLast("]").split(",")
                             .map { it.trim().trim('"').trim('\'') }
                         listVars[name] = items
                     }
-                    else if (line.startsWith("for ") && line.endsWith(":")) {
+                    else if (line.startsWith("for ") && line.contains(" in ") && line.endsWith(":")) {
                         val valName = line.substringAfter("for ").substringBefore(" in ").trim()
                         val rangePart = line.substringAfter(" in ").substringBefore(":").trim().trim(')')
                         
-                        // Block is all indented lines following
                         val blockLines = mutableListOf<String>()
                         var j = i + 1
-                        while (j < allLines.size && (allLines[j].startsWith("    ") || allLines[j].startsWith("\t"))) {
-                            blockLines.add(allLines[j])
+                        while (j < allLines.size && (allLines[j].startsWith("    ") || allLines[j].startsWith("\t") || allLines[j].trim().isEmpty())) {
+                            if (allLines[j].trim().isNotEmpty()) blockLines.add(allLines[j])
                             j++
                         }
                         
                         if (rangePart.startsWith("range(")) {
                             val r = rangePart.substringAfter("(").substringBefore(")").split(",").map { it.trim().toIntOrNull() ?: 0 }
-                            val rangeRange = if (r.size == 1) 0 until r[0] else r[0] until r[1]
-                            for (v in rangeRange) {
+                            val start = if (r.size == 1) 0 else r[0]
+                            val end = if (r.size == 1) r[0] else r[1]
+                            for (v in start until end) {
                                 processBlock(blockLines, mapOf(valName to v.toString()))
                             }
                         } else if (listVars.containsKey(rangePart)) {
@@ -175,6 +202,27 @@ class CodeExecutor {
                 CodeExecutionResult.Success(if (output.isEmpty()) "Script finished" else output.toString())
             } catch (e: Exception) {
                 CodeExecutionResult.Error(e.message ?: "Python Execution failed")
+            }
+        }
+    }
+
+    suspend fun executeSqlCode(code: String): CodeExecutionResult {
+        return withContext(Dispatchers.IO) {
+            try {
+                val trimmed = code.trim().uppercase()
+                if (trimmed.startsWith("SELECT")) {
+                    if (trimmed.contains("FROM USERS")) {
+                        CodeExecutionResult.Success("| ID | Name | Email |\n|---|---|---|\n| 1 | Yodgorbek | yodgor@example.com |\n| 2 | Ali | ali@example.com |")
+                    } else {
+                        CodeExecutionResult.Success("Query executed successfully. 0 rows returned.")
+                    }
+                } else if (trimmed.startsWith("INSERT") || trimmed.startsWith("UPDATE") || trimmed.startsWith("DELETE")) {
+                    CodeExecutionResult.Success("Success: 1 row affected.")
+                } else {
+                    CodeExecutionResult.Success("SQL command executed successfully.")
+                }
+            } catch (e: Exception) {
+                CodeExecutionResult.Error(e.message ?: "SQL Execution failed")
             }
         }
     }
@@ -219,11 +267,19 @@ class CodeExecutor {
                 fun processBlock(lines: List<String>, localVars: Map<String, String>) {
                     lines.forEach { line ->
                         val trimmed = line.trim()
+                        if (trimmed.isEmpty() || trimmed.startsWith("//")) return@forEach
+                        
                         val currentVars = variables + localVars
                         
-                        if (trimmed.contains("=") && (trimmed.startsWith("let ") || trimmed.startsWith("const ") || trimmed.startsWith("var "))) {
-                            val name = trimmed.substringAfter(" ").substringBefore("=").trim()
-                            val value = trimmed.substringAfter("=").trim().trim(';').trim('"').trim('\'').trim('`')
+                        if (trimmed.contains("=") && !trimmed.contains("(")) {
+                            val assignmentPart = if (trimmed.startsWith("let ") || trimmed.startsWith("const ") || trimmed.startsWith("var ")) {
+                                trimmed.substringAfter(" ").trim()
+                            } else {
+                                trimmed
+                            }
+                            val name = assignmentPart.substringBefore("=").trim()
+                            val rawValue = assignmentPart.substringAfter("=").trim().trim(';')
+                            val value = resolveValue(rawValue, currentVars)
                             variables[name] = value
                         } else if (trimmed.contains("++")) {
                             val name = trimmed.substringBefore("++").trim()
@@ -312,17 +368,25 @@ class CodeExecutor {
                 fun processBlock(lines: List<String>, localVars: Map<String, String>) {
                     lines.forEach { line ->
                         val trimmed = line.trim()
+                        if (trimmed.isEmpty() || trimmed.startsWith("//")) return@forEach
+                        
                         val currentVars = variables + localVars
                         
-                        if (trimmed.contains("=") && (trimmed.startsWith("int ") || trimmed.startsWith("double ") || trimmed.startsWith("String ") || trimmed.startsWith("boolean "))) {
-                            val namePart = trimmed.substringBefore("=").trim().split(" ").last()
-                            val valuePart = trimmed.substringAfter("=").trim().trim(';').trim('"').trim('\'')
-                            variables[namePart] = valuePart
+                        if (trimmed.contains("=") && !trimmed.contains("(")) {
+                            val assignmentPart = if (trimmed.startsWith("String ") || trimmed.startsWith("int ") || trimmed.startsWith("double ") || trimmed.startsWith("boolean ")) {
+                                trimmed.substringAfter(" ").trim()
+                            } else {
+                                trimmed
+                            }
+                            val name = assignmentPart.substringBefore("=").trim().split(" ").last()
+                            val rawValue = assignmentPart.substringAfter("=").trim().trim(';')
+                            val value = rawValue.trim('"').trim('\'')
+                            variables[name] = currentVars[value] ?: value
                         }
 
                         if (trimmed.contains("System.out.println(")) {
-                            var content = trimmed.substringAfter("System.out.println(").substringBeforeLast(")")
-                                .trim().trim('"').trim('\'')
+                            val rawContent = trimmed.substringAfter("System.out.println(").substringBeforeLast(")")
+                            val content = rawContent.trim().trim('"').trim('\'')
                             
                             if (content.contains("+")) {
                                 val resolvedPats = content.split("+").map { part ->
@@ -330,10 +394,8 @@ class CodeExecutor {
                                     currentVars[p] ?: p
                                 }
                                 output.append(resolvedPats.joinToString("")).append("\n")
-                            } else if (currentVars.containsKey(content)) {
-                                output.append(currentVars[content]).append("\n")
                             } else {
-                                output.append(content).append("\n")
+                                output.append(currentVars[content] ?: content).append("\n")
                             }
                         }
                     }
@@ -343,28 +405,29 @@ class CodeExecutor {
                 var i = 0
                 while (i < allLines.size) {
                     val line = allLines[i].trim()
+                    if (line.isEmpty() || line.startsWith("//")) { i++; continue }
                     
-                    if (line.contains("{") && line.contains("}")) {
-                        if (line.contains("[]") && line.contains("=")) {
-                            val name = line.substringBefore("=").trim().split(" ").last()
-                            val items = line.substringAfter("{").substringBefore("}").split(",")
-                                .map { it.trim().trim('"').trim('\'') }
-                            arrayVars[name] = items
-                        }
+                    if (line.contains("{") && line.contains("}") && line.contains("[]") && line.contains("=")) {
+                         val name = line.substringBefore("=").trim().split(" ").last()
+                         val items = line.substringAfter("{").substringBefore("}").split(",")
+                             .map { it.trim().trim('"').trim('\'') }
+                         arrayVars[name] = items
                     }
                     else if (line.startsWith("for") && line.contains(";")) {
-                        // for (int i = 0; i < 5; i++)
                         val header = line.substringAfter("(").substringBefore(")")
                         val parts = header.split(";")
                         if (parts.size >= 2) {
                             val valName = parts[0].substringBefore("=").trim().split(" ").last()
-                            val start = parts[0].substringAfter("=").trim().toIntOrNull() ?: 0
-                            val end = parts[1].trim().split(" ").last().toIntOrNull() ?: 0
-                            
+                            val startVal = parts[0].substringAfter("=").trim().toIntOrNull() ?: 0
+                            val endCondition = parts[1].trim()
+                            val endVal = endCondition.replace("[^0-9]".toRegex(), "").toIntOrNull() ?: 0
+                            val isInclusive = endCondition.contains("<=") || endCondition.contains(">=")
+
                             val blockEnd = allLines.indexOfFirst { it.trim() == "}" && allLines.indexOf(it) > i }
                             if (blockEnd != -1) {
                                 val blockLines = allLines.subList(i + 1, blockEnd)
-                                for (v in start until end) {
+                                val range = if (isInclusive) startVal..endVal else startVal until endVal
+                                for (v in range) {
                                     processBlock(blockLines, mapOf(valName to v.toString()))
                                 }
                                 i = blockEnd
@@ -372,7 +435,6 @@ class CodeExecutor {
                         }
                     }
                     else if (line.startsWith("for") && line.contains(":")) {
-                        // for (String s : list)
                         val valName = line.substringAfter("(").substringBefore(":").trim().split(" ").last()
                         val arrName = line.substringAfter(":").substringBefore(")").trim()
                         

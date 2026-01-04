@@ -74,6 +74,7 @@ class LessonViewModel(
                 courseId.contains("kotlin") -> codeExecutor.executeKotlinCode(code)
                 courseId.contains("web-dev") || courseId.contains("js") -> codeExecutor.executeJavaScriptCode(code)
                 courseId.contains("java") -> codeExecutor.executeJavaCode(code)
+                courseId.contains("sql") || courseId.contains("database") -> codeExecutor.executeSqlCode(code)
                 else -> CodeExecutionResult.Success("Code executed successfully")
             }
             
