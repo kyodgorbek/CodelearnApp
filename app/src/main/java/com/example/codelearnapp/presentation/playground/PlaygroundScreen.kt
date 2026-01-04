@@ -9,6 +9,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -107,7 +108,7 @@ fun PlaygroundScreen(
                     .padding(16.dp)
             ) {
                 Text(
-                    "CONOLEX OUTPUT",
+                    "CONSOLE OUTPUT",
                     style = MaterialTheme.typography.labelSmall,
                     color = Color.Gray,
                     fontWeight = FontWeight.Bold
@@ -148,6 +149,3 @@ fun PlaygroundScreen(
     }
 }
 
-private fun Modifier.clip(shape: androidx.compose.ui.graphics.Shape) = this.then(
-    androidx.compose.ui.draw.clip(shape)
-)
