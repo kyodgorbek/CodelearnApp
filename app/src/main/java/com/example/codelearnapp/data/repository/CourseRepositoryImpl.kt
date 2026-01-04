@@ -63,6 +63,16 @@ object CourseRepositoryImpl {
             totalLessons = 30,
             completedLessons = 0,
             category = CourseCategory.SQL
+        ),
+        Course(
+            id = "data-science",
+            title = "Data Science Foundations",
+            description = "Explore data analysis, visualization, and machine learning",
+            icon = "📊",
+            progress = 0.0f,
+            totalLessons = 30,
+            completedLessons = 0,
+            category = CourseCategory.DATA_SCIENCE
         )
     )
 
@@ -71,7 +81,8 @@ object CourseRepositoryImpl {
                 getKotlinLessons() +
                 getJavaLessons() +
                 getJavaScriptLessons() +
-                getSqlLessons()
+                getSqlLessons() +
+                getDataScienceLessons()
     }
 
     // PYTHON LESSONS (30)
@@ -3905,6 +3916,484 @@ object CourseRepositoryImpl {
                 GROUP BY DATE_FORMAT(order_date, '%Y-%m')
                 ORDER BY month DESC;
                 */
+            """.trimIndent()
+        )
+    )
+
+    // DATA SCIENCE LESSONS (30)
+    private fun getDataScienceLessons() = listOf(
+        // Lesson 1-10: Introduction & Python for DS
+        Lesson(
+            id = "ds-1",
+            courseId = "data-science",
+            title = "What is Data Science?",
+            content = "Data Science is the field of study that combines domain expertise, programming skills, and knowledge of mathematics and statistics to extract meaningful insights from data.",
+            type = LessonType.THEORY,
+            order = 1,
+            isCompleted = false,
+            codeExample = """
+                # Data science lifecycle:
+                # 1. Data Collection
+                # 2. Data Cleaning
+                # 3. Exploratory Data Analysis (EDA)
+                # 4. Modeling
+                # 5. Interpretation
+                print("Welcome to Data Science!")
+            """.trimIndent()
+        ),
+        Lesson(
+            id = "ds-2",
+            courseId = "data-science",
+            title = "Intro to NumPy",
+            content = "NumPy is the fundamental package for scientific computing in Python. It provides a powerful N-dimensional array object.",
+            type = LessonType.THEORY,
+            order = 2,
+            isCompleted = false,
+            codeExample = """
+                import numpy as np
+                
+                # Creating a NumPy array
+                arr = np.array([1, 2, 3, 4, 5])
+                print(arr)
+                print(arr.mean())  # Calculate mean
+            """.trimIndent()
+        ),
+        Lesson(
+            id = "ds-3",
+            courseId = "data-science",
+            title = "Practice: NumPy Arrays",
+            content = "Create a NumPy array of 10 zeros and print it.",
+            type = LessonType.CODE_PRACTICE,
+            order = 3,
+            isCompleted = false,
+            codeExample = "import numpy as np\narr = np.zeros(10)\nprint(arr)"
+        ),
+        Lesson(
+            id = "ds-4",
+            courseId = "data-science",
+            title = "Intro to Pandas",
+            content = "Pandas is a fast, powerful, flexible and easy to use open source data analysis and manipulation tool.",
+            type = LessonType.THEORY,
+            order = 4,
+            isCompleted = false,
+            codeExample = """
+                import pandas as pd
+                
+                # Creating a DataFrame
+                data = {
+                    'Name': ['Alice', 'Bob', 'Charlie'],
+                    'Age': [25, 30, 35],
+                    'City': ['NY', 'SF', 'CHI']
+                }
+                df = pd.DataFrame(data)
+                print(df.head())
+            """.trimIndent()
+        ),
+        Lesson(
+            id = "ds-5",
+            courseId = "data-science",
+            title = "Quiz: Library Basics",
+            content = "Test your knowledge of NumPy and Pandas",
+            type = LessonType.QUIZ,
+            order = 5,
+            isCompleted = false,
+            quiz = Quiz(
+                id = "ds-quiz-1",
+                question = "Which library is primary used for data manipulation and analysis?",
+                options = listOf("NumPy", "Pandas", "Matplotlib", "Seaborn"),
+                correctAnswer = 1,
+                explanation = "Pandas is the primary library for data table (DataFrame) manipulation."
+            )
+        ),
+        Lesson(
+            id = "ds-6",
+            courseId = "data-science",
+            title = "Pandas: Reading Data",
+            content = "You can read data from various formats like CSV, Excel, and SQL using Pandas.",
+            type = LessonType.THEORY,
+            order = 6,
+            isCompleted = false,
+            codeExample = """
+                import pandas as pd
+                
+                # Reading a CSV file
+                # df = pd.read_csv('data.csv')
+                
+                # Display statistics
+                # print(df.describe())
+            """.trimIndent()
+        ),
+        Lesson(
+            id = "ds-7",
+            courseId = "data-science",
+            title = "Pandas: Selection & Filtering",
+            content = "Learn how to select specific columns and filter rows based on conditions.",
+            type = LessonType.THEORY,
+            order = 7,
+            isCompleted = false,
+            codeExample = """
+                import pandas as pd
+                
+                df = pd.DataFrame({
+                    'A': [1, 2, 3],
+                    'B': [4, 5, 6]
+                })
+                
+                # Selecting a column
+                col_a = df['A']
+                
+                # Filtering rows
+                filtered = df[df['A'] > 1]
+                print(filtered)
+            """.trimIndent()
+        ),
+        Lesson(
+            id = "ds-8",
+            courseId = "data-science",
+            title = "Practice: Pandas Filtering",
+            content = "Filter a DataFrame to only show rows where 'Age' is greater than 20.",
+            type = LessonType.CODE_PRACTICE,
+            order = 8,
+            isCompleted = false,
+            codeExample = "import pandas as pd\ndf = pd.DataFrame({'Age': [18, 22, 25]})\nprint(df[df['Age'] > 20])"
+        ),
+        Lesson(
+            id = "ds-9",
+            courseId = "data-science",
+            title = "Introduction to Matplotlib",
+            content = "Matplotlib is a comprehensive library for creating static, animated, and interactive visualizations in Python.",
+            type = LessonType.THEORY,
+            order = 9,
+            isCompleted = false,
+            codeExample = """
+                import matplotlib.pyplot as plt
+                
+                plt.plot([1, 2, 3, 4], [1, 4, 9, 16])
+                plt.xlabel('X-axis')
+                plt.ylabel('Y-axis')
+                plt.show()
+            """.trimIndent()
+        ),
+        Lesson(
+            id = "ds-10",
+            courseId = "data-science",
+            title = "Quiz: Visualization",
+            content = "Test your knowledge of visualization basics",
+            type = LessonType.QUIZ,
+            order = 10,
+            isCompleted = false,
+            quiz = Quiz(
+                id = "ds-quiz-2",
+                question = "Which function is used to create a line plot in Matplotlib?",
+                options = listOf("bar()", "scatter()", "plot()", "hist()"),
+                correctAnswer = 2,
+                explanation = "plt.plot() is used for line plots."
+            )
+        ),
+        // Lesson 11-20: Data Cleaning & Analysis
+        Lesson(
+            id = "ds-11",
+            courseId = "data-science",
+            title = "Data Cleaning: Missing Values",
+            content = "Handling missing data is a crucial step in data science. You can drop them or fill them with values.",
+            type = LessonType.THEORY,
+            order = 11,
+            isCompleted = false,
+            codeExample = """
+                import pandas as pd
+                import numpy as np
+                
+                df = pd.DataFrame({'A': [1, np.nan, 3]})
+                
+                # Drop rows with NaN
+                df_dropped = df.dropna()
+                
+                # Fill NaN with mean
+                df_filled = df.fillna(df.mean())
+                print(df_filled)
+            """.trimIndent()
+        ),
+        Lesson(
+            id = "ds-12",
+            courseId = "data-science",
+            title = "Groupby Operations",
+            content = "Split-apply-combine strategy for data analysis.",
+            type = LessonType.THEORY,
+            order = 12,
+            isCompleted = false,
+            codeExample = """
+                import pandas as pd
+                
+                df = pd.DataFrame({
+                    'Dept': ['Sales', 'IT', 'Sales'],
+                    'Salary': [50000, 60000, 55000]
+                })
+                
+                # Calculate mean salary per department
+                print(df.groupby('Dept').mean())
+            """.trimIndent()
+        ),
+        Lesson(
+            id = "ds-13",
+            courseId = "data-science",
+            title = "Practice: Groupby",
+            content = "Calculate the sum of 'Sales' grouped by 'Region'.",
+            type = LessonType.CODE_PRACTICE,
+            order = 13,
+            isCompleted = false,
+            codeExample = "import pandas as pd\ndf = pd.DataFrame({'Region': ['N', 'S', 'N'], 'Sales': [100, 200, 150]})\nprint(df.groupby('Region').sum())"
+        ),
+        Lesson(
+            id = "ds-14",
+            courseId = "data-science",
+            title = "Intro to Seaborn",
+            content = "Seaborn is a Python data visualization library based on matplotlib. It provides a high-level interface for drawing attractive and informative statistical graphics.",
+            type = LessonType.THEORY,
+            order = 14,
+            isCompleted = false,
+            codeExample = """
+                import seaborn as sns
+                import matplotlib.pyplot as plt
+                
+                # Load example dataset
+                tips = sns.load_dataset("tips")
+                sns.boxplot(x="day", y="total_bill", data=tips)
+                plt.show()
+            """.trimIndent()
+        ),
+        Lesson(
+            id = "ds-15",
+            courseId = "data-science",
+            title = "Statistical Concepts",
+            content = "Brief intro to Mean, Median, Mode, Variance, and Standard Deviation.",
+            type = LessonType.THEORY,
+            order = 15,
+            isCompleted = false,
+            codeExample = """
+                import numpy as np
+                data = [1, 2, 2, 3, 4]
+                
+                print(f"Mean: {np.mean(data)}")
+                print(f"StdDev: {np.std(data)}")
+            """.trimIndent()
+        ),
+        Lesson(
+            id = "ds-16",
+            courseId = "data-science",
+            title = "Correlation",
+            content = "Correlation measures how closely two variables change together.",
+            type = LessonType.THEORY,
+            order = 16,
+            isCompleted = false,
+            codeExample = """
+                import pandas as pd
+                df = pd.DataFrame({
+                    'X': [1, 2, 3, 4],
+                    'Y': [2, 4, 6, 8]
+                })
+                print(df.corr())
+            """.trimIndent()
+        ),
+        Lesson(
+            id = "ds-17",
+            courseId = "data-science",
+            title = "Quiz: Statistics",
+            content = "Test your statistical understanding",
+            type = LessonType.QUIZ,
+            order = 17,
+            isCompleted = false,
+            quiz = Quiz(
+                id = "ds-quiz-3",
+                question = "What is the middle value in a sorted dataset called?",
+                options = listOf("Mean", "Median", "Mode", "Variance"),
+                correctAnswer = 1,
+                explanation = "The Median is the middle value of a sorted dataset."
+            )
+        ),
+        Lesson(
+            id = "ds-18",
+            courseId = "data-science",
+            title = "Scikit-Learn Basics",
+            content = "Scikit-learn is a simple and efficient tool for predictive data analysis.",
+            type = LessonType.THEORY,
+            order = 18,
+            isCompleted = false,
+            codeExample = """
+                # Generic Scikit-Learn structure:
+                # 1. Choose model class
+                # 2. Instantiate model
+                # 3. model.fit(X, y)
+                # 4. model.predict(X_test)
+            """.trimIndent()
+        ),
+        Lesson(
+            id = "ds-19",
+            courseId = "data-science",
+            title = "Linear Regression",
+            content = "Predicting a continuous value based on independent variables.",
+            type = LessonType.THEORY,
+            order = 19,
+            isCompleted = false,
+            codeExample = """
+                from sklearn.linear_model import LinearRegression
+                import numpy as np
+                
+                X = np.array([[1], [2], [3]])
+                y = np.array([2, 4, 6])
+                
+                model = LinearRegression()
+                model.fit(X, y)
+                print(model.predict([[4]])) # Expected: [8]
+            """.trimIndent()
+        ),
+        Lesson(
+            id = "ds-20",
+            courseId = "data-science",
+            title = "Practice: Linear Regression",
+            content = "Fit a linear regression model to predict y from X.",
+            type = LessonType.CODE_PRACTICE,
+            order = 20,
+            isCompleted = false,
+            codeExample = "from sklearn.linear_model import LinearRegression\nimport numpy as np\nX = np.array([[1], [2]])\ny = np.array([3, 5])\nmodel = LinearRegression().fit(X, y)\nprint(model.coef_)"
+        ),
+        // Lesson 21-30: Machine Learning & Beyond
+        Lesson(
+            id = "ds-21",
+            courseId = "data-science",
+            title = "Classification & Logistics Regression",
+            content = "Predicting a categorical label (e.g., spam vs. not spam).",
+            type = LessonType.THEORY,
+            order = 21,
+            isCompleted = false,
+            codeExample = """
+                from sklearn.linear_model import LogisticRegression
+                # Similar fit/predict pattern
+            """.trimIndent()
+        ),
+        Lesson(
+            id = "ds-22",
+            courseId = "data-science",
+            title = "Evaluation Metrics: Classification",
+            content = "Accuracy, Precision, Recall, and F1-Score.",
+            type = LessonType.THEORY,
+            order = 22,
+            isCompleted = false,
+            codeExample = """
+                from sklearn.metrics import accuracy_score
+                # accuracy_score(y_true, y_pred)
+            """.trimIndent()
+        ),
+        Lesson(
+            id = "ds-23",
+            courseId = "data-science",
+            title = "Quiz: Machine Learning",
+            content = "Test your ML basics",
+            type = LessonType.QUIZ,
+            order = 23,
+            isCompleted = false,
+            quiz = Quiz(
+                id = "ds-quiz-4",
+                question = "Linear Regression is used for predicting...",
+                options = listOf("Categories", "Continuous values", "Images", "Text"),
+                correctAnswer = 1,
+                explanation = "Linear Regression is a regression technique for continuous output."
+            )
+        ),
+        Lesson(
+            id = "ds-24",
+            courseId = "data-science",
+            title = "K-Means Clustering",
+            content = "Unsupervised learning method to group data into K clusters.",
+            type = LessonType.THEORY,
+            order = 24,
+            isCompleted = false,
+            codeExample = """
+                from sklearn.cluster import KMeans
+                import numpy as np
+                
+                X = np.array([[1, 2], [1, 4], [1, 0], [10, 2], [10, 4], [10, 0]])
+                kmeans = KMeans(n_clusters=2).fit(X)
+                print(kmeans.labels_)
+            """.trimIndent()
+        ),
+        Lesson(
+            id = "ds-25",
+            courseId = "data-science",
+            title = "Feature Engineering",
+            content = "The process of creating new features or transforming existing ones to improve model performance.",
+            type = LessonType.THEORY,
+            order = 25,
+            isCompleted = false,
+            codeExample = """
+                # Examples:
+                # - Scaling (Standardization/Normalization)
+                # - One-Hot Encoding for categorical data
+                # - Handling Date/Time features
+            """.trimIndent()
+        ),
+        Lesson(
+            id = "ds-26",
+            courseId = "data-science",
+            title = "Decision Trees",
+            content = "A flowchart-like structure used for both classification and regression.",
+            type = LessonType.THEORY,
+            order = 26,
+            isCompleted = false,
+            codeExample = """
+                from sklearn.tree import DecisionTreeClassifier
+                # clf = DecisionTreeClassifier().fit(X, y)
+            """.trimIndent()
+        ),
+        Lesson(
+            id = "ds-27",
+            courseId = "data-science",
+            title = "Random Forest",
+            content = "An ensemble learning method that operates by constructing a multitude of decision trees.",
+            type = LessonType.THEORY,
+            order = 27,
+            isCompleted = false,
+            codeExample = """
+                from sklearn.ensemble import RandomForestClassifier
+                # forest = RandomForestClassifier().fit(X, y)
+            """.trimIndent()
+        ),
+        Lesson(
+            id = "ds-28",
+            courseId = "data-science",
+            title = "Practice: Random Forest",
+            content = "Instantiate a Random Forest Classifier with 100 estimators.",
+            type = LessonType.CODE_PRACTICE,
+            order = 28,
+            isCompleted = false,
+            codeExample = "from sklearn.ensemble import RandomForestClassifier\nclf = RandomForestClassifier(n_estimators=100)\nprint('Model Created')"
+        ),
+        Lesson(
+            id = "ds-29",
+            courseId = "data-science",
+            title = "Introduction to Deep Learning",
+            content = "A subset of machine learning based on artificial neural networks.",
+            type = LessonType.THEORY,
+            order = 29,
+            isCompleted = false,
+            codeExample = """
+                # Key libraries:
+                # - TensorFlow / Keras
+                # - PyTorch
+            """.trimIndent()
+        ),
+        Lesson(
+            id = "ds-30",
+            courseId = "data-science",
+            title = "Final Challenge: Titanic Analysis",
+            content = "Analyze the Titanic dataset to find patterns in survivor demographics.",
+            type = LessonType.CHALLENGE,
+            order = 30,
+            isCompleted = false,
+            codeExample = """
+                import pandas as pd
+                # Analyze survivor rates by class and gender
+                # df.groupby(['Pclass', 'Sex'])['Survived'].mean()
+                print("Final Challenge: Analyze survival rates!")
             """.trimIndent()
         )
     )

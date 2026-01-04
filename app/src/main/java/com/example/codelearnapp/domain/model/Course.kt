@@ -12,5 +12,5 @@ data class Course(
 )
 
 enum class CourseCategory {
-    PYTHON, KOTLIN, JAVA, JAVASCRIPT, SQL
+    PYTHON, KOTLIN, JAVA, JAVASCRIPT, SQL, DATA_SCIENCE
 }
