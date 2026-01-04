@@ -103,11 +103,40 @@ class CodeExecutor {
         return withContext(Dispatchers.IO) {
             try {
                 val output = StringBuilder()
+                val variables = mutableMapOf<String, String>()
+
                 code.lines().forEach { line ->
-                    if (line.trim().contains("console.log(")) {
-                        val content = line.substringAfter("console.log(").substringBeforeLast(")")
-                            .trim().trim('"').trim('\'')
-                        output.append(content).append("\n")
+                    val trimmed = line.trim()
+                    
+                    // Assignment: let/const/var x = 10;
+                    if (trimmed.contains("=") && (trimmed.startsWith("let ") || trimmed.startsWith("const ") || trimmed.startsWith("var "))) {
+                        val name = trimmed.substringAfter(" ").substringBefore("=").trim()
+                        val value = trimmed.substringAfter("=").trim().trim(';').trim('"').trim('\'').trim('`')
+                        variables[name] = value
+                    }
+
+                    if (trimmed.contains("console.log(")) {
+                        val argsRaw = trimmed.substringAfter("console.log(").substringBeforeLast(")")
+                        val args = argsRaw.split(",").map { it.trim() }
+                        
+                        val resolvedArgs = args.map { arg ->
+                            var content = arg.trim('"').trim('\'').trim('`')
+                            
+                            // Resolve template literals inside the argument
+                            variables.forEach { (name, value) ->
+                                content = content.replace("${'$'}{$name}", value)
+                            }
+                            
+                            if (content.contains("+")) {
+                                content.split("+").joinToString("") { part ->
+                                    val p = part.trim().trim('"').trim('\'').trim('`')
+                                    variables[p] ?: p
+                                }
+                            } else {
+                                variables[content] ?: content
+                            }
+                        }
+                        output.append(resolvedArgs.joinToString(" ")).append("\n")
                     }
                 }
                 CodeExecutionResult.Success(if (output.isEmpty()) "JS executed" else output.toString())
