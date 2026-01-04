@@ -96,6 +96,7 @@ fun highlightCode(code: String, language: String): AnnotatedString {
         "kotlin" -> listOf("fun", "val", "var", "if", "else", "for", "while", "class", "object", "return", "import", "package", "true", "false", "null")
         "python" -> listOf("def", "if", "else", "elif", "for", "while", "in", "import", "from", "as", "class", "return", "True", "False", "None", "print")
         "javascript" -> listOf("function", "let", "const", "var", "if", "else", "for", "while", "class", "return", "import", "export", "true", "false", "null", "console")
+        "java" -> listOf("public", "private", "protected", "static", "final", "class", "void", "int", "double", "boolean", "char", "if", "else", "for", "while", "return", "new", "import", "package", "true", "false", "null", "System")
         else -> emptyList()
     }
 

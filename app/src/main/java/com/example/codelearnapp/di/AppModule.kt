@@ -74,7 +74,7 @@ val appModule = module {
     // ViewModels
     viewModel { HomeViewModel(get()) }
     viewModel { CourseDetailViewModel(get(), get()) }
-    viewModel { LessonViewModel(get(), get(), get(), get()) }
+    viewModel { LessonViewModel(get(), get(), get(), get(), get()) }
     viewModel { SearchViewModel(get()) }
     viewModel { BookmarksViewModel(get(), get()) }
     viewModel { AchievementsViewModel(get()) }

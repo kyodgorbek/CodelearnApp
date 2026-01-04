@@ -22,6 +22,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.codelearnapp.presentation.components.VideoPlayer
+import com.example.codelearnapp.presentation.components.CodeEditor
 import com.example.codelearnapp.domain.model.LessonType
 import com.example.codelearnapp.domain.model.Quiz
 import com.airbnb.lottie.compose.*
@@ -149,14 +150,74 @@ fun LessonScreen(
                                 color = MaterialTheme.colorScheme.onBackground
                             )
                             
-                            // Code Example
-                            lesson.codeExample?.let { code ->
+                            // Code Section (Theory Example or Interactive Practice)
+                            lesson.codeExample?.let {
+                                val language = when {
+                                    lesson.courseId.contains("python") || lesson.courseId.contains("data-science") -> "python"
+                                    lesson.courseId.contains("kotlin") -> "kotlin"
+                                    lesson.courseId.contains("java") -> "java"
+                                    lesson.courseId.contains("web-dev") || lesson.courseId.contains("js") -> "javascript"
+                                    else -> "kotlin"
+                                }
+
                                 Text(
-                                    "Example",
+                                    if (lesson.type == LessonType.CODE_PRACTICE) "Interactive Practice" else "Code Example",
                                     style = MaterialTheme.typography.titleMedium,
                                     fontWeight = FontWeight.Bold
                                 )
-                                CodeBlock(code)
+                                
+                                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                                    Box(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .height(200.dp)
+                                            .clip(RoundedCornerShape(12.dp))
+                                    ) {
+                                        CodeEditor(
+                                            code = state.currentCode,
+                                            onCodeChange = { viewModel.sendIntent(LessonIntent.UpdateCode(it)) },
+                                            language = language,
+                                            modifier = Modifier.fillMaxSize()
+                                        )
+                                    }
+                                    
+                                    Button(
+                                        onClick = { viewModel.sendIntent(LessonIntent.RunCode) },
+                                        enabled = !state.isExecuting,
+                                        modifier = Modifier.align(Alignment.End),
+                                        colors = ButtonDefaults.buttonColors(
+                                            containerColor = Color(0xFF4CAF50)
+                                        )
+                                    ) {
+                                        if (state.isExecuting) {
+                                            CircularProgressIndicator(size = 18.dp, color = Color.White)
+                                        } else {
+                                            Text("Run Code")
+                                        }
+                                    }
+
+                                    if (state.executionOutput.isNotEmpty()) {
+                                        Surface(
+                                            modifier = Modifier.fillMaxWidth(),
+                                            color = Color(0xFF121212),
+                                            shape = RoundedCornerShape(8.dp)
+                                        ) {
+                                            Column(modifier = Modifier.padding(12.dp)) {
+                                                Text(
+                                                    "Output:",
+                                                    style = MaterialTheme.typography.labelSmall,
+                                                    color = Color.Gray
+                                                )
+                                                Text(
+                                                    state.executionOutput,
+                                                    style = MaterialTheme.typography.bodySmall,
+                                                    fontFamily = FontFamily.Monospace,
+                                                    color = Color.White
+                                                )
+                                            }
+                                        }
+                                    }
+                                }
                             }
                             
                             // Quiz
@@ -297,22 +358,6 @@ fun LessonScreen(
     }
 }
 
-@Composable
-fun CodeBlock(code: String) {
-    Surface(
-        modifier = Modifier.fillMaxWidth(),
-        color = Color(0xFF1E1E1E),
-        shape = RoundedCornerShape(8.dp)
-    ) {
-        Text(
-            text = code,
-            modifier = Modifier.padding(16.dp),
-            style = MaterialTheme.typography.bodyMedium,
-            fontFamily = FontFamily.Monospace,
-            color = Color(0xFFDCDCDC)
-        )
-    }
-}
 
 @Composable
 fun QuizSection(

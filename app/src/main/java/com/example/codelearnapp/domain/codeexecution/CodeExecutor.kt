@@ -106,6 +106,42 @@ class CodeExecutor {
             }
         }
     }
+
+    suspend fun executeJavaCode(code: String): CodeExecutionResult {
+        return withContext(Dispatchers.IO) {
+            try {
+                val output = StringBuilder()
+                val lines = code.lines()
+                val variables = mutableMapOf<String, Any>()
+
+                lines.forEach { line ->
+                    val trimmed = line.trim()
+                    
+                    // Basic Assignment simulation (e.g., int x = 10;)
+                    if (trimmed.contains("=") && (trimmed.startsWith("int ") || trimmed.startsWith("double ") || trimmed.startsWith("String "))) {
+                        val parts = trimmed.split("=")
+                        val namePart = parts[0].trim().split(" ").last()
+                        val valuePart = parts[1].trim().trim(';').trim('"')
+                        variables[namePart] = valuePart
+                    }
+
+                    if (trimmed.contains("System.out.println(")) {
+                        val content = trimmed.substringAfter("System.out.println(").substringBeforeLast(")")
+                            .trim().trim('"').trim('\'')
+                        
+                        if (variables.containsKey(content)) {
+                            output.append(variables[content]).append("\n")
+                        } else {
+                            output.append(content).append("\n")
+                        }
+                    }
+                }
+                CodeExecutionResult.Success(if (output.isEmpty()) "Java program finished" else output.toString())
+            } catch (e: Exception) {
+                CodeExecutionResult.Error(e.message ?: "Java Execution failed")
+            }
+        }
+    }
 }
 
 sealed class CodeExecutionResult {
