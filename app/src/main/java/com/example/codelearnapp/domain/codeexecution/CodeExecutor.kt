@@ -13,6 +13,8 @@ class CodeExecutor {
         localExecutor: suspend (String) -> CodeExecutionResult
     ): CodeExecutionResult {
         return withContext(Dispatchers.IO) {
+            android.util.Log.d("CodeExecutor", "Starting execution for $language. Code length: ${code.length}")
+            
             // Uncomment to force local execution for debugging or if backend is not running
             // return@withContext localExecutor(code)
 
@@ -23,18 +25,15 @@ class CodeExecutor {
 
                 if (response.error != null) {
                     // Network error or backend unreachable -> Fallback to local
-                    println("Cloud execution failed: ${response.error}. Falling back to local.")
+                    android.util.Log.e("CodeExecutor", "Piston execution failed: ${response.error}. Using Local Fallback.")
                     localExecutor(code)
                 } else {
                     // Successful cloud execution
-                    if (response.statusCode == 200 || response.statusCode == 201) {
-                         CodeExecutionResult.Success(response.output ?: "")
-                    } else {
-                         // Compilation/Runtime error from cloud
-                         CodeExecutionResult.Error(response.output ?: "Unknown execution error")
-                    }
+                    android.util.Log.d("CodeExecutor", "Piston execution success. Output: ${response.output}")
+                     CodeExecutionResult.Success(response.output ?: "")
                 }
             } catch (e: Exception) {
+                android.util.Log.e("CodeExecutor", "Exception during Piston call: ${e.message}. Using Local Fallback.")
                 e.printStackTrace()
                 localExecutor(code)
             }
