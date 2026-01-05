@@ -339,23 +339,25 @@ object KotlinDsaRepositoryImpl {
             order = 16,
             isCompleted = false,
             codeExample = """
-                // Conceptual: Generating permutations
-            codeExample = """
+                // Generating permutations using backtracking
                 fun permute(str: String, l: Int, r: Int) {
-                    if (l == r) println(str)
-                    else {
+                    if (l == r) {
+                        println(str)
+                    } else {
                         for (i in l..r) {
-                             val s = str.toCharArray()
-                             // Simple swap simulation
-                             val temp = s[l]; s[l] = s[i]; s[i] = temp
-                             // Recurse
-                             permute(String(s), l + 1, r)
-                             // Backtrack (swap back)
-                             val temp2 = s[l]; s[l] = s[i]; s[i] = temp2 
+                            val chars = str.toCharArray()
+        
+                            // swap
+                            val temp = chars[l]
+                            chars[l] = chars[i]
+                            chars[i] = temp
+        
+                            // recurse
+                            permute(String(chars), l + 1, r)
                         }
                     }
                 }
-
+        
                 fun main() {
                     println("Permutations of 'ABC':")
                     permute("ABC", 0, 2)
