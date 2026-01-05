@@ -93,6 +93,16 @@ object CourseRepositoryImpl {
             totalLessons = 60,
             completedLessons = 0,
             category = CourseCategory.JAVA_DSA
+        ),
+        Course(
+            id = "kotlin-dsa",
+            title = "Kotlin DSA",
+            description = "Complete Data Structures & Algorithms in Kotlin. 60 Lessons.",
+            icon = "🧩",
+            progress = 0.0f,
+            totalLessons = 60,
+            completedLessons = 0,
+            category = CourseCategory.KOTLIN_DSA
         )
     )
 
@@ -104,7 +114,8 @@ object CourseRepositoryImpl {
                 getSqlLessons() +
                 getDataScienceLessons() +
                 getPythonKidsLessons() +
-                getJavaDsaLessons()
+                getJavaDsaLessons() +
+                getKotlinDsaLessons()
     }
 
     // PYTHON LESSONS (30)
@@ -112,6 +123,9 @@ object CourseRepositoryImpl {
 
     // KOTLIN LESSONS (30)
     private fun getKotlinLessons() = KotlinCourseRepositoryImpl.kotlinLessons
+    
+    // KOTLIN DSA LESSONS (60)
+    private fun getKotlinDsaLessons() = KotlinDsaRepositoryImpl.kotlinDsaLessons
 
     // JAVA LESSONS (30)
     private fun getJavaLessons() = listOf(
