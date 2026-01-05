@@ -35,6 +35,7 @@ object KotlinDsaRepositoryImpl {
             order = 2,
             isCompleted = false,
             codeExample = """
+            codeExample = """
                 // O(1) - Constant Time
                 fun getFirst(list: List<Int>): Int = list[0]
                 
@@ -46,6 +47,13 @@ object KotlinDsaRepositoryImpl {
                     }
                     return max
                 }
+
+                fun main() {
+                    val numbers = listOf(10, 5, 20, 8)
+                    println("First: ${'$'}{getFirst(numbers)}")
+                    println("Max: ${'$'}{findMax(numbers)}")
+                }
+            """.trimIndent()
             """.trimIndent()
         ),
         Lesson(
@@ -57,6 +65,7 @@ object KotlinDsaRepositoryImpl {
             order = 3,
             isCompleted = false,
             codeExample = """
+            codeExample = """
                 // O(n) Space - Creates a new list
                 fun doubleList(list: List<Int>): List<Int> {
                     return list.map { it * 2 }
@@ -66,6 +75,16 @@ object KotlinDsaRepositoryImpl {
                 fun printDoubles(list: List<Int>) {
                     for (num in list) println(num * 2)
                 }
+
+                fun main() {
+                    val nums = listOf(1, 2, 3)
+                    val doubled = doubleList(nums)
+                    println("Doubled (New List): ${'$'}doubled")
+                    
+                    println("Printing Doubles (In-Place):")
+                    printDoubles(nums)
+                }
+            """.trimIndent()
             """.trimIndent()
         ),
         Lesson(
@@ -193,6 +212,7 @@ object KotlinDsaRepositoryImpl {
             order = 10,
             isCompleted = false,
             codeExample = """
+            codeExample = """
                 fun isPalindrome(s: String): Boolean {
                     var left = 0
                     var right = s.length - 1
@@ -203,6 +223,14 @@ object KotlinDsaRepositoryImpl {
                     }
                     return true
                 }
+
+                fun main() {
+                    val word1 = "madam"
+                    val word2 = "kotlin"
+                    println("${'$'}word1 is palindrome? ${'$'}{isPalindrome(word1)}")
+                    println("${'$'}word2 is palindrome? ${'$'}{isPalindrome(word2)}")
+                }
+            """.trimIndent()
             """.trimIndent()
         ),
         Lesson(
@@ -213,6 +241,7 @@ object KotlinDsaRepositoryImpl {
             type = LessonType.THEORY,
             order = 11,
             isCompleted = false,
+            codeExample = """
             codeExample = """
                 // Max sum of subarray of size k
                 fun maxSum(arr: IntArray, k: Int): Int {
@@ -226,6 +255,13 @@ object KotlinDsaRepositoryImpl {
                     }
                     return maxS
                 }
+
+                fun main() {
+                    val arr = intArrayOf(1, 4, 2, 10, 23, 3, 1, 0, 20)
+                    val k = 4
+                    println("Max sum of subarray size ${'$'}k: ${'$'}{maxSum(arr, k)}")
+                }
+            """.trimIndent()
             """.trimIndent()
         ),
         Lesson(
@@ -255,10 +291,17 @@ object KotlinDsaRepositoryImpl {
             order = 13,
             isCompleted = false,
             codeExample = """
+            codeExample = """
                 fun factorial(n: Int): Int {
                     if (n <= 1) return 1
                     return n * factorial(n - 1)
                 }
+
+                fun main() {
+                    val num = 5
+                    println("Factorial of ${'$'}num is ${'$'}{factorial(num)}") // 120
+                }
+            """.trimIndent()
             """.trimIndent()
         ),
         Lesson(
@@ -307,14 +350,27 @@ object KotlinDsaRepositoryImpl {
             isCompleted = false,
             codeExample = """
                 // Conceptual: Generating permutations
+            codeExample = """
                 fun permute(str: String, l: Int, r: Int) {
                     if (l == r) println(str)
                     else {
                         for (i in l..r) {
-                            // swap, recurse, swap back
+                             val s = str.toCharArray()
+                             // Simple swap simulation
+                             val temp = s[l]; s[l] = s[i]; s[i] = temp
+                             // Recurse
+                             permute(String(s), l + 1, r)
+                             // Backtrack (swap back)
+                             val temp2 = s[l]; s[l] = s[i]; s[i] = temp2 
                         }
                     }
                 }
+
+                fun main() {
+                    println("Permutations of 'ABC':")
+                    permute("ABC", 0, 2)
+                }
+            """.trimIndent()
             """.trimIndent()
         ),
         Lesson(
