@@ -11,6 +11,13 @@ data class Course(
     val category: CourseCategory
 )
 
-enum class CourseCategory {
-    PYTHON, KOTLIN, JAVA, JAVASCRIPT, SQL, DATA_SCIENCE
+enum class CourseCategory(val displayName: String) {
+    PYTHON("Python"),
+    KOTLIN("Kotlin"),
+    JAVA("Java"),
+    JAVASCRIPT("JavaScript"),
+    SQL("SQL"),
+    DATA_SCIENCE("Data Science"),
+    FOR_KIDS("For Kids"),
+    JAVA_DSA("Java DSA")
 }

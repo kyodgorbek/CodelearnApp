@@ -230,11 +230,43 @@ fun CourseCard(course: Course, onClick: () -> Unit) {
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold
                     )
-                    Text(
-                        course.category.name,
-                        style = MaterialTheme.typography.labelMedium,
-                        color = MaterialTheme.colorScheme.primary
-                    )
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(
+                            course.category.displayName,
+                            style = MaterialTheme.typography.labelMedium,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                        if (course.category == com.example.codelearnapp.domain.model.CourseCategory.FOR_KIDS) {
+                            Spacer(Modifier.width(8.dp))
+                            Surface(
+                                color = Color(0xFF4CAF50),
+                                shape = RoundedCornerShape(4.dp)
+                            ) {
+                                Text(
+                                    "FREE",
+                                    modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = Color.White,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
+                        }
+                        if (course.category == com.example.codelearnapp.domain.model.CourseCategory.JAVA_DSA) {
+                            Spacer(Modifier.width(8.dp))
+                            Surface(
+                                color = Color(0xFF9C27B0), // Purple
+                                shape = RoundedCornerShape(4.dp)
+                            ) {
+                                Text(
+                                    "NEW",
+                                    modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = Color.White,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
+                        }
+                    }
                 }
                 Text(
                     "${(course.progress * 100).toInt()}%",
