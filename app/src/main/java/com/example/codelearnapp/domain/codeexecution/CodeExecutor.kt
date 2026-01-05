@@ -273,6 +273,9 @@ class CodeExecutor {
                         .dropLastWhile { it.trim() == "}" || it.isBlank() }
                         .dropWhile { it.trim() == "{" || it.isBlank() }
                     executeBlock(body)
+                } else {
+                    // Execute as top-level script if no main method found
+                    executeBlock(allLines)
                 }
 
                 CodeExecutionResult.Success(if (output.isEmpty()) "Executed successfully" else output.toString())
