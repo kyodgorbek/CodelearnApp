@@ -412,6 +412,12 @@ object KotlinDsaRepositoryImpl {
                         }
                     }
                 }
+
+                fun main() {
+                    val arr = intArrayOf(64, 34, 25, 12, 22, 11, 90)
+                    bubbleSort(arr)
+                    println("Sorted array: ${'$'}{arr.joinToString()}")
+                }
             """.trimIndent()
         ),
         Lesson(
@@ -435,6 +441,12 @@ object KotlinDsaRepositoryImpl {
                         arr[i] = temp
                     }
                 }
+
+                fun main() {
+                    val arr = intArrayOf(64, 25, 12, 22, 11)
+                    selectionSort(arr)
+                    println("Sorted array: ${'$'}{arr.joinToString()}")
+                }
             """.trimIndent()
         ),
         Lesson(
@@ -457,6 +469,12 @@ object KotlinDsaRepositoryImpl {
                         arr[j + 1] = key
                     }
                 }
+
+                fun main() {
+                    val arr = intArrayOf(12, 11, 13, 5, 6)
+                    insertionSort(arr)
+                    println("Sorted array: ${'$'}{arr.joinToString()}")
+                }
             """.trimIndent()
         ),
         Lesson(
@@ -468,10 +486,37 @@ object KotlinDsaRepositoryImpl {
             order = 21,
             isCompleted = false,
             codeExample = """
-                fun mergeSort(arr: IntArray) {
-                   // Splitting logic...
-                   // Merging logic...
-                   // Recursive calls
+                fun mergeSort(arr: IntArray, left: Int, right: Int) {
+                    if (left < right) {
+                        val mid = (left + right) / 2
+                        mergeSort(arr, left, mid)
+                        mergeSort(arr, mid + 1, right)
+                        merge(arr, left, mid, right)
+                    }
+                }
+
+                fun merge(arr: IntArray, left: Int, mid: Int, right: Int) {
+                    val n1 = mid - left + 1
+                    val n2 = right - mid
+                    val L = IntArray(n1)
+                    val R = IntArray(n2)
+                    for (i in 0 until n1) L[i] = arr[left + i]
+                    for (j in 0 until n2) R[j] = arr[mid + 1 + j]
+
+                    var i = 0; var j = 0; var k = left
+                    while (i < n1 && j < n2) {
+                        if (L[i] <= R[j]) { arr[k] = L[i]; i++ } 
+                        else { arr[k] = R[j]; j++ }
+                        k++
+                    }
+                    while (i < n1) { arr[k] = L[i]; i++; k++ }
+                    while (j < n2) { arr[k] = R[j]; j++; k++ }
+                }
+
+                fun main() {
+                    val arr = intArrayOf(38, 27, 43, 3, 9, 82, 10)
+                    mergeSort(arr, 0, arr.size - 1)
+                    println("Sorted array: ${'$'}{arr.joinToString()}")
                 }
             """.trimIndent()
         ),
@@ -490,6 +535,25 @@ object KotlinDsaRepositoryImpl {
                         quickSort(arr, low, pi - 1)
                         quickSort(arr, pi + 1, high)
                     }
+                }
+
+                fun partition(arr: IntArray, low: Int, high: Int): Int {
+                    val pivot = arr[high]
+                    var i = (low - 1)
+                    for (j in low until high) {
+                        if (arr[j] <= pivot) {
+                            i++
+                            val temp = arr[i]; arr[i] = arr[j]; arr[j] = temp
+                        }
+                    }
+                    val temp = arr[i + 1]; arr[i + 1] = arr[high]; arr[high] = temp
+                    return i + 1
+                }
+
+                fun main() {
+                    val arr = intArrayOf(10, 7, 8, 9, 1, 5)
+                    quickSort(arr, 0, arr.size - 1)
+                    println("Sorted array: ${'$'}{arr.joinToString()}")
                 }
             """.trimIndent()
         ),
@@ -545,6 +609,13 @@ object KotlinDsaRepositoryImpl {
                     }
                     return -1
                 }
+
+                fun main() {
+                    val arr = intArrayOf(2, 3, 4, 10, 40)
+                    val x = 10
+                    val result = search(arr, x)
+                    println(if (result == -1) "Element not found" else "Element found at index ${'$'}result")
+                }
             """.trimIndent()
         ),
         Lesson(
@@ -566,6 +637,13 @@ object KotlinDsaRepositoryImpl {
                         else r = mid - 1
                     }
                     return -1
+                }
+
+                fun main() {
+                    val arr = intArrayOf(2, 3, 4, 10, 40)
+                    val x = 10
+                    val result = binarySearch(arr, x)
+                    println(if (result == -1) "Element not found" else "Element found at index ${'$'}result")
                 }
             """.trimIndent()
         ),
@@ -627,6 +705,10 @@ object KotlinDsaRepositoryImpl {
             order = 29,
             isCompleted = false,
             codeExample = """
+                class ListNode(var `val`: Int) {
+                    var next: ListNode? = null
+                }
+
                 fun printList(head: ListNode?) {
                     var curr = head
                     while (curr != null) {
@@ -634,6 +716,13 @@ object KotlinDsaRepositoryImpl {
                         curr = curr.next
                     }
                     println("null")
+                }
+
+                fun main() {
+                    val head = ListNode(1)
+                    head.next = ListNode(2)
+                    head.next?.next = ListNode(3)
+                    printList(head)
                 }
             """.trimIndent()
         ),
@@ -646,6 +735,10 @@ object KotlinDsaRepositoryImpl {
             order = 30,
             isCompleted = false,
             codeExample = """
+                class ListNode(var `val`: Int) {
+                    var next: ListNode? = null
+                }
+
                 fun reverse(head: ListNode?): ListNode? {
                     var prev: ListNode? = null
                     var curr = head
@@ -656,6 +749,28 @@ object KotlinDsaRepositoryImpl {
                         curr = nextTemp
                     }
                     return prev
+                }
+
+                fun printList(head: ListNode?) {
+                    var curr = head
+                    while (curr != null) {
+                        print("${'$'}{curr.`val`} -> ")
+                        curr = curr.next
+                    }
+                    println("null")
+                }
+
+                fun main() {
+                    val head = ListNode(1)
+                    head.next = ListNode(2)
+                    head.next?.next = ListNode(3)
+                    
+                    println("Original:")
+                    printList(head)
+                    
+                    val newHead = reverse(head)
+                    println("Reversed:")
+                    printList(newHead)
                 }
             """.trimIndent()
         ),
@@ -668,6 +783,10 @@ object KotlinDsaRepositoryImpl {
             order = 31,
             isCompleted = false,
             codeExample = """
+                class ListNode(var `val`: Int) {
+                    var next: ListNode? = null
+                }
+
                 fun hasCycle(head: ListNode?): Boolean {
                     var slow = head
                     var fast = head
@@ -677,6 +796,17 @@ object KotlinDsaRepositoryImpl {
                         if (slow == fast) return true
                     }
                     return false
+                }
+
+                fun main() {
+                    val head = ListNode(1)
+                    val second = ListNode(2)
+                    val third = ListNode(3)
+                    head.next = second
+                    second.next = third
+                    third.next = second // Cycle!
+                    
+                    println("Has Cycle? ${'$'}{hasCycle(head)}")
                 }
             """.trimIndent()
         ),
