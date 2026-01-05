@@ -1,4 +1,4 @@
-package com.example.codelearnapp.data.repository
+﻿package com.example.codelearnapp.data.repository
 
 import com.example.codelearnapp.domain.model.Lesson
 import com.example.codelearnapp.domain.model.LessonType
@@ -35,7 +35,6 @@ object KotlinDsaRepositoryImpl {
             order = 2,
             isCompleted = false,
             codeExample = """
-            codeExample = """
                 // O(1) - Constant Time
                 fun getFirst(list: List<Int>): Int = list[0]
                 
@@ -54,7 +53,6 @@ object KotlinDsaRepositoryImpl {
                     println("Max: ${'$'}{findMax(numbers)}")
                 }
             """.trimIndent()
-            """.trimIndent()
         ),
         Lesson(
             id = "kt-dsa-3",
@@ -64,7 +62,6 @@ object KotlinDsaRepositoryImpl {
             type = LessonType.THEORY,
             order = 3,
             isCompleted = false,
-            codeExample = """
             codeExample = """
                 // O(n) Space - Creates a new list
                 fun doubleList(list: List<Int>): List<Int> {
@@ -84,7 +81,6 @@ object KotlinDsaRepositoryImpl {
                     println("Printing Doubles (In-Place):")
                     printDoubles(nums)
                 }
-            """.trimIndent()
             """.trimIndent()
         ),
         Lesson(
@@ -212,7 +208,6 @@ object KotlinDsaRepositoryImpl {
             order = 10,
             isCompleted = false,
             codeExample = """
-            codeExample = """
                 fun isPalindrome(s: String): Boolean {
                     var left = 0
                     var right = s.length - 1
@@ -231,7 +226,6 @@ object KotlinDsaRepositoryImpl {
                     println("${'$'}word2 is palindrome? ${'$'}{isPalindrome(word2)}")
                 }
             """.trimIndent()
-            """.trimIndent()
         ),
         Lesson(
             id = "kt-dsa-11",
@@ -241,7 +235,6 @@ object KotlinDsaRepositoryImpl {
             type = LessonType.THEORY,
             order = 11,
             isCompleted = false,
-            codeExample = """
             codeExample = """
                 // Max sum of subarray of size k
                 fun maxSum(arr: IntArray, k: Int): Int {
@@ -261,7 +254,6 @@ object KotlinDsaRepositoryImpl {
                     val k = 4
                     println("Max sum of subarray size ${'$'}k: ${'$'}{maxSum(arr, k)}")
                 }
-            """.trimIndent()
             """.trimIndent()
         ),
         Lesson(
@@ -291,7 +283,6 @@ object KotlinDsaRepositoryImpl {
             order = 13,
             isCompleted = false,
             codeExample = """
-            codeExample = """
                 fun factorial(n: Int): Int {
                     if (n <= 1) return 1
                     return n * factorial(n - 1)
@@ -301,7 +292,6 @@ object KotlinDsaRepositoryImpl {
                     val num = 5
                     println("Factorial of ${'$'}num is ${'$'}{factorial(num)}") // 120
                 }
-            """.trimIndent()
             """.trimIndent()
         ),
         Lesson(
@@ -370,7 +360,6 @@ object KotlinDsaRepositoryImpl {
                     println("Permutations of 'ABC':")
                     permute("ABC", 0, 2)
                 }
-            """.trimIndent()
             """.trimIndent()
         ),
         Lesson(
