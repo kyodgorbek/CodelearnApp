@@ -12,54 +12,255 @@ class CodeExecutor {
             try {
                 val output = StringBuilder()
                 val variables = mutableMapOf<String, String>()
-                val arrayVars = mutableMapOf<String, List<String>>()
-                
-                fun resolveValue(content: String, currentVars: Map<String, String>): String {
-                    var resolved = content.trim()
+                val collections = mutableMapOf<String, Any>()
+
+                fun eval(expr: String, currentVars: Map<String, String>): String {
+                    val trimmed = expr.trim().trim(';').trim('"').trim('\'')
+                    if (currentVars.containsKey(trimmed)) return currentVars[trimmed]!!
                     
-                    // String interpolation: $name or ${name}
-                    currentVars.forEach { (name, value) ->
-                        resolved = resolved.replace("${'$'}$name", value)
-                        resolved = resolved.replace("${'$'}{$name}", value)
+                    if (trimmed.contains("+") && (expr.contains("\"") || expr.contains("'"))) {
+                         return trimmed.split("+").joinToString("") { eval(it, currentVars) }
+                    }
+                    
+                    if (trimmed.matches(Regex(".*[+\\-*/%].*")) && !trimmed.contains("\"")) {
+                        try {
+                            val parts = trimmed.split(Regex("(?=[+\\-*/%])|(?<=[+\\-*/%])")).map { it.trim() }
+                            var res = eval(parts[0], currentVars).toDoubleOrNull() ?: 0.0
+                            var i = 1
+                            while (i < parts.size) {
+                                val op = parts[i]
+                                val nextVal = eval(parts[i+1], currentVars).toDoubleOrNull() ?: 0.0
+                                when(op) {
+                                    "+" -> res += nextVal
+                                    "-" -> res -= nextVal
+                                    "*" -> res *= nextVal
+                                    "/" -> res /= nextVal
+                                    "%" -> res %= nextVal
+                                }
+                                i += 2
+                            }
+                            return if (res % 1 == 0.0) res.toInt().toString() else res.toString()
+                        } catch(e: Exception) { return trimmed }
                     }
 
-                    // Concatenation: "Hello " + name
-                    if (resolved.contains("+") && (resolved.contains("\"") || resolved.contains("'"))) {
-                        return resolved.split("+").joinToString("") { part ->
-                            val p = part.trim().trim('"').trim('\'')
-                            currentVars[p] ?: p
+                    if (trimmed.contains(">") || trimmed.contains("<") || trimmed.contains("==") || trimmed.contains("!=")) {
+                        val op = if (trimmed.contains("==")) "==" else if (trimmed.contains("!=")) "!=" else if (trimmed.contains(">=")) ">=" else if (trimmed.contains("<=")) "<=" else if (trimmed.contains(">")) ">" else "<"
+                        val left = eval(trimmed.substringBefore(op), currentVars).toDoubleOrNull() ?: 0.0
+                        val right = eval(trimmed.substringAfter(op), currentVars).toDoubleOrNull() ?: 0.0
+                        return when(op) {
+                            ">" -> (left > right).toString()
+                            "<" -> (left < right).toString()
+                            "==" -> (left == right).toString()
+                            "!=" -> (left != right).toString()
+                            ">=" -> (left >= right).toString()
+                            "<=" -> (left <= right).toString()
+                            else -> "false"
                         }
                     }
-
-                    return currentVars[resolved] ?: resolved
+                    return trimmed
                 }
 
-                fun processBlock(lines: List<String>, localVars: Map<String, String>) {
-                    lines.forEach { line ->
-                        val trimmed = line.trim()
-                        if (trimmed.isEmpty() || trimmed.startsWith("//")) return@forEach
-                        
-                        val currentVars = variables + localVars
-                        
-                        // Assignment or Reassignment
-                        if (trimmed.contains("=") && !trimmed.contains("(")) {
-                            val assignmentPart = if (trimmed.startsWith("val ") || trimmed.startsWith("var ")) {
-                                trimmed.substringAfter("val ").substringAfter("var ")
-                            } else {
-                                trimmed
+                code.lines().forEach { line ->
+                    val trimmed = line.trim()
+                    if (trimmed.isEmpty() || trimmed.startsWith("//")) return@forEach
+                    if (trimmed.contains("println(")) {
+                        val expr = trimmed.substringAfter("println(").substringBeforeLast(")")
+                        output.append(eval(expr, variables)).append("\n")
+                    } else if (trimmed.contains(".put(") || trimmed.contains(".add(")) {
+                         val name = trimmed.substringBefore(".").trim()
+                         val args = trimmed.substringAfter("(").substringBeforeLast(")").split(",").map { eval(it, variables) }
+                         if (trimmed.contains(".put(")) {
+                             val map = collections.getOrPut(name) { mutableMapOf<String, String>() } as MutableMap<String, String>
+                             map[args[0]] = args[1]
+                         } else {
+                             val list = collections.getOrPut(name) { mutableListOf<String>() } as MutableList<String>
+                             list.add(args[0])
+                         }
+                    } else if (trimmed.contains("=")) {
+                        val clean = if (trimmed.startsWith("val ") || trimmed.startsWith("var ")) trimmed.substringAfter(" ").trim() else trimmed
+                        val name = clean.substringBefore("=").trim().split(":").first().trim()
+                        variables[name] = eval(clean.substringAfter("="), variables)
+                    }
+                }
+                CodeExecutionResult.Success(if (output.isEmpty()) "Executed successfully" else output.toString())
+            } catch (e: Exception) {
+                CodeExecutionResult.Error("Kotlin Error: ${e.message}")
+            }
+        }
+    }
+
+    suspend fun executeJavaCode(code: String): CodeExecutionResult {
+        return withContext(Dispatchers.IO) {
+            try {
+                val output = StringBuilder()
+                val variables = mutableMapOf<String, String>()
+                val collections = mutableMapOf<String, Any>()
+
+                fun eval(expr: String, currentVars: Map<String, String>): String {
+                    var trimmed = expr.trim().trim(';').trim('"').trim('\'')
+                    if (currentVars.containsKey(trimmed)) return currentVars[trimmed]!!
+                    
+                    if (trimmed.contains("+") && (expr.contains("\"") || expr.contains("'"))) {
+                        return trimmed.split("+").joinToString("") { eval(it, currentVars) }
+                    }
+
+                    if (trimmed.matches(Regex(".*[+\\-*/%].*"))) {
+                         try {
+                            val parts = trimmed.split(Regex("(?=[+\\-*/%])|(?<=[+\\-*/%])")).map { it.trim() }
+                            var res = eval(parts[0], currentVars).toDoubleOrNull() ?: 0.0
+                            var i = 1
+                            while (i < parts.size) {
+                                val op = parts[i]
+                                val nextVal = eval(parts[i+1], currentVars).toDoubleOrNull() ?: 0.0
+                                when(op) {
+                                    "+" -> res += nextVal
+                                    "-" -> res -= nextVal
+                                    "*" -> res *= nextVal
+                                    "/" -> res /= nextVal
+                                    "%" -> res %= nextVal
+                                }
+                                i += 2
                             }
-                            val name = assignmentPart.substringBefore("=").trim().split(":").first().trim()
-                            val rawValue = assignmentPart.substringAfter("=").trim().trim(';')
-                            val value = resolveValue(rawValue, currentVars).trim('"')
-                            variables[name] = value
-                        }
-                        
-                        if (trimmed.contains("println(")) {
-                            val rawContent = trimmed.substringAfter("println(").substringBeforeLast(")")
-                            val content = resolveValue(rawContent, currentVars)
-                            output.append(content).append("\n")
+                            return if (res % 1 == 0.0) res.toInt().toString() else res.toString()
+                        } catch(e: Exception) { return trimmed }
+                    }
+
+                    if (trimmed.contains(">") || trimmed.contains("<") || trimmed.contains("==") || trimmed.contains("!=")) {
+                        val op = if (trimmed.contains("==")) "==" else if (trimmed.contains("!=")) "!=" else if (trimmed.contains(">=")) ">=" else if (trimmed.contains("<=")) "<=" else if (trimmed.contains(">")) ">" else "<"
+                        val left = eval(trimmed.substringBefore(op), currentVars).toDoubleOrNull() ?: 0.0
+                        val right = eval(trimmed.substringAfter(op), currentVars).toDoubleOrNull() ?: 0.0
+                        return when(op) {
+                            ">" -> (left > right).toString()
+                            "<" -> (left < right).toString()
+                            "==" -> (left == right).toString()
+                            "!=" -> (left != right).toString()
+                            ">=" -> (left >= right).toString()
+                            "<=" -> (left <= right).toString()
+                            else -> "false"
                         }
                     }
+                    return trimmed
+                }
+
+                code.lines().forEach { line ->
+                    val trimmed = line.trim()
+                    if (trimmed.isEmpty() || trimmed.startsWith("//") || trimmed.startsWith("public class") || trimmed.startsWith("public static void main") || trimmed == "}") return@forEach
+                    
+                    if (trimmed.contains("System.out.println(")) {
+                        val expr = trimmed.substringAfter("System.out.println(").substringBeforeLast(")")
+                        if (expr.contains(".get(")) {
+                            val name = expr.substringBefore(".get(").trim()
+                            val key = eval(expr.substringAfter(".get(").substringBeforeLast(")"), variables)
+                            output.append((collections[name] as? Map<*, *>)?.get(key)?.toString() ?: "null").append("\n")
+                        } else {
+                            output.append(eval(expr, variables)).append("\n")
+                        }
+                    } else if (trimmed.contains(".put(") || trimmed.contains(".add(")) {
+                         val name = trimmed.substringBefore(".").trim()
+                         val args = trimmed.substringAfter("(").substringBeforeLast(")").split(",").map { eval(it, variables) }
+                         if (trimmed.contains(".put(")) {
+                             val map = collections.getOrPut(name) { mutableMapOf<String, String>() } as MutableMap<String, String>
+                             map[args[0]] = args[1]
+                         } else {
+                             val list = collections.getOrPut(name) { mutableListOf<String>() } as MutableList<String>
+                             list.add(args[0])
+                         }
+                    } else if (trimmed.contains("=") && !trimmed.contains("(")) {
+                        val types = listOf("String ", "int ", "double ", "boolean ", "HashMap<", "ArrayList<")
+                        var clean = trimmed
+                        types.forEach { if (clean.startsWith(it)) clean = clean.substringAfter(" ").trim() }
+                        val name = clean.substringBefore("=").trim()
+                        variables[name] = eval(clean.substringAfter("=").trim(';'), variables)
+                    }
+                }
+                CodeExecutionResult.Success(if (output.isEmpty()) "Java finished" else output.toString())
+            } catch (e: Exception) {
+                CodeExecutionResult.Error("Java Error: ${e.message}")
+            }
+        }
+    }
+
+    suspend fun executePythonCode(code: String): CodeExecutionResult {
+        return withContext(Dispatchers.IO) {
+            try {
+                val output = StringBuilder()
+                val variables = mutableMapOf<String, String>()
+                val collections = mutableMapOf<String, Any>()
+
+                fun eval(expr: String): String {
+                    val trimmed = expr.trim().trim('"').trim('\'')
+                    if (variables.containsKey(trimmed)) return variables[trimmed]!!
+                    if (expr.trim().startsWith("f\"") || expr.trim().startsWith("f'")) {
+                        var content = expr.trim().substring(2, expr.trim().length - 1)
+                        variables.forEach { (k, v) -> content = content.replace("{$k}", v) }
+                        return content
+                    }
+                    // Simple arithmetic for Python
+                    if (trimmed.contains("+") || trimmed.contains("-") || trimmed.contains("*")) {
+                         try {
+                            val left = eval(trimmed.substringBefore("+").substringBefore("-").trim())
+                            val right = eval(trimmed.substringAfter("+").substringAfter("-").trim())
+                            val res = (left.toDoubleOrNull() ?: 0.0) + (right.toDoubleOrNull() ?: 0.0)
+                            return if (res % 1 == 0.0) res.toInt().toString() else res.toString()
+                         } catch(e: Exception) {}
+                    }
+                    return trimmed.replace("True", "true").replace("False", "false").replace("None", "null")
+                }
+
+                code.lines().forEach { line ->
+                    val t = line.trim()
+                    if (t.isEmpty() || t.startsWith("#")) return@forEach
+                    if (t.startsWith("print(")) {
+                        val expr = t.substringAfter("print(").substringBeforeLast(")")
+                        if (expr.contains("[") && expr.endsWith("]")) {
+                            val name = expr.substringBefore("[").trim()
+                            val key = eval(expr.substringAfter("[").substringBeforeLast("]"))
+                            output.append((collections[name] as? Map<*, *>)?.get(key)?.toString() ?: "None").append("\n")
+                        } else {
+                            output.append(eval(expr).replace("true", "True").replace("false", "False").replace("null", "None")).append("\n")
+                        }
+                    } else if (t.contains("=") && !t.contains("(")) {
+                        val name = t.substringBefore("=").trim()
+                        val value = t.substringAfter("=").trim()
+                        if (value == "{}") collections[name] = mutableMapOf<String, String>()
+                        else if (value == "[]") collections[name] = mutableListOf<String>()
+                        else variables[name] = eval(value)
+                    } else if (t.contains("[") && t.contains("]") && t.contains("=")) {
+                        val name = t.substringBefore("[").trim()
+                        val key = eval(t.substringAfter("[").substringBefore("]"))
+                        val value = eval(t.substringAfter("=").trim())
+                        val map = collections.getOrPut(name) { mutableMapOf<String, String>() } as MutableMap<String, String>
+                        map[key] = value
+                    }
+                }
+                CodeExecutionResult.Success(if (output.isEmpty()) "Python finished" else output.toString())
+            } catch (e: Exception) {
+                CodeExecutionResult.Error("Python Error: ${e.message}")
+            }
+        }
+    }
+
+    suspend fun executeJavaScriptCode(code: String): CodeExecutionResult {
+        return withContext(Dispatchers.IO) {
+            try {
+                val output = StringBuilder()
+                val variables = mutableMapOf<String, String>()
+                val objects = mutableMapOf<String, MutableMap<String, String>>()
+
+                fun eval(expr: String): String {
+                    val t = expr.trim().trim(';').trim('"').trim('\'').trim('`')
+                    if (variables.containsKey(t)) return variables[t]!!
+                    if (expr.trim().startsWith("`")) { // Template literal
+                        var content = expr.trim().trim('`')
+                        variables.forEach { (k, v) -> content = content.replace("${\'$\'}{$k}", v) }
+                        return content
+                    }
+                    if (t.contains(".")) {
+                        val obj = t.substringBefore(".").trim()
+                        val prop = t.substringAfter(".").trim().replace("()", "")
+                        return objects[obj]?.get(prop) ?: t
+                    }
+                    return t
                 }
 
                 val allLines = code.lines()
@@ -67,141 +268,53 @@ class CodeExecutor {
                 while (i < allLines.size) {
                     val line = allLines[i].trim()
                     if (line.isEmpty() || line.startsWith("//")) { i++; continue }
-                    
-                    if (line.contains("listOf(") || line.contains("arrayOf(")) {
+                    if (line.contains("console.log(")) {
+                        val expr = line.substringAfter("console.log(").substringBeforeLast(")")
+                        output.append(eval(expr)).append("\n")
+                    } else if (line.contains("=") && line.endsWith("{")) {
                         val name = line.substringBefore("=").trim().split(" ").last()
-                        val items = line.substringAfter("(").substringBeforeLast(")").split(",")
-                            .map { it.trim().trim('"').trim('\'') }
-                        arrayVars[name] = items
-                    }
-                    else if (line.startsWith("for") && line.contains(" in ")) {
-                        val valName = line.substringAfter("(").substringBefore(" in ").trim()
-                        val rangePart = line.substringAfter(" in ").substringBefore(")").trim()
-                        
-                        val blockEnd = allLines.indexOfFirst { it.trim() == "}" && allLines.indexOf(it) > i }
-                        if (blockEnd != -1) {
-                            val blockLines = allLines.subList(i + 1, blockEnd)
-                            
-                            if (rangePart.contains("..")) {
-                                val start = rangePart.substringBefore("..").trim().toIntOrNull() ?: 0
-                                val end = rangePart.substringAfter("..").trim().toIntOrNull() ?: 0
-                                for (v in start..end) {
-                                    processBlock(blockLines, mapOf(valName to v.toString()))
-                                }
-                            } else if (arrayVars.containsKey(rangePart)) {
-                                arrayVars[rangePart]?.forEach { item ->
-                                    processBlock(blockLines, mapOf(valName to item))
+                        val data = mutableMapOf<String, String>()
+                        var j = i + 1
+                        while (j < allLines.size && !allLines[j].trim().startsWith("}")) {
+                            val l = allLines[j].trim()
+                            if (l.contains(":")) {
+                                val k = l.substringBefore(":").trim()
+                                val v = l.substringAfter(":").trim().trim(',').trim('"').trim('\'')
+                                if (l.contains("function") || l.contains("()")) {
+                                     // Basic method mock: search for return
+                                     var k2 = j + 1
+                                     while(k2 < allLines.size && !allLines[k2].trim().startsWith("}")) {
+                                         if (allLines[k2].trim().startsWith("return ")) {
+                                             data[k] = eval(allLines[k2].trim().substringAfter("return ").trim(';'))
+                                         }
+                                         k2++
+                                     }
+                                } else {
+                                    data[k] = eval(v)
                                 }
                             }
-                            i = blockEnd
-                        }
-                    }
-                    else {
-                        processBlock(listOf(line), emptyMap())
-                    }
-                    i++
-                }
-                
-                CodeExecutionResult.Success(if (output.isEmpty()) "Executed successfully" else output.toString())
-            } catch (e: Exception) {
-                CodeExecutionResult.Error(e.message ?: "Execution failed")
-            }
-        }
-    }
-    
-    suspend fun executePythonCode(code: String): CodeExecutionResult {
-        return withContext(Dispatchers.IO) {
-            try {
-                val output = StringBuilder()
-                val variables = mutableMapOf<String, String>()
-                val listVars = mutableMapOf<String, List<String>>()
-
-                fun resolveValue(content: String, currentVars: Map<String, String>): String {
-                    var resolved = content.trim()
-                    
-                    // f-strings or simple {var}
-                    val inFString = content.startsWith("f\"") || content.startsWith("f'")
-                    val cleanContent = if (inFString) resolved.substring(1).trim('"').trim('\'') else resolved.trim('"').trim('\'')
-                    
-                    var finalValue = cleanContent
-                    currentVars.forEach { (name, value) ->
-                        finalValue = finalValue.replace("{$name}", value)
-                    }
-                    
-                    if (!inFString && currentVars.containsKey(cleanContent) && !resolved.contains(" ")) {
-                        return currentVars[cleanContent] ?: cleanContent
-                    }
-                    
-                    return finalValue
-                }
-
-                fun processBlock(lines: List<String>, localVars: Map<String, String>) {
-                    lines.forEach { line ->
-                        val trimmed = line.trim()
-                        if (trimmed.isEmpty() || trimmed.startsWith("#")) return@forEach
-                        
-                        val currentVars = variables + localVars
-                        
-                        if (trimmed.contains("=") && !trimmed.contains("(")) {
-                            val name = trimmed.substringBefore("=").trim()
-                            val rawValue = trimmed.substringAfter("=").trim()
-                            val value = resolveValue(rawValue, currentVars)
-                            variables[name] = value
-                        }
-
-                        if (trimmed.startsWith("print(")) {
-                            val rawContent = trimmed.substringAfter("print(").substringBeforeLast(")")
-                            val content = resolveValue(rawContent, currentVars)
-                            output.append(content).append("\n")
-                        }
-                    }
-                }
-
-                val allLines = code.lines()
-                var i = 0
-                while (i < allLines.size) {
-                    val line = allLines[i].trim()
-                    if (line.isEmpty() || line.startsWith("#")) { i++; continue }
-                    
-                    if (line.contains("=") && line.contains("[") && line.contains("]")) {
-                        val name = line.substringBefore("=").trim()
-                        val items = line.substringAfter("[").substringBeforeLast("]").split(",")
-                            .map { it.trim().trim('"').trim('\'') }
-                        listVars[name] = items
-                    }
-                    else if (line.startsWith("for ") && line.contains(" in ") && line.endsWith(":")) {
-                        val valName = line.substringAfter("for ").substringBefore(" in ").trim()
-                        val rangePart = line.substringAfter(" in ").substringBefore(":").trim().trim(')')
-                        
-                        val blockLines = mutableListOf<String>()
-                        var j = i + 1
-                        while (j < allLines.size && (allLines[j].startsWith("    ") || allLines[j].startsWith("\t") || allLines[j].trim().isEmpty())) {
-                            if (allLines[j].trim().isNotEmpty()) blockLines.add(allLines[j])
                             j++
                         }
-                        
-                        if (rangePart.startsWith("range(")) {
-                            val r = rangePart.substringAfter("(").substringBefore(")").split(",").map { it.trim().toIntOrNull() ?: 0 }
-                            val start = if (r.size == 1) 0 else r[0]
-                            val end = if (r.size == 1) r[0] else r[1]
-                            for (v in start until end) {
-                                processBlock(blockLines, mapOf(valName to v.toString()))
-                            }
-                        } else if (listVars.containsKey(rangePart)) {
-                            listVars[rangePart]?.forEach { item ->
-                                processBlock(blockLines, mapOf(valName to item))
-                            }
+                        objects[name] = data
+                        i = j
+                    } else if (line.contains(".then(")) { // Promise mock
+                        val resVar = line.substringAfter("(").substringBefore("=>").trim().trim('(').trim(')')
+                        variables[resVar + ".data"] = "Sample data loaded"
+                        objects[resVar] = mutableMapOf("data" to "Sample data loaded")
+                        val body = line.substringAfter("=>").trim().trim('{').trim('}').trim(';')
+                        if (body.contains("console.log")) {
+                             val expr = body.substringAfter("console.log(").substringBeforeLast(")")
+                             output.append(eval(expr)).append("\n")
                         }
-                        i = j - 1
-                    }
-                    else {
-                        processBlock(listOf(line), emptyMap())
+                    } else if (line.contains("=")) {
+                        val name = line.substringBefore("=").trim().split(" ").last()
+                        variables[name] = eval(line.substringAfter("=").trim(';'))
                     }
                     i++
                 }
-                CodeExecutionResult.Success(if (output.isEmpty()) "Script finished" else output.toString())
+                CodeExecutionResult.Success(if (output.isEmpty()) "JS finished" else output.toString())
             } catch (e: Exception) {
-                CodeExecutionResult.Error(e.message ?: "Python Execution failed")
+                CodeExecutionResult.Error("JS Error: ${e.message}")
             }
         }
     }
@@ -222,290 +335,7 @@ class CodeExecutor {
                     CodeExecutionResult.Success("SQL command executed successfully.")
                 }
             } catch (e: Exception) {
-                CodeExecutionResult.Error(e.message ?: "SQL Execution failed")
-            }
-        }
-    }
-    
-    suspend fun executeJavaScriptCode(code: String): CodeExecutionResult {
-        return withContext(Dispatchers.IO) {
-            try {
-                val output = StringBuilder()
-                val variables = mutableMapOf<String, String>()
-                val arrayVars = mutableMapOf<String, List<String>>()
-                val objectVars = mutableMapOf<String, Map<String, String>>()
-
-                fun resolveValue(content: String, currentVars: Map<String, String>, context: Map<String, String>? = null): String {
-                    var resolved = content.trim()
-                    
-                    // Template literals: `... ${name} ...`
-                    if (resolved.startsWith("`") && resolved.endsWith("`")) {
-                        var inner = resolved.substring(1, resolved.length - 1)
-                        val allAvailable = variables + (context ?: emptyMap()) + currentVars
-                        allAvailable.forEach { (name, value) ->
-                            inner = inner.replace("${'$'}{$name}", value)
-                            inner = inner.replace("${'$'}{this.$name}", value)
-                        }
-                        return inner
-                    }
-
-                    // Member access: book.title or book.getInfo()
-                    if (resolved.contains(".")) {
-                        val objName = resolved.substringBefore(".").trim()
-                        val member = resolved.substringAfter(".").trim()
-                        val obj = objectVars[objName]
-                        if (obj != null) {
-                            val cleanMember = member.replace("()", "")
-                            return obj[cleanMember] ?: resolved
-                        }
-                    }
-
-                    // Concatenation: "a" + b
-                    if (resolved.contains("+") && (resolved.contains("\"") || resolved.contains("'") || resolved.contains("`"))) {
-                        return resolved.split("+").joinToString("") { part ->
-                            val p = part.trim().trim('"').trim('\'').trim('`')
-                            val all = variables + (context ?: emptyMap()) + currentVars
-                            all[p] ?: p
-                        }
-                    }
-
-                    // Array access: fruits[0]
-                    if (resolved.contains("[") && resolved.endsWith("]")) {
-                        val arrName = resolved.substringBefore("[").trim()
-                        val indexStr = resolved.substringAfter("[").substringBeforeLast("]").trim()
-                        val index = (currentVars[indexStr] ?: indexStr).toIntOrNull() ?: 0
-                        val list = arrayVars[arrName]
-                        if (list != null && index >= 0 && index < list.size) {
-                            return list[index]
-                        }
-                    }
-
-                    return (variables + (context ?: emptyMap()) + currentVars)[resolved] ?: resolved.trim('"').trim('\'')
-                }
-
-                fun processBlock(lines: List<String>, localVars: Map<String, String>, context: Map<String, String>? = null) {
-                    lines.forEach { line ->
-                        val trimmed = line.trim()
-                        if (trimmed.isEmpty() || trimmed.startsWith("//")) return@forEach
-                        
-                        val currentVars = localVars
-                        
-                        if (trimmed.contains("console.log(")) {
-                            val argsRaw = trimmed.substringAfter("console.log(").substringBeforeLast(")")
-                            val args = argsRaw.split(",").map { it.trim() }
-                            val resolvedArgs = args.map { resolveValue(it, currentVars, context) }
-                            output.append(resolvedArgs.joinToString(" ")).append("\n")
-                        } else if (trimmed.contains(".then(")) {
-                            // Basic Promise/Async mock
-                            val resultVar = trimmed.substringAfter("(").substringBefore("=>").trim()
-                                .trim('(').trim(')').trim()
-                            val callbackBody = trimmed.substringAfter("=>").trim().trim('{').trim('}').trim(';')
-                            // Mock an object result
-                            objectVars[resultVar] = mapOf("data" to "Sample data loaded")
-                            processBlock(listOf(callbackBody), emptyMap()) 
-                        } else if (trimmed.contains("++") || trimmed.contains("--")) {
-                            val isInc = trimmed.contains("++")
-                            val name = if (isInc) trimmed.substringBefore("++").trim() else trimmed.substringBefore("--").trim()
-                            val current = (variables[name] ?: localVars[name])?.toIntOrNull() ?: 0
-                            variables[name] = (if (isInc) current + 1 else current - 1).toString()
-                        } else if (trimmed.contains("=") && !trimmed.contains("(")) {
-                            val assignmentPart = if (trimmed.startsWith("let ") || trimmed.startsWith("const ") || trimmed.startsWith("var ")) {
-                                trimmed.substringAfter(" ").trim()
-                            } else {
-                                trimmed
-                            }
-                            val name = assignmentPart.substringBefore("=").trim()
-                            val rawValue = assignmentPart.substringAfter("=").trim().trim(';')
-                            val value = resolveValue(rawValue, currentVars, context)
-                            variables[name] = value
-                        }
-                    }
-                }
-
-                val allLines = code.lines()
-                var i = 0
-                while (i < allLines.size) {
-                    val line = allLines[i].trim()
-                    if (line.isEmpty() || line.startsWith("//")) { i++; continue }
-                    
-                    // Object Definition: const book = { ... }
-                    if (line.contains("=") && line.endsWith("{")) {
-                        val objName = line.substringBefore("=").trim().split(" ").last()
-                        val objData = mutableMapOf<String, String>()
-                        var j = i + 1
-                        while (j < allLines.size && !allLines[j].trim().startsWith("}")) {
-                            val l = allLines[j].trim()
-                            if (l.contains(":") && !l.contains("function") && !l.contains("()")) {
-                                val key = l.substringBefore(":").trim()
-                                val valRaw = l.substringAfter(":").trim().trim(',').trim(';').trim('"').trim('\'')
-                                objData[key] = valRaw
-                            } else if (l.contains("() {") || l.contains(": function")) {
-                                // Simple method mock: find return value
-                                val methodName = if (l.contains("() {")) l.substringBefore("(").trim() else l.substringBefore(":").trim()
-                                var k = j + 1
-                                while (k < allLines.size && !allLines[k].trim().startsWith("}")) {
-                                    val methodLine = allLines[k].trim()
-                                    if (methodLine.startsWith("return ")) {
-                                        val retVal = methodLine.substringAfter("return ").trim().trim(';')
-                                        objData[methodName] = resolveValue(retVal, emptyMap(), objData)
-                                    }
-                                    k++
-                                }
-                            }
-                            j++
-                        }
-                        objectVars[objName] = objData
-                        i = j
-                    }
-                    else if (line.contains("=") && line.contains("[") && line.contains("]")) {
-                        val name = line.substringBefore("=").trim().split(" ").last()
-                        val items = line.substringAfter("[").substringBeforeLast("]").split(",")
-                            .map { it.trim().trim('"').trim('\'') }
-                        arrayVars[name] = items
-                    }
-                    else if (line.startsWith("for") && (line.contains(" of ") || line.contains(";"))) {
-                        if (line.contains(" of ")) {
-                            val valName = line.substringAfter("(").substringBefore(" of ").trim().split(" ").last()
-                            val arrName = line.substringAfter(" of ").substringBefore(")").trim()
-                            val blockEnd = allLines.indexOfFirst { it.trim().startsWith("}") && allLines.indexOf(it) > i }
-                            if (blockEnd != -1) {
-                                val blockLines = allLines.subList(i + 1, blockEnd)
-                                arrayVars[arrName]?.forEach { item ->
-                                    processBlock(blockLines, mapOf(valName to item))
-                                }
-                                i = blockEnd
-                            }
-                        } else {
-                            val header = line.substringAfter("(").substringBefore(")")
-                            val parts = header.split(";")
-                            if (parts.size >= 2) {
-                                val valName = parts[0].substringBefore("=").trim().split(" ").last()
-                                val startVal = parts[0].substringAfter("=").trim().toIntOrNull() ?: 0
-                                val endCondition = parts[1].trim()
-                                val endVal = endCondition.replace("[^0-9]".toRegex(), "").toIntOrNull() ?: 0
-                                val isInclusive = endCondition.contains("<=") || endCondition.contains(">=")
-
-                                val blockEnd = allLines.indexOfFirst { it.trim().startsWith("}") && allLines.indexOf(it) > i }
-                                if (blockEnd != -1) {
-                                    val blockLines = allLines.subList(i + 1, blockEnd)
-                                    val range = if (isInclusive) startVal..endVal else startVal until endVal
-                                    for (v in range) {
-                                        processBlock(blockLines, mapOf(valName to v.toString()))
-                                    }
-                                    i = blockEnd
-                                }
-                            }
-                        }
-                    }
-                    else {
-                        processBlock(listOf(line), emptyMap())
-                    }
-                    i++
-                }
-                CodeExecutionResult.Success(if (output.isEmpty()) "JS executed" else output.toString())
-            } catch (e: Exception) {
-                CodeExecutionResult.Error(e.message ?: "JS Execution failed")
-            }
-        }
-    }
-
-    suspend fun executeJavaCode(code: String): CodeExecutionResult {
-        return withContext(Dispatchers.IO) {
-            try {
-                val output = StringBuilder()
-                val variables = mutableMapOf<String, String>()
-                val arrayVars = mutableMapOf<String, List<String>>()
-
-                fun processBlock(lines: List<String>, localVars: Map<String, String>) {
-                    lines.forEach { line ->
-                        val trimmed = line.trim()
-                        if (trimmed.isEmpty() || trimmed.startsWith("//")) return@forEach
-                        
-                        val currentVars = variables + localVars
-                        
-                        if (trimmed.contains("=") && !trimmed.contains("(")) {
-                            val assignmentPart = if (trimmed.startsWith("String ") || trimmed.startsWith("int ") || trimmed.startsWith("double ") || trimmed.startsWith("boolean ")) {
-                                trimmed.substringAfter(" ").trim()
-                            } else {
-                                trimmed
-                            }
-                            val name = assignmentPart.substringBefore("=").trim().split(" ").last()
-                            val rawValue = assignmentPart.substringAfter("=").trim().trim(';')
-                            val value = rawValue.trim('"').trim('\'')
-                            variables[name] = currentVars[value] ?: value
-                        }
-
-                        if (trimmed.contains("System.out.println(")) {
-                            val rawContent = trimmed.substringAfter("System.out.println(").substringBeforeLast(")")
-                            val content = rawContent.trim().trim('"').trim('\'')
-                            
-                            if (content.contains("+")) {
-                                val resolvedPats = content.split("+").map { part ->
-                                    val p = part.trim().trim('"').trim('\'')
-                                    currentVars[p] ?: p
-                                }
-                                output.append(resolvedPats.joinToString("")).append("\n")
-                            } else {
-                                output.append(currentVars[content] ?: content).append("\n")
-                            }
-                        }
-                    }
-                }
-
-                val allLines = code.lines()
-                var i = 0
-                while (i < allLines.size) {
-                    val line = allLines[i].trim()
-                    if (line.isEmpty() || line.startsWith("//")) { i++; continue }
-                    
-                    if (line.contains("{") && line.contains("}") && line.contains("[]") && line.contains("=")) {
-                         val name = line.substringBefore("=").trim().split(" ").last()
-                         val items = line.substringAfter("{").substringBefore("}").split(",")
-                             .map { it.trim().trim('"').trim('\'') }
-                         arrayVars[name] = items
-                    }
-                    else if (line.startsWith("for") && line.contains(";")) {
-                        val header = line.substringAfter("(").substringBefore(")")
-                        val parts = header.split(";")
-                        if (parts.size >= 2) {
-                            val valName = parts[0].substringBefore("=").trim().split(" ").last()
-                            val startVal = parts[0].substringAfter("=").trim().toIntOrNull() ?: 0
-                            val endCondition = parts[1].trim()
-                            val endVal = endCondition.replace("[^0-9]".toRegex(), "").toIntOrNull() ?: 0
-                            val isInclusive = endCondition.contains("<=") || endCondition.contains(">=")
-
-                            val blockEnd = allLines.indexOfFirst { it.trim() == "}" && allLines.indexOf(it) > i }
-                            if (blockEnd != -1) {
-                                val blockLines = allLines.subList(i + 1, blockEnd)
-                                val range = if (isInclusive) startVal..endVal else startVal until endVal
-                                for (v in range) {
-                                    processBlock(blockLines, mapOf(valName to v.toString()))
-                                }
-                                i = blockEnd
-                            }
-                        }
-                    }
-                    else if (line.startsWith("for") && line.contains(":")) {
-                        val valName = line.substringAfter("(").substringBefore(":").trim().split(" ").last()
-                        val arrName = line.substringAfter(":").substringBefore(")").trim()
-                        
-                        val blockEnd = allLines.indexOfFirst { it.trim() == "}" && allLines.indexOf(it) > i }
-                        if (blockEnd != -1) {
-                            val blockLines = allLines.subList(i + 1, blockEnd)
-                            arrayVars[arrName]?.forEach { item ->
-                                processBlock(blockLines, mapOf(valName to item))
-                            }
-                            i = blockEnd
-                        }
-                    }
-                    else {
-                        processBlock(listOf(line), emptyMap())
-                    }
-                    i++
-                }
-                CodeExecutionResult.Success(if (output.isEmpty()) "Java execution finished" else output.toString())
-            } catch (e: Exception) {
-                CodeExecutionResult.Error(e.message ?: "Java Execution failed")
+                CodeExecutionResult.Error("SQL Error: ${e.message}")
             }
         }
     }
