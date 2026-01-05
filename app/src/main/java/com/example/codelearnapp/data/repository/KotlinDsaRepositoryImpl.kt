@@ -1023,11 +1023,51 @@ object KotlinDsaRepositoryImpl {
             order = 41,
             isCompleted = false,
             codeExample = """
+                class TreeNode(var `val`: Int) {
+                    var left: TreeNode? = null
+                    var right: TreeNode? = null
+                }
+
                 fun inorder(root: TreeNode?) {
                     if (root == null) return
                     inorder(root.left)
-                    print(root.`val`)
+                    print("${'$'}{root.`val`} ")
                     inorder(root.right)
+                }
+
+                fun preorder(root: TreeNode?) {
+                    if (root == null) return
+                    print("${'$'}{root.`val`} ")
+                    preorder(root.left)
+                    preorder(root.right)
+                }
+
+                fun postorder(root: TreeNode?) {
+                    if (root == null) return
+                    postorder(root.left)
+                    postorder(root.right)
+                    print("${'$'}{root.`val`} ")
+                }
+
+                fun main() {
+                    //      1
+                    //     / \
+                    //    2   3
+                    val root = TreeNode(1)
+                    root.left = TreeNode(2)
+                    root.right = TreeNode(3)
+
+                    print("Inorder: ")
+                    inorder(root)
+                    println()
+
+                    print("Preorder: ")
+                    preorder(root)
+                    println()
+
+                    print("Postorder: ")
+                    postorder(root)
+                    println()
                 }
             """.trimIndent()
         ),
@@ -1040,16 +1080,38 @@ object KotlinDsaRepositoryImpl {
             order = 42,
             isCompleted = false,
             codeExample = """
+                class TreeNode(var `val`: Int) {
+                    var left: TreeNode? = null
+                    var right: TreeNode? = null
+                }
+
                 fun levelOrder(root: TreeNode?) {
                     if (root == null) return
                     val q = java.util.LinkedList<TreeNode>()
                     q.offer(root)
                     while(!q.isEmpty()) {
                         val curr = q.poll()
-                        print(curr.`val`)
+                        print("${'$'}{curr.`val`} ")
                         if (curr.left != null) q.offer(curr.left)
                         if (curr.right != null) q.offer(curr.right)
                     }
+                }
+
+                fun main() {
+                    //      1
+                    //     / \
+                    //    2   3
+                    //   / \
+                    //  4   5
+                    val root = TreeNode(1)
+                    root.left = TreeNode(2)
+                    root.right = TreeNode(3)
+                    root.left?.left = TreeNode(4)
+                    root.left?.right = TreeNode(5)
+
+                    print("Level Order: ")
+                    levelOrder(root) 
+                    // Expected: 1 2 3 4 5
                 }
             """.trimIndent()
         ),
@@ -1062,10 +1124,36 @@ object KotlinDsaRepositoryImpl {
             order = 43,
             isCompleted = false,
             codeExample = """
+                class TreeNode(var `val`: Int) {
+                    var left: TreeNode? = null
+                    var right: TreeNode? = null
+                }
+
                 fun searchBST(root: TreeNode?, `val`: Int): TreeNode? {
                     if (root == null || root.`val` == `val`) return root
                     if (`val` < root.`val`) return searchBST(root.left, `val`)
                     return searchBST(root.right, `val`)
+                }
+
+                fun main() {
+                    //      4
+                    //     / \
+                    //    2   7
+                    //   / \
+                    //  1   3
+                    val root = TreeNode(4)
+                    root.left = TreeNode(2)
+                    root.right = TreeNode(7)
+                    root.left?.left = TreeNode(1)
+                    root.left?.right = TreeNode(3)
+
+                    val target = 2
+                    val result = searchBST(root, target)
+                    println("Searching for ${'$'}target: ${'$'}{if (result != null) "Found" else "Not Found"}")
+
+                    val missing = 5
+                    val result2 = searchBST(root, missing)
+                    println("Searching for ${'$'}missing: ${'$'}{if (result2 != null) "Found" else "Not Found"}")
                 }
             """.trimIndent()
         ),
@@ -1078,11 +1166,31 @@ object KotlinDsaRepositoryImpl {
             order = 44,
             isCompleted = false,
             codeExample = """
+                class TreeNode(var `val`: Int) {
+                    var left: TreeNode? = null
+                    var right: TreeNode? = null
+                }
+
                 fun maxDepth(root: TreeNode?): Int {
                     if (root == null) return 0
                     val left = maxDepth(root.left)
                     val right = maxDepth(root.right)
                     return kotlin.math.max(left, right) + 1
+                }
+
+                fun main() {
+                    //      3
+                    //     / \
+                    //    9  20
+                    //      /  \
+                    //     15   7
+                    val root = TreeNode(3)
+                    root.left = TreeNode(9)
+                    root.right = TreeNode(20)
+                    root.right?.left = TreeNode(15)
+                    root.right?.right = TreeNode(7)
+
+                    println("Max Depth: ${'$'}{maxDepth(root)}") // Expected: 3
                 }
             """.trimIndent()
         ),
@@ -1163,13 +1271,26 @@ object KotlinDsaRepositoryImpl {
                 
                 fun main() {
                     // Min Heap by default
+                    println("Min Heap:")
                     val pq = PriorityQueue<Int>()
                     pq.add(10)
                     pq.add(5)
-                    println(pq.poll()) // 5
+                    pq.add(20)
+                    while(!pq.isEmpty()) {
+                        print("${'$'}{pq.poll()} ") // 5 10 20
+                    }
+                    println()
                     
                     // Max Heap via comparator
+                    println("Max Heap:")
                     val maxPQ = PriorityQueue<Int>(compareByDescending { it })
+                    maxPQ.add(10)
+                    maxPQ.add(5)
+                    maxPQ.add(20)
+                    while(!maxPQ.isEmpty()) {
+                        print("${'$'}{maxPQ.poll()} ") // 20 10 5
+                    }
+                    println()
                 }
             """.trimIndent()
         ),
@@ -1190,6 +1311,12 @@ object KotlinDsaRepositoryImpl {
                     }
                     return pq.peek()
                 }
+
+                fun main() {
+                    val nums = intArrayOf(3, 2, 1, 5, 6, 4)
+                    val k = 2
+                    println("The ${'$'}k-th largest element in ${'$'}{nums.joinToString()} is ${'$'}{findKthLargest(nums, k)}") // 5
+                }
             """.trimIndent()
         ),
         Lesson(
@@ -1201,8 +1328,20 @@ object KotlinDsaRepositoryImpl {
             order = 49,
             isCompleted = false,
             codeExample = """
-                // Kotlin's HashMap uses chaining for collisions
-                // Efficiency: O(1) average for get/put
+                fun main() {
+                    // Kotlin's HashMap uses chaining for collisions
+                    val map = java.util.HashMap<String, Int>()
+                    
+                    // Adding keys that might collide (conceptual)
+                    map["Aa"] = 1
+                    map["BB"] = 2  // "Aa" and "BB" often have same hashCode in Java strings
+                    
+                    println("Map content: ${'$'}map")
+                    println("Size: ${'$'}{map.size}")
+                    println("Value for 'Aa': ${'$'}{map["Aa"]}")
+                    
+                    // Efficiency: O(1) average for get/put
+                }
             """.trimIndent()
         ),
         Lesson(
@@ -1225,6 +1364,13 @@ object KotlinDsaRepositoryImpl {
                     }
                     return intArrayOf()
                 }
+
+                fun main() {
+                    val nums = intArrayOf(2, 7, 11, 15)
+                    val target = 9
+                    val result = twoSum(nums, target)
+                    println("Indices finding ${'$'}target: ${'$'}{result.joinToString()}")
+                }
             """.trimIndent()
         ),
         Lesson(
@@ -1244,6 +1390,13 @@ object KotlinDsaRepositoryImpl {
                     }
                     return false
                 }
+
+                fun main() {
+                    val nums1 = intArrayOf(1, 2, 3, 1)
+                    val nums2 = intArrayOf(1, 2, 3, 4)
+                    println("Array 1 contains duplicate? ${'$'}{containsDuplicate(nums1)}")
+                    println("Array 2 contains duplicate? ${'$'}{containsDuplicate(nums2)}")
+                }
             """.trimIndent()
         ),
         Lesson(
@@ -1254,7 +1407,26 @@ object KotlinDsaRepositoryImpl {
             type = LessonType.CODE_PRACTICE,
             order = 52,
             isCompleted = false,
-            codeExample = "fun firstUniqChar(s: String): Int {\n    // Count frequencies map\n    return -1\n}"
+            codeExample = """
+                fun firstUniqChar(s: String): Int {
+                    val count = HashMap<Char, Int>()
+                    for (c in s) {
+                        count[c] = count.getOrDefault(c, 0) + 1
+                    }
+                    for (i in s.indices) {
+                        if (count[s[i]] == 1) return i
+                    }
+                    return -1
+                }
+
+                fun main() {
+                    val s = "leetcode"
+                    println("First unique index in '${'$'}s': ${'$'}{firstUniqChar(s)}") // 0 (l)
+                    
+                    val s2 = "loveleetcode"
+                    println("First unique index in '${'$'}s2': ${'$'}{firstUniqChar(s2)}") // 2 (v)
+                }
+            """.trimIndent()
         ),
         Lesson(
             id = "kt-dsa-53",
@@ -1283,13 +1455,20 @@ object KotlinDsaRepositoryImpl {
             order = 54,
             isCompleted = false,
             codeExample = """
-                // Adjacency List: Map<Int, List<Int>>
-                val graph = mapOf(
-                    1 to listOf(2, 3),
-                    2 to listOf(1, 4),
-                    3 to listOf(1),
-                    4 to listOf(2)
-                )
+                fun main() {
+                    // Adjacency List: Map<Int, List<Int>>
+                    val graph = mapOf(
+                        1 to listOf(2, 3),
+                        2 to listOf(1, 4),
+                        3 to listOf(1),
+                        4 to listOf(2)
+                    )
+                    
+                    println("Graph Adjacency List:")
+                    for ((node, neighbors) in graph) {
+                        println("${'$'}node -> ${'$'}neighbors")
+                    }
+                }
             """.trimIndent()
         ),
         Lesson(
@@ -1302,13 +1481,14 @@ object KotlinDsaRepositoryImpl {
             isCompleted = false,
             codeExample = """
                 fun bfs(graph: Map<Int, List<Int>>, start: Int) {
+                    println("BFS Traversal starting from ${'$'}start:")
                     val visited = HashSet<Int>()
                     val queue = java.util.ArrayDeque<Int>()
                     queue.add(start)
                     visited.add(start)
                     while(!queue.isEmpty()) {
                         val node = queue.remove()
-                        println(node)
+                        print("${'$'}node ")
                         graph[node]?.forEach { neighbor ->
                              if (!visited.contains(neighbor)) {
                                  visited.add(neighbor)
@@ -1316,6 +1496,33 @@ object KotlinDsaRepositoryImpl {
                              }
                         }
                     }
+                    println()
+                }
+
+                fun dfs(graph: Map<Int, List<Int>>, start: Int, visited: HashSet<Int> = HashSet()) {
+                    if (!visited.contains(start)) {
+                        visited.add(start)
+                        print("${'$'}start ")
+                        graph[start]?.forEach { neighbor ->
+                            dfs(graph, neighbor, visited)
+                        }
+                    }
+                }
+
+                fun main() {
+                    val graph = mapOf(
+                        0 to listOf(1, 2),
+                        1 to listOf(2),
+                        2 to listOf(0, 3),
+                        3 to listOf(3)
+                    )
+                    
+                    bfs(graph, 2)
+                    
+                    print("DFS Traversal starting from 2: ")
+                    val visited = HashSet<Int>()
+                    dfs(graph, 2, visited)
+                    println()
                 }
             """.trimIndent()
         ),
@@ -1336,6 +1543,11 @@ object KotlinDsaRepositoryImpl {
                     memo[n] = result
                     return result
                 }
+
+                fun main() {
+                    val n = 10
+                    println("Fibonacci(${'$'}n) with Memoization: ${'$'}{fib(n)}")
+                }
             """.trimIndent()
         ),
         Lesson(
@@ -1355,6 +1567,11 @@ object KotlinDsaRepositoryImpl {
                         dp[i] = dp[i-1] + dp[i-2]
                     }
                     return dp[n]
+                }
+
+                fun main() {
+                    val n = 10
+                    println("Fibonacci(${'$'}n) with Tabulation: ${'$'}{fibTab(n)}")
                 }
             """.trimIndent()
         ),
@@ -1378,6 +1595,11 @@ object KotlinDsaRepositoryImpl {
                     }
                     return b
                 }
+
+                fun main() {
+                    val n = 5
+                    println("Ways to climb ${'$'}n stairs: ${'$'}{climbStairs(n)}")
+                }
             """.trimIndent()
         ),
         Lesson(
@@ -1392,6 +1614,44 @@ object KotlinDsaRepositoryImpl {
                 class TrieNode {
                     val children = HashMap<Char, TrieNode>()
                     var isEnd = false
+                }
+
+                class Trie {
+                    val root = TrieNode()
+
+                    fun insert(word: String) {
+                        var curr = root
+                        for (c in word) {
+                            curr = curr.children.getOrPut(c) { TrieNode() }
+                        }
+                        curr.isEnd = true
+                    }
+
+                    fun search(word: String): Boolean {
+                        var curr = root
+                        for (c in word) {
+                            curr = curr.children[c] ?: return false
+                        }
+                        return curr.isEnd
+                    }
+                    
+                    fun startsWith(prefix: String): Boolean {
+                        var curr = root
+                        for (c in prefix) {
+                            curr = curr.children[c] ?: return false
+                        }
+                        return true
+                    }
+                }
+
+                fun main() {
+                    val trie = Trie()
+                    trie.insert("apple")
+                    println("Inserted 'apple'")
+                    
+                    println("Search 'apple': ${'$'}{trie.search("apple")}")   // true
+                    println("Search 'app': ${'$'}{trie.search("app")}")       // false
+                    println("StartsWith 'app': ${'$'}{trie.startsWith("app")}") // true
                 }
             """.trimIndent()
         ),
