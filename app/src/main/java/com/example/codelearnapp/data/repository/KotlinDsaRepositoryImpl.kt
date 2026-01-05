@@ -76,7 +76,18 @@ object KotlinDsaRepositoryImpl {
             type = LessonType.CODE_PRACTICE,
             order = 4,
             isCompleted = false,
-            codeExample = "fun sum(arr: IntArray): Int {\n    var total = 0\n    for (i in arr) total += i\n    return total\n}\n// Complexity is O(n)"
+            codeExample = """
+                fun sum(arr: IntArray): Int {
+                    var total = 0
+                    for (i in arr) total += i
+                    return total
+                }
+                
+                fun main() {
+                    val numbers = intArrayOf(1, 2, 3, 4, 5)
+                    println("Sum: ${'$'}{sum(numbers)}") // Output: 15
+                }
+            """.trimIndent()
         ),
         Lesson(
             id = "kt-dsa-5",
@@ -159,7 +170,19 @@ object KotlinDsaRepositoryImpl {
             type = LessonType.CODE_PRACTICE,
             order = 9,
             isCompleted = false,
-            codeExample = "fun reverse(s: String): String {\n    var res = \"\"\n    for(i in s.length-1 downTo 0) res += s[i]\n    return res\n}"
+            codeExample = """
+                fun reverse(s: String): String {
+                    var res = ""
+                    for(i in s.length-1 downTo 0) res += s[i]
+                    return res
+                }
+                
+                fun main() {
+                    val input = "Kotlin"
+                    println("Original: ${'$'}input")
+                    println("Reversed: ${'$'}{reverse(input)}") // Output: niltoK
+                }
+            """.trimIndent()
         ),
         Lesson(
             id = "kt-dsa-10",
@@ -261,7 +284,18 @@ object KotlinDsaRepositoryImpl {
             type = LessonType.CODE_PRACTICE,
             order = 15,
             isCompleted = false,
-            codeExample = "fun power(x: Int, n: Int): Int {\n    if (n == 0) return 1\n    return x * power(x, n-1)\n}"
+            codeExample = """
+                fun power(x: Int, n: Int): Int {
+                    if (n == 0) return 1
+                    return x * power(x, n - 1)
+                }
+                
+                fun main() {
+                    val base = 2
+                    val exponent = 3
+                    println("${'$'}base^${'$'}exponent = ${'$'}{power(base, exponent)}") // Output: 8
+                }
+            """.trimIndent()
         ),
         Lesson(
             id = "kt-dsa-16",
@@ -487,7 +521,25 @@ object KotlinDsaRepositoryImpl {
             type = LessonType.CODE_PRACTICE,
             order = 27,
             isCompleted = false,
-            codeExample = "fun bs(arr: IntArray, target: Int): Int {\n    // Implementation\n    return -1\n}"
+            codeExample = """
+                fun binarySearch(arr: IntArray, target: Int): Int {
+                    var left = 0
+                    var right = arr.size - 1
+                    while (left <= right) {
+                        val mid = left + (right - left) / 2
+                        if (arr[mid] == target) return mid
+                        if (arr[mid] < target) left = mid + 1
+                        else right = mid - 1
+                    }
+                    return -1
+                }
+                
+                fun main() {
+                    val sorted = intArrayOf(1, 3, 5, 7, 9)
+                    val target = 5
+                    println("Index of ${'$'}target: ${'$'}{binarySearch(sorted, target)}") // Output: 2
+                }
+            """.trimIndent()
         ),
 
         // SECTION 6: LINKED LISTS (Lessons 28-33)
@@ -580,7 +632,38 @@ object KotlinDsaRepositoryImpl {
             type = LessonType.CODE_PRACTICE,
             order = 32,
             isCompleted = false,
-            codeExample = "fun merge(l1: ListNode?, l2: ListNode?): ListNode? {\n    // logic\n    return null\n}"
+            codeExample = """
+                class ListNode(var `val`: Int) {
+                    var next: ListNode? = null
+                }
+                
+                fun mergeTwoLists(l1: ListNode?, l2: ListNode?): ListNode? {
+                    if (l1 == null) return l2
+                    if (l2 == null) return l1
+                    
+                    if (l1.`val` < l2.`val`) {
+                        l1.next = mergeTwoLists(l1.next, l2)
+                        return l1
+                    } else {
+                        l2.next = mergeTwoLists(l1, l2.next)
+                        return l2
+                    }
+                }
+                
+                fun main() {
+                    // Create simple lists: 1->3 and 2->4
+                    val l1 = ListNode(1).apply { next = ListNode(3) }
+                    val l2 = ListNode(2).apply { next = ListNode(4) }
+                    
+                    var merged = mergeTwoLists(l1, l2)
+                    print("Merged: ")
+                    while(merged != null) {
+                        print("${'$'}{merged.`val`} -> ")
+                        merged = merged.next
+                    }
+                    println("null")
+                }
+            """.trimIndent()
         ),
         Lesson(
             id = "kt-dsa-33",
@@ -667,7 +750,33 @@ object KotlinDsaRepositoryImpl {
             type = LessonType.CODE_PRACTICE,
             order = 37,
             isCompleted = false,
-            codeExample = "class MyStack {\n    private val list = ArrayList<Int>()\n    fun push(x: Int) { list.add(x) }\n    fun pop(): Int? = if(list.isNotEmpty()) list.removeAt(list.size-1) else null\n}"
+            codeExample = """
+                class MyStack {
+                    private val list = java.util.ArrayList<Int>()
+                    
+                    fun push(x: Int) { 
+                        list.add(x) 
+                        println("Pushed: ${'$'}x")
+                    }
+                    
+                    fun pop(): Int? {
+                        if(list.isNotEmpty()) {
+                            val item = list.removeAt(list.size-1)
+                            println("Popped: ${'$'}item")
+                            return item
+                        }
+                        return null
+                    }
+                }
+                
+                fun main() {
+                    val stack = MyStack()
+                    stack.push(10)
+                    stack.push(20)
+                    stack.pop()
+                    stack.pop()
+                }
+            """.trimIndent()
         ),
         Lesson(
             id = "kt-dsa-38",
@@ -799,7 +908,43 @@ object KotlinDsaRepositoryImpl {
             type = LessonType.CODE_PRACTICE,
             order = 45,
             isCompleted = false,
-            codeExample = "fun invertTree(root: TreeNode?): TreeNode? {\n    if (root == null) return null\n    val temp = root.left\n    root.left = invertTree(root.right)\n    root.right = invertTree(temp)\n    return root\n}"
+            codeExample = """
+                class TreeNode(var `val`: Int) {
+                    var left: TreeNode? = null
+                    var right: TreeNode? = null
+                }
+                
+                fun invertTree(root: TreeNode?): TreeNode? {
+                    if (root == null) return null
+                    val temp = root.left
+                    root.left = invertTree(root.right)
+                    root.right = invertTree(temp)
+                    return root
+                }
+                
+                fun printTree(root: TreeNode?) {
+                    if(root == null) return
+                    print("${'$'}{root.`val`} ")
+                    printTree(root.left)
+                    printTree(root.right)
+                }
+
+                fun main() {
+                    // Tree: 1 -> (Left: 2, Right: 3)
+                    val root = TreeNode(1)
+                    root.left = TreeNode(2)
+                    root.right = TreeNode(3)
+                    
+                    println("Original Pre-order:")
+                    printTree(root)
+                    println()
+                    
+                    invertTree(root)
+                    
+                    println("Inverted Pre-order:")
+                    printTree(root)
+                }
+            """.trimIndent()
         ),
         Lesson(
             id = "kt-dsa-46",
@@ -1074,7 +1219,6 @@ object KotlinDsaRepositoryImpl {
             isCompleted = false,
             codeExample = """
                 class LRUCache(val capacity: Int) {
-                    // Use LinkedHashMap with accessOrder = true
                     val map = object : java.util.LinkedHashMap<Int, Int>(capacity, 0.75f, true) {
                         override fun removeEldestEntry(eldest: MutableMap.MutableEntry<Int, Int>?): Boolean {
                             return size > capacity
@@ -1090,7 +1234,21 @@ object KotlinDsaRepositoryImpl {
                     }
                 }
                 
-                // Or implement using HashMap + Doubly Linked List manually
+                fun main() {
+                    val cache = LRUCache(2)
+                    
+                    cache.put(1, 1)
+                    cache.put(2, 2)
+                    println("Get 1: ${'$'}{cache.get(1)}") // 1
+                    
+                    cache.put(3, 3) // Evicts 2
+                    println("Get 2: ${'$'}{cache.get(2)}") // -1
+                    
+                    cache.put(4, 4) // Evicts 1
+                    println("Get 1: ${'$'}{cache.get(1)}") // -1
+                    println("Get 3: ${'$'}{cache.get(3)}") // 3
+                    println("Get 4: ${'$'}{cache.get(4)}") // 4
+                }
             """.trimIndent()
         )
     )
