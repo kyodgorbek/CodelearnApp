@@ -5365,7 +5365,7 @@ object CourseRepositoryImpl {
                     }
                 }
             """.trimIndent()),
-        Lesson("jd-46", "java-dsa", "HashSet", "Collection of unique items.", LessonType.Code_PRACTICE, 46, false,
+        Lesson("jd-46", "java-dsa", "HashSet", "Collection of unique items.", LessonType.CODE_PRACTICE, 46, false,
             codeExample = """
                 import java.util.HashSet;
                 public class Main {

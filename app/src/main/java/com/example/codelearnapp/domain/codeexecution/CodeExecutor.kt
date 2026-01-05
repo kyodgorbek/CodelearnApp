@@ -252,7 +252,7 @@ class CodeExecutor {
                     if (variables.containsKey(t)) return variables[t]!!
                     if (expr.trim().startsWith("`")) { // Template literal
                         var content = expr.trim().trim('`')
-                        variables.forEach { (k, v) -> content = content.replace("${\'$\'}{$k}", v) }
+                        variables.forEach { (k, v) -> content = content.replace("\${$k}", v) }
                         return content
                     }
                     if (t.contains(".")) {
