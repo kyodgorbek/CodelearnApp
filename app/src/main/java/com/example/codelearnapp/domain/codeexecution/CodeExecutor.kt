@@ -1,14 +1,70 @@
 package com.example.codelearnapp.domain.codeexecution
 
+import com.example.codelearnapp.data.remote.CodeExecutionService
+import com.example.codelearnapp.domain.model.CodeExecutionRequest
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import java.io.ByteArrayOutputStream
-import java.io.PrintStream
 
 class CodeExecutor {
-    
-    suspend fun executeKotlinCode(code: String): CodeExecutionResult {
+
+    private suspend fun executeWithFallback(
+        code: String,
+        language: String,
+        localExecutor: suspend (String) -> CodeExecutionResult
+    ): CodeExecutionResult {
         return withContext(Dispatchers.IO) {
+            // Uncomment to force local execution for debugging or if backend is not running
+            // return@withContext localExecutor(code)
+
+            try {
+                val response = CodeExecutionService.executeCode(
+                    CodeExecutionRequest(script = code, language = language)
+                )
+
+                if (response.error != null) {
+                    // Network error or backend unreachable -> Fallback to local
+                    println("Cloud execution failed: ${response.error}. Falling back to local.")
+                    localExecutor(code)
+                } else {
+                    // Successful cloud execution
+                    if (response.statusCode == 200 || response.statusCode == 201) {
+                         CodeExecutionResult.Success(response.output ?: "")
+                    } else {
+                         // Compilation/Runtime error from cloud
+                         CodeExecutionResult.Error(response.output ?: "Unknown execution error")
+                    }
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                localExecutor(code)
+            }
+        }
+    }
+
+    suspend fun executeKotlinCode(code: String): CodeExecutionResult {
+        return executeWithFallback(code, "kotlin") { executeLocalKotlinCode(it) }
+    }
+
+    suspend fun executeJavaCode(code: String): CodeExecutionResult {
+        return executeWithFallback(code, "java") { executeLocalJavaCode(it) }
+    }
+
+    suspend fun executePythonCode(code: String): CodeExecutionResult {
+        return executeWithFallback(code, "python3") { executeLocalPythonCode(it) }
+    }
+
+    suspend fun executeJavaScriptCode(code: String): CodeExecutionResult {
+        return executeWithFallback(code, "nodejs") { executeLocalJavaScriptCode(it) }
+    }
+
+    suspend fun executeSqlCode(code: String): CodeExecutionResult {
+        return executeWithFallback(code, "sql") { executeLocalSqlCode(it) }
+    }
+
+    // --- Local Simulation Logic (Preserved as Fallback) ---
+
+    private suspend fun executeLocalKotlinCode(code: String): CodeExecutionResult {
+        return withContext(Dispatchers.Default) {
             try {
                 val output = StringBuilder()
                 val variables = mutableMapOf<String, String>()
@@ -82,15 +138,15 @@ class CodeExecutor {
                         variables[name] = eval(clean.substringAfter("="), variables)
                     }
                 }
-                CodeExecutionResult.Success(if (output.isEmpty()) "Executed successfully" else output.toString())
+                CodeExecutionResult.Success(if (output.isEmpty()) "Executed successfully (Local)" else output.toString())
             } catch (e: Exception) {
                 CodeExecutionResult.Error("Kotlin Error: ${e.message}")
             }
         }
     }
 
-    suspend fun executeJavaCode(code: String): CodeExecutionResult {
-        return withContext(Dispatchers.IO) {
+    private suspend fun executeLocalJavaCode(code: String): CodeExecutionResult {
+        return withContext(Dispatchers.Default) {
             try {
                 val output = StringBuilder()
                 val variables = mutableMapOf<String, String>()
@@ -278,15 +334,15 @@ class CodeExecutor {
                     executeBlock(allLines)
                 }
 
-                CodeExecutionResult.Success(if (output.isEmpty()) "Executed successfully" else output.toString())
+                CodeExecutionResult.Success(if (output.isEmpty()) "Executed successfully (Local)" else output.toString())
             } catch (e: Exception) {
                 CodeExecutionResult.Error("Java Error: ${e.message}")
             }
         }
     }
 
-    suspend fun executePythonCode(code: String): CodeExecutionResult {
-        return withContext(Dispatchers.IO) {
+    private suspend fun executeLocalPythonCode(code: String): CodeExecutionResult {
+        return withContext(Dispatchers.Default) {
             try {
                 val output = StringBuilder()
                 val variables = mutableMapOf<String, String>()
@@ -338,15 +394,15 @@ class CodeExecutor {
                         map[key] = value
                     }
                 }
-                CodeExecutionResult.Success(if (output.isEmpty()) "Python finished" else output.toString())
+                CodeExecutionResult.Success(if (output.isEmpty()) "Python finished (Local)" else output.toString())
             } catch (e: Exception) {
                 CodeExecutionResult.Error("Python Error: ${e.message}")
             }
         }
     }
 
-    suspend fun executeJavaScriptCode(code: String): CodeExecutionResult {
-        return withContext(Dispatchers.IO) {
+    private suspend fun executeLocalJavaScriptCode(code: String): CodeExecutionResult {
+        return withContext(Dispatchers.Default) {
             try {
                 val output = StringBuilder()
                 val variables = mutableMapOf<String, String>()
@@ -417,15 +473,15 @@ class CodeExecutor {
                     }
                     i++
                 }
-                CodeExecutionResult.Success(if (output.isEmpty()) "JS finished" else output.toString())
+                CodeExecutionResult.Success(if (output.isEmpty()) "JS finished (Local)" else output.toString())
             } catch (e: Exception) {
                 CodeExecutionResult.Error("JS Error: ${e.message}")
             }
         }
     }
 
-    suspend fun executeSqlCode(code: String): CodeExecutionResult {
-        return withContext(Dispatchers.IO) {
+    private suspend fun executeLocalSqlCode(code: String): CodeExecutionResult {
+        return withContext(Dispatchers.Default) {
             try {
                 val trimmed = code.trim().uppercase()
                 if (trimmed.startsWith("SELECT")) {
