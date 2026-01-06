@@ -25,9 +25,9 @@ data class HfRequest(
 
 @Serializable
 data class HfParameters(
-    val max_new_tokens: Int = 500,
+    val max_new_tokens: Int = 200,
     val return_full_text: Boolean = false,
-    val temperature: Double = 0.7
+    val temperature: Double = 0.3
 )
 
 @Serializable
@@ -83,31 +83,31 @@ class HuggingFaceAiProvider : AiProvider {
     ): String {
         val sb = StringBuilder()
         
-        // System & Context (Mistral Instruct doesn't strictly have a "System" role in the v0.2 raw format, 
-        // usually it's prepend to the first instruction or treated as such)
-        val initialContext = "$systemInstruction\n\nCONTEXT: $lessonContext"
+        // Structure:
+        // <s>[INST] System + Context + User [/INST] Model </s>[INST] User [/INST] ...
         
-        // If history is empty, just send fresh
+        // Combine System Prompt and Lesson Context into the "System" block
+        val contextBlock = """
+            $systemInstruction
+            
+            LESSON CONTEXT
+            $lessonContext
+        """.trimIndent()
+        
         if (history.isEmpty()) {
-            sb.append("<s>[INST] $initialContext\n\n$userMessage [/INST]")
+            // First turn
+            sb.append("<s>[INST] $contextBlock\n\nUSER INPUT\nQuestion:\n$userMessage [/INST]")
         } else {
-            // Reconstruct history
-            // Mistral format: <s>[INST] Instruction [/INST] Model Answer</s>[INST] Follow-up [/INST]
+            // Multi-turn history reconstruction
             sb.append("<s>")
-            
-            // Add initial context to the VERY FIRST user message if possible
-            // We'll iterate and rebuild.
-            // Simplified approach: Just append context to the beginning of the current prompt chain?
-            // No, context needs to be "remembered".
-            
-            // NOTE: HF Inference API is stateless. We must send full history.
             
             var isFirstUserMsg = true
             history.forEach { msg ->
                 if (msg.isUser) {
                     sb.append("[INST] ")
                     if (isFirstUserMsg) {
-                        sb.append("$initialContext\n\n")
+                        // Inject context into the first user message
+                        sb.append("$contextBlock\n\nUSER INPUT\nQuestion:\n")
                         isFirstUserMsg = false
                     }
                     sb.append(msg.text)
@@ -118,10 +118,11 @@ class HuggingFaceAiProvider : AiProvider {
                 }
             }
             
-            // Add current message
+            // Append current user message
             sb.append("[INST] ")
-            if (isFirstUserMsg) { // If history was somehow only AI messages or empty (unlikely handled above)
-                 sb.append("$initialContext\n\n")
+            if (isFirstUserMsg) {
+                 // Fallback if history had no user messages (unlikely)
+                 sb.append("$contextBlock\n\nUSER INPUT\nQuestion:\n")
             }
             sb.append(userMessage)
             sb.append(" [/INST]")

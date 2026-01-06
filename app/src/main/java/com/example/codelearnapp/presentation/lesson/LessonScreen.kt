@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.codelearnapp.presentation.components.VideoPlayer
 import com.example.codelearnapp.presentation.components.CodeEditor
+import com.example.codelearnapp.presentation.tutor.AiTutorUi
 import com.example.codelearnapp.domain.model.LessonType
 import com.example.codelearnapp.domain.model.Quiz
 import com.airbnb.lottie.compose.*
@@ -50,7 +51,6 @@ fun LessonScreen(
             }
         }
     }
-    
     Scaffold(
         topBar = {
             TopAppBar(
@@ -78,6 +78,9 @@ fun LessonScreen(
                     containerColor = MaterialTheme.colorScheme.background
                 )
             )
+        },
+        floatingActionButton = {
+             AiTutorUi(lessonId = lessonId)
         }
     ) { padding ->
         Column(
