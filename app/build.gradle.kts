@@ -1,3 +1,6 @@
+import java.util.Properties
+import java.io.FileInputStream
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -6,6 +9,15 @@ plugins {
     id("com.google.gms.google-services") version "4.4.0"
     id("org.jetbrains.kotlin.plugin.serialization") version "2.0.21"
 }
+
+// Read API Keys from local.properties
+val localProperties = Properties()
+val localPropertiesFile = rootProject.file("local.properties")
+if (localPropertiesFile.exists()) {
+    localProperties.load(FileInputStream(localPropertiesFile))
+}
+val geminiApiKey = localProperties.getProperty("GEMINI_API_KEY") ?: ""
+val hfApiKey = localProperties.getProperty("HF_API_KEY") ?: ""
 
 android {
     namespace = "com.example.codelearnapp"
@@ -19,6 +31,9 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        
+        buildConfigField("String", "GEMINI_API_KEY", "\"$geminiApiKey\"")
+        buildConfigField("String", "HF_API_KEY", "\"$hfApiKey\"")
     }
 
     buildTypes {
@@ -30,40 +45,21 @@ android {
             )
         }
     }
-
-    packaging {
-        resources {
-            // This is the specific file causing your error
-            pickFirsts.add("kotlin/coroutines/coroutines.kotlin_builtins")
-
-            // 2. This handles the previous error
-            pickFirsts.add("kotlin/reflect/reflect.kotlin_builtins")
-
-            // 3. BEST PRACTICE: Use a wildcard to catch ALL other similar conflicts
-            // from the compiler-embeddable jar
-            pickFirsts.add("**/*.kotlin_builtins")
-            pickFirsts.add("**/*.kotlin_module")
-
-            // Other common duplicates in this specific setup
-            pickFirsts.add("META-INF/io.netty.versions.properties")
-            excludes.add("META-INF/kotlin.kotlin_builtins")
-        }
-    }
-
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
-    }
-    kotlinOptions {
-        jvmTarget = "11"
-    }
+    
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 
 dependencies {
     implementation(libs.androidx.core.ktx)
+    // ... existing deps ...
+    
+    // Gemini SDK
+    implementation("com.google.ai.client.generativeai:generativeai:0.9.0") // Check for latest version
+    
+    implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
     implementation(platform(libs.androidx.compose.bom))

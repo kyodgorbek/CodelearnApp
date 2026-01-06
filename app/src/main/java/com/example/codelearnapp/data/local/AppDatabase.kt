@@ -11,9 +11,10 @@ import com.example.codelearnapp.data.local.entity.*
         LessonEntity::class,
         UserProgressEntity::class,
         AchievementEntity::class,
-        BookmarkEntity::class
+        BookmarkEntity::class,
+        ChatEntity::class
     ],
-    version = 3,
+    version = 4,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -22,4 +23,5 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun userProgressDao(): UserProgressDao
     abstract fun achievementDao(): AchievementDao
     abstract fun bookmarkDao(): BookmarkDao
+    abstract fun chatDao(): ChatDao
 }

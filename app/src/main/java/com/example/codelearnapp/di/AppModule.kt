@@ -57,6 +57,17 @@ val appModule = module {
     single { SyncManager(androidContext(), get(), get()) }
     single { com.example.codelearnapp.data.local.ReminderManager(androidContext()) }
     single { CodeExecutor() }
+    
+    // AI Tutor Provider strategy
+    // Switch between GeminiAiProvider() and HuggingFaceAiProvider() here.
+    single<com.example.codelearnapp.data.remote.ai.AiProvider> { 
+        // com.example.codelearnapp.data.remote.ai.GeminiAiProvider() // Uncomment for Gemini
+        com.example.codelearnapp.data.remote.ai.HuggingFaceAiProvider() // Using HF Fallback
+    }
+
+    single<com.example.codelearnapp.domain.repository.AiRepository> { 
+        com.example.codelearnapp.data.repository.AiRepositoryImpl(get(), get()) 
+    }
 
     // Use Cases
     factory { GetCoursesUseCase(get()) }
@@ -83,5 +94,6 @@ val appModule = module {
     viewModel { SettingsViewModel(get(), get(), get(), get(), get()) }
     viewModel { OnboardingViewModel(get()) }
     viewModel { PlaygroundViewModel(get()) }
+    viewModel { com.example.codelearnapp.presentation.tutor.AiTutorViewModel(get()) }
 
 }
