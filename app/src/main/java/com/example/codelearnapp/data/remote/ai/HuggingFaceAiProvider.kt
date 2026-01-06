@@ -72,9 +72,17 @@ class HuggingFaceAiProvider : AiProvider {
         val prompt = buildMistralPrompt(systemInstruction, lessonContext, history, userMessage)
 
         try {
+            // Sanitize API Key: remove quotes and whitespace that might have come from local.properties
+            val rawApiKey = BuildConfig.HF_API_KEY
+            val apiKey = rawApiKey.replace("\"", "").trim()
+
+            if (apiKey.isEmpty()) {
+                return "Config Error: HF_API_KEY is missing in local.properties. Please add it and rebuild."
+            }
+
             // Fetch response as raw text first to handle dynamic JSON types (Object vs Array)
             val responseString = client.post(modelUrl) {
-                header("Authorization", "Bearer ${BuildConfig.HF_API_KEY}")
+                header("Authorization", "Bearer $apiKey")
                 contentType(ContentType.Application.Json)
                 setBody(HfRequest(inputs = prompt))
             }.bodyAsText()
