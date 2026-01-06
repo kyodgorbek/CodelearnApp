@@ -56,8 +56,7 @@ fun AiTutorUi(
             onDismissRequest = { showBottomSheet = false },
             sheetState = sheetState,
             containerColor = MaterialTheme.colorScheme.surface,
-            tonalElevation = 8.dp,
-            windowInsets = WindowInsets.ime // Handle soft keyboard
+            tonalElevation = 8.dp
         ) {
             AiTutorContent(
                 state = state,

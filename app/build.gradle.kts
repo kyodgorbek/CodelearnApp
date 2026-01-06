@@ -50,7 +50,34 @@ android {
         compose = true
         buildConfig = true
     }
+    
+    packaging {
+        resources {
+            excludes += "/META-INF/{AL2.0,LGPL2.1}"
+            pickFirsts += "kotlin/reflect/reflect.kotlin_builtins"
+            pickFirsts += "kotlin/coroutines/coroutines.kotlin_builtins"
+            pickFirsts += "kotlin/collections/collections.kotlin_builtins"
+            pickFirsts += "kotlin/ranges/ranges.kotlin_builtins"
+            pickFirsts += "kotlin/annotation/annotation.kotlin_builtins"
+            pickFirsts += "kotlin/internal/internal.kotlin_builtins"
+            pickFirsts += "kotlin/kotlin.kotlin_builtins"
+            pickFirsts += "META-INF/lifecycle-runtime-ktx_release.kotlin_module"
+            pickFirsts += "META-INF/LICENSE.md"
+            pickFirsts += "META-INF/LICENSE-notice.md"
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
+    kotlinOptions {
+        jvmTarget = "17"
+    }
 }
+
+// Ensure legacy task configuration matches
+
 
 dependencies {
     implementation(libs.androidx.core.ktx)
