@@ -1,0 +1,45 @@
+# =========================
+# Android / Gradle
+# =========================
+.gradle/
+**/build/
+build/
+
+# Local configuration
+local.properties
+
+# =========================
+# IDEs
+# =========================
+.idea/
+*.iml
+.vscode/
+.kotlin/
+
+# =========================
+# OS files
+# =========================
+.DS_Store
+Thumbs.db
+
+# =========================
+# Native build
+# =========================
+.externalNativeBuild/
+.cxx/
+
+# =========================
+# Android captures
+# =========================
+captures/
+
+# =========================
+# Backend (if present)
+# =========================
+backend/.env
+backend/node_modules/
+
+# =========================
+# Logs
+# =========================
+*.log

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "108528417484",
+    "project_id": "codelearnapp-de",
+    "storage_bucket": "codelearnapp-de.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:108528417484:android:6255fe4881eb028258a069",
+        "android_client_info": {
+          "package_name": "com.example.codelearnapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCwlo2VgZT17MHt48tg0lvG2VwoLbdWBSU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
