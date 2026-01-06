@@ -44,6 +44,14 @@ val appModule = module {
         .build()
     }
 
+    // DAOs
+    single { get<AppDatabase>().chatDao() }
+    single { get<AppDatabase>().courseDao() }
+    single { get<AppDatabase>().lessonDao() }
+    single { get<AppDatabase>().userProgressDao() }
+    single { get<AppDatabase>().achievementDao() }
+    single { get<AppDatabase>().bookmarkDao() }
+
     // Firebase
     single { FirebaseAuth.getInstance() }
     single { FirebaseFirestore.getInstance() }
