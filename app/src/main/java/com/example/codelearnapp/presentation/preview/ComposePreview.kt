@@ -86,7 +86,56 @@ fun QirRenderer(node: QirNode) {
                 }
             }
         }
-// ...
+        is QirBox -> {
+            Box(
+                modifier = composeModifier,
+                contentAlignment = node.contentAlignment.toCompose()
+            ) {
+                node.children.forEach { child ->
+                     if (child.modifier.align != null) {
+                         Box(modifier = Modifier.fillMaxSize(), contentAlignment = child.modifier.align!!.toCompose()) {
+                             QirRenderer(child)
+                         }
+                     } else {
+                         QirRenderer(child)
+                     }
+                }
+            }
+        }
+        is QirText -> {
+            Text(
+                text = node.text,
+                modifier = composeModifier,
+                color = Color.Black
+            )
+        }
+        is QirButton -> {
+            Button(
+                onClick = {}, 
+                modifier = composeModifier
+            ) {
+                if (node.content != null) {
+                    QirRenderer(node.content)
+                } else {
+                    Text("Button")
+                }
+            }
+        }
+        is QirCard -> {
+            Card(modifier = composeModifier) {
+                Column(modifier = Modifier.padding(16.dp)) {
+                    node.children.forEach { child ->
+                        QirRenderer(child)
+                    }
+                }
+            }
+        }
+        is QirSpacer -> {
+            Spacer(modifier = composeModifier)
+        }
+    }
+}
+
 @Composable
 fun QirArrangement.toComposeVerticalArrangement(): Arrangement.Vertical {
     return when(this) {
