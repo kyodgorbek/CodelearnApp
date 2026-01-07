@@ -55,30 +55,56 @@ fun MobilePreview(
 @Composable
 fun QirRenderer(node: QirNode) {
     // Convert QIR modifier to Compose Modifier
-    val composeModifier = node.modifier.toComposeModifier()
+    var composeModifier = node.modifier.toComposeModifier()
 
+    // Handle .align specific to BoxScope manually since we can't apply scoped modifiers easily in generic recursion
+    // We rely on the parent container handling alignment, OR we just support basic alignment via Box wrapper if needed.
+    // For this version (Preview), we'll prioritize Container alignment properties.
+    
     when (node) {
         is QirColumn -> {
-            Column(modifier = composeModifier) {
+            Column(
+                modifier = composeModifier,
+                verticalArrangement = node.verticalArrangement.toCompose(),
+                horizontalAlignment = node.horizontalAlignment.toCompose()
+            ) {
                 node.children.forEach { child ->
+                    // Handle Child Alignments specific to Column if we implemented them
+                    // For now, renderer is simple recursive
                     QirRenderer(child)
                 }
             }
         }
         is QirRow -> {
-            Row(modifier = composeModifier) {
+            Row(
+                modifier = composeModifier,
+                horizontalArrangement = node.horizontalArrangement.toCompose(),
+                verticalAlignment = node.verticalAlignment.toCompose()
+            ) {
                 node.children.forEach { child ->
                     QirRenderer(child)
                 }
             }
         }
         is QirBox -> {
-            Box(modifier = composeModifier) {
+            Box(
+                modifier = composeModifier,
+                contentAlignment = node.contentAlignment.toCompose()
+            ) {
                 node.children.forEach { child ->
-                    QirRenderer(child)
+                     // If child has specific .align modifier, we need to wrap it in a Box with that align
+                     // because QirRenderer isn't scoped.
+                     if (child.modifier.align != null) {
+                         Box(modifier = Modifier.fillMaxSize(), contentAlignment = child.modifier.align!!.toCompose()) {
+                             QirRenderer(child)
+                         }
+                     } else {
+                         QirRenderer(child)
+                     }
                 }
             }
         }
+// ... (Text, Button, Card, Spacer remain essentially same but good to ensure imports)
         is QirText -> {
             Text(
                 text = node.text,
@@ -98,9 +124,82 @@ fun QirRenderer(node: QirNode) {
                 }
             }
         }
+        is QirCard -> {
+            Card(modifier = composeModifier) {
+                Column(modifier = Modifier.padding(16.dp)) {
+                    node.children.forEach { child ->
+                        QirRenderer(child)
+                    }
+                }
+            }
+        }
         is QirSpacer -> {
             Spacer(modifier = composeModifier)
         }
+    }
+}
+
+// --- Mappers ---
+
+@Composable
+fun QirArrangement.toCompose(): Arrangement.Vertical {
+    return when(this) {
+        QirArrangement.Top -> Arrangement.Top
+        QirArrangement.Bottom -> Arrangement.Bottom
+        QirArrangement.Center -> Arrangement.Center
+        QirArrangement.SpaceBetween -> Arrangement.SpaceBetween
+        QirArrangement.SpaceAround -> Arrangement.SpaceAround
+        QirArrangement.SpaceEvenly -> Arrangement.SpaceEvenly
+        else -> Arrangement.Top // Fallback for vertical
+    }
+}
+
+@Composable
+@JvmName("toComposeHorizontalArrangement")
+fun QirArrangement.toCompose(): Arrangement.Horizontal {
+    return when(this) {
+        QirArrangement.Start -> Arrangement.Start
+        QirArrangement.End -> Arrangement.End
+        QirArrangement.Center -> Arrangement.Center
+        QirArrangement.SpaceBetween -> Arrangement.SpaceBetween
+        QirArrangement.SpaceAround -> Arrangement.SpaceAround
+        QirArrangement.SpaceEvenly -> Arrangement.SpaceEvenly
+        else -> Arrangement.Start
+    }
+}
+
+@Composable
+fun QirAlignment.Horizontal.toCompose(): Alignment.Horizontal {
+    return when(this) {
+        QirAlignment.Horizontal.Start -> Alignment.Start
+        QirAlignment.Horizontal.CenterHorizontally -> Alignment.CenterHorizontally
+        QirAlignment.Horizontal.End -> Alignment.End
+    }
+}
+
+@Composable
+fun QirAlignment.Vertical.toCompose(): Alignment.Vertical {
+    return when(this) {
+        QirAlignment.Vertical.Top -> Alignment.Top
+        QirAlignment.Vertical.CenterVertically -> Alignment.CenterVertically
+        QirAlignment.Vertical.Bottom -> Alignment.Bottom
+    }
+}
+
+@Composable
+fun QirAlignment.toCompose(): Alignment {
+    return when(this) {
+        QirAlignment.TopStart -> Alignment.TopStart
+        QirAlignment.TopCenter -> Alignment.TopCenter
+        QirAlignment.TopEnd -> Alignment.TopEnd
+        QirAlignment.CenterStart -> Alignment.CenterStart
+        QirAlignment.Center -> Alignment.Center
+        QirAlignment.CenterEnd -> Alignment.CenterEnd
+        QirAlignment.BottomStart -> Alignment.BottomStart
+        QirAlignment.BottomCenter -> Alignment.BottomCenter
+        QirAlignment.BottomEnd -> Alignment.BottomEnd
+        // Fallbacks for type safety if needed (though sealed covers all)
+        else -> Alignment.TopStart
     }
 }
 
@@ -108,6 +207,7 @@ fun QirRenderer(node: QirNode) {
 fun QirModifier.toComposeModifier(): Modifier {
     var mod = Modifier
         .padding(this.padding)
+// ... (rest of modifier)
     
     // Size
     // Width

@@ -207,46 +207,46 @@ fun LessonScreen(
                                                     rootNode = qirRoot
                                                 )
                                             }
-                                        } else {
-                                            // Standard Run Code Button & Console
-                                            Button(
-                                                onClick = { viewModel.sendIntent(LessonIntent.RunCode) },
-                                                enabled = !state.isExecuting,
-                                                modifier = Modifier.align(Alignment.End),
-                                                colors = ButtonDefaults.buttonColors(
-                                                    containerColor = Color(0xFF4CAF50)
+                                        }
+                                        
+                                        // Standard Run Code Button & Console (Always Available)
+                                        Button(
+                                            onClick = { viewModel.sendIntent(LessonIntent.RunCode) },
+                                            enabled = !state.isExecuting,
+                                            modifier = Modifier.align(Alignment.End),
+                                            colors = ButtonDefaults.buttonColors(
+                                                containerColor = Color(0xFF4CAF50)
+                                            )
+                                        ) {
+                                            if (state.isExecuting) {
+                                                CircularProgressIndicator(
+                                                    modifier = Modifier.size(18.dp),
+                                                    color = Color.White,
+                                                    strokeWidth = 2.dp
                                                 )
-                                            ) {
-                                                if (state.isExecuting) {
-                                                    CircularProgressIndicator(
-                                                        modifier = Modifier.size(18.dp),
-                                                        color = Color.White,
-                                                        strokeWidth = 2.dp
-                                                    )
-                                                } else {
-                                                    Text("Run Code")
-                                                }
+                                            } else {
+                                                Text("Run Code")
                                             }
+                                        }
 
-                                            if (state.executionOutput.isNotEmpty()) {
-                                                Surface(
-                                                    modifier = Modifier.fillMaxWidth(),
-                                                    color = Color(0xFF121212),
-                                                    shape = RoundedCornerShape(8.dp)
-                                                ) {
-                                                    Column(modifier = Modifier.padding(12.dp)) {
-                                                        Text(
-                                                            "Output:",
-                                                            style = MaterialTheme.typography.labelSmall,
-                                                            color = Color.Gray
-                                                        )
-                                                        Text(
-                                                            state.executionOutput,
-                                                            style = MaterialTheme.typography.bodySmall,
-                                                            fontFamily = FontFamily.Monospace,
-                                                            color = Color.White
-                                                        )
-                                                    }
+                                        if (state.executionOutput.isNotEmpty()) {
+                                            Surface(
+                                                modifier = Modifier.fillMaxWidth(),
+                                                color = Color(0xFF121212),
+                                                shape = RoundedCornerShape(8.dp)
+                                            ) {
+                                                Column(modifier = Modifier.padding(12.dp)) {
+                                                    Text(
+                                                        "Output:",
+                                                        style = MaterialTheme.typography.labelSmall,
+                                                        color = Color.Gray
+                                                    )
+                                                    Text(
+                                                        state.executionOutput,
+                                                        style = MaterialTheme.typography.bodySmall,
+                                                        fontFamily = FontFamily.Monospace,
+                                                        color = Color.White
+                                                    )
                                                 }
                                             }
                                         }
