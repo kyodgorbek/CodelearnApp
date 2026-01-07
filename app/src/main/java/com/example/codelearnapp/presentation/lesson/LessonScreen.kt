@@ -169,62 +169,88 @@ fun LessonScreen(
                                     fontWeight = FontWeight.Bold
                                 )
                                 
-                                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                                    Box(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .height(200.dp)
-                                            .clip(RoundedCornerShape(12.dp))
-                                    ) {
-                                        CodeEditor(
-                                            code = state.currentCode,
-                                            onCodeChange = { viewModel.sendIntent(LessonIntent.UpdateCode(it)) },
-                                            language = language,
-                                            modifier = Modifier.fillMaxSize()
-                                        )
-                                    }
-                                    
-                                    Button(
-                                        onClick = { viewModel.sendIntent(LessonIntent.RunCode) },
-                                        enabled = !state.isExecuting,
-                                        modifier = Modifier.align(Alignment.End),
-                                        colors = ButtonDefaults.buttonColors(
-                                            containerColor = Color(0xFF4CAF50)
-                                        )
-                                    ) {
-                                        if (state.isExecuting) {
-                                            CircularProgressIndicator(
-                                                modifier = Modifier.size(18.dp),
-                                                color = Color.White,
-                                                strokeWidth = 2.dp
-                                            )
-                                        } else {
-                                            Text("Run Code")
-                                        }
-                                    }
+                                    // Determine if this is a Compose lesson
+                                    val isCompose = lesson.courseId.contains("jetpack-compose") || lesson.id.startsWith("compose")
 
-                                    if (state.executionOutput.isNotEmpty()) {
-                                        Surface(
-                                            modifier = Modifier.fillMaxWidth(),
-                                            color = Color(0xFF121212),
-                                            shape = RoundedCornerShape(8.dp)
+                                    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                                        Box(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .height(if (isCompose) 300.dp else 200.dp) // Taller editor for Compose
+                                                .clip(RoundedCornerShape(12.dp))
                                         ) {
-                                            Column(modifier = Modifier.padding(12.dp)) {
-                                                Text(
-                                                    "Output:",
-                                                    style = MaterialTheme.typography.labelSmall,
-                                                    color = Color.Gray
+                                            CodeEditor(
+                                                code = state.currentCode,
+                                                onCodeChange = { viewModel.sendIntent(LessonIntent.UpdateCode(it)) },
+                                                language = language,
+                                                modifier = Modifier.fillMaxSize()
+                                            )
+                                        }
+                                        
+                                        if (isCompose) {
+                                            // Real-time Preview for Compose
+                                            Text("Live Preview", style = MaterialTheme.typography.labelLarge)
+                                            
+                                            val qirRoot = remember(state.currentCode) {
+                                                com.example.codelearnapp.domain.preview.parser.ComposeCodeParser.parse(state.currentCode)
+                                            }
+                                            
+                                            Box(
+                                                modifier = Modifier
+                                                    .fillMaxWidth()
+                                                    .height(650.dp) // Container for phone preview
+                                                    .background(Color(0xFFEEEEEE), RoundedCornerShape(16.dp))
+                                                    .padding(16.dp),
+                                                contentAlignment = Alignment.Center
+                                            ) {
+                                                com.example.codelearnapp.presentation.preview.MobilePreview(
+                                                    rootNode = qirRoot
                                                 )
-                                                Text(
-                                                    state.executionOutput,
-                                                    style = MaterialTheme.typography.bodySmall,
-                                                    fontFamily = FontFamily.Monospace,
-                                                    color = Color.White
+                                            }
+                                        } else {
+                                            // Standard Run Code Button & Console
+                                            Button(
+                                                onClick = { viewModel.sendIntent(LessonIntent.RunCode) },
+                                                enabled = !state.isExecuting,
+                                                modifier = Modifier.align(Alignment.End),
+                                                colors = ButtonDefaults.buttonColors(
+                                                    containerColor = Color(0xFF4CAF50)
                                                 )
+                                            ) {
+                                                if (state.isExecuting) {
+                                                    CircularProgressIndicator(
+                                                        modifier = Modifier.size(18.dp),
+                                                        color = Color.White,
+                                                        strokeWidth = 2.dp
+                                                    )
+                                                } else {
+                                                    Text("Run Code")
+                                                }
+                                            }
+
+                                            if (state.executionOutput.isNotEmpty()) {
+                                                Surface(
+                                                    modifier = Modifier.fillMaxWidth(),
+                                                    color = Color(0xFF121212),
+                                                    shape = RoundedCornerShape(8.dp)
+                                                ) {
+                                                    Column(modifier = Modifier.padding(12.dp)) {
+                                                        Text(
+                                                            "Output:",
+                                                            style = MaterialTheme.typography.labelSmall,
+                                                            color = Color.Gray
+                                                        )
+                                                        Text(
+                                                            state.executionOutput,
+                                                            style = MaterialTheme.typography.bodySmall,
+                                                            fontFamily = FontFamily.Monospace,
+                                                            color = Color.White
+                                                        )
+                                                    }
+                                                }
                                             }
                                         }
                                     }
-                                }
                             }
                             
                             // Quiz
