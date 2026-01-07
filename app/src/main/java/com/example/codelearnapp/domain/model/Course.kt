@@ -20,5 +20,6 @@ enum class CourseCategory(val displayName: String) {
     DATA_SCIENCE("Data Science"),
     FOR_KIDS("For Kids"),
     JAVA_DSA("Java DSA"),
-    KOTLIN_DSA("Kotlin DSA")
+    KOTLIN_DSA("Kotlin DSA"),
+    JETPACK_COMPOSE("Jetpack Compose")
 }

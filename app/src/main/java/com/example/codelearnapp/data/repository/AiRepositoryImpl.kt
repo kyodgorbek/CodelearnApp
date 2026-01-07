@@ -61,14 +61,27 @@ class AiRepositoryImpl(
 
         try {
             // 1. Prepare Context
-            val lessonPrompt = AiTutorPrompts.LESSON_PROMPTS[lessonId] 
-                ?: "You are a helpful AI tutor for Computer Science."
+            // 1. Prepare Context
+            val lessonGoal = AiTutorPrompts.LESSON_PROMPTS[lessonId] 
+                ?: "Help the student with their coding task."
             val systemInstruction = AiTutorPrompts.SYSTEM_INSTRUCTION
+            
+            // Construct structured context as JSON
+            val lessonContextJson = """
+            {
+              "course": "CodeLearn Kotlin Course",
+              "lesson_id": "$lessonId",
+              "lesson_goal": "${lessonGoal.replace("\"", "'").replace("\n", " ")}",
+              "user_level": "beginner",
+              "user_action": "asked_question",
+              "preferred_mode": "auto"
+            }
+            """.trimIndent()
             
             // 2. Delegate to Provider
             val responseText = aiProvider.generateResponse(
                 systemInstruction = systemInstruction,
-                lessonContext = lessonPrompt,
+                lessonContext = lessonContextJson,
                 history = history,
                 userMessage = userMessage
             )

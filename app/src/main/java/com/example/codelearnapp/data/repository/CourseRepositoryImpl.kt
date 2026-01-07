@@ -94,6 +94,7 @@ object CourseRepositoryImpl {
             completedLessons = 0,
             category = CourseCategory.JAVA_DSA
         ),
+
         Course(
             id = "kotlin-dsa",
             title = "Kotlin DSA",
@@ -103,6 +104,16 @@ object CourseRepositoryImpl {
             totalLessons = 60,
             completedLessons = 0,
             category = CourseCategory.KOTLIN_DSA
+        ),
+        Course(
+            id = "jetpack-compose",
+            title = "Jetpack Compose",
+            description = "From Zero to Professional. 30 Comprehensive Lessons.",
+            icon = "🎨",
+            progress = 0.0f,
+            totalLessons = 30,
+            completedLessons = 0,
+            category = CourseCategory.JETPACK_COMPOSE
         )
     )
 
@@ -115,7 +126,8 @@ object CourseRepositoryImpl {
                 getDataScienceLessons() +
                 getPythonKidsLessons() +
                 getJavaDsaLessons() +
-                getKotlinDsaLessons()
+                getKotlinDsaLessons() +
+                getComposeLessons()
     }
 
     // PYTHON LESSONS (30)
@@ -126,6 +138,9 @@ object CourseRepositoryImpl {
     
     // KOTLIN DSA LESSONS (60)
     private fun getKotlinDsaLessons() = KotlinDsaRepositoryImpl.kotlinDsaLessons
+
+    // COMPOSE LESSONS (30)
+    private fun getComposeLessons() = ComposeCourseRepositoryImpl.composeLessons
 
     // JAVA LESSONS (30)
     private fun getJavaLessons() = listOf(
