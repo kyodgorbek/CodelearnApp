@@ -65,11 +65,57 @@ object ComposeCodeParser {
         return nodes
     }
 
-    // ... existing findNextComponent ...
+    // Returns: Type, Args, BodyCode, RemainingCode
+    private fun findNextComponent(code: String): ParseResult? {
+        // Regex to find: Name followed by optional (...) followed by optional { ... }
+        // We look for known component names
+        val regex = """^(Column|Row|Box|Button|Text|Spacer|Card)\s*""".toRegex()
+        val match = regex.find(code) ?: return null
+        
+        val type = match.groupValues[1]
+        var cursor = match.range.last + 1
+        
+        // 1. Parse Arguments (...)
+        var args = ""
+        if (cursor < code.length && code[cursor] == '(') {
+            val argStart = cursor
+            cursor = findMatchingBracket(code, cursor, '(', ')')
+            args = code.substring(argStart + 1, cursor)
+            cursor++ // Skip ')'
+        }
 
-    // ... existing findMatchingBracket ...
+        // 2. Parse Body { ... }
+        var body = ""
+        // Skip whitespace
+        while (cursor < code.length && code[cursor].isWhitespace()) cursor++
+        
+        if (cursor < code.length && code[cursor] == '{') {
+            val bodyStart = cursor
+            cursor = findMatchingBracket(code, cursor, '{', '}')
+            body = code.substring(bodyStart + 1, cursor)
+            cursor++ // Skip '}'
+        }
 
-    // ... existing extractStringArg ...
+        return ParseResult(type, args, body, code.substring(cursor))
+    }
+
+    private fun findMatchingBracket(text: String, startIndex: Int, openChar: Char, closeChar: Char): Int {
+        var count = 0
+        for (i in startIndex until text.length) {
+            if (text[i] == openChar) count++
+            if (text[i] == closeChar) count--
+            if (count == 0) return i
+        }
+        return text.length - 1 // Should shouldn't happen in valid code
+    }
+
+    private fun extractStringArg(args: String): String? {
+        val start = args.indexOf('"')
+        if (start == -1) return null
+        val end = args.indexOf('"', start + 1)
+        if (end == -1) return null
+        return args.substring(start + 1, end)
+    }
 
     private fun parseModifiers(args: String): QirModifier {
         var padding = 0.dp

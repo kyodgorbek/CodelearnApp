@@ -65,8 +65,8 @@ fun QirRenderer(node: QirNode) {
         is QirColumn -> {
             Column(
                 modifier = composeModifier,
-                verticalArrangement = node.verticalArrangement.toCompose(),
-                horizontalAlignment = node.horizontalAlignment.toCompose()
+                verticalArrangement = node.verticalArrangement.toComposeVerticalArrangement(),
+                horizontalAlignment = node.horizontalAlignment.toComposeHorizontalAlignment()
             ) {
                 node.children.forEach { child ->
                     // Handle Child Alignments specific to Column if we implemented them
@@ -78,71 +78,17 @@ fun QirRenderer(node: QirNode) {
         is QirRow -> {
             Row(
                 modifier = composeModifier,
-                horizontalArrangement = node.horizontalArrangement.toCompose(),
-                verticalAlignment = node.verticalAlignment.toCompose()
+                horizontalArrangement = node.horizontalArrangement.toComposeHorizontalArrangement(),
+                verticalAlignment = node.verticalAlignment.toComposeVerticalAlignment()
             ) {
                 node.children.forEach { child ->
                     QirRenderer(child)
                 }
             }
         }
-        is QirBox -> {
-            Box(
-                modifier = composeModifier,
-                contentAlignment = node.contentAlignment.toCompose()
-            ) {
-                node.children.forEach { child ->
-                     // If child has specific .align modifier, we need to wrap it in a Box with that align
-                     // because QirRenderer isn't scoped.
-                     if (child.modifier.align != null) {
-                         Box(modifier = Modifier.fillMaxSize(), contentAlignment = child.modifier.align!!.toCompose()) {
-                             QirRenderer(child)
-                         }
-                     } else {
-                         QirRenderer(child)
-                     }
-                }
-            }
-        }
-// ... (Text, Button, Card, Spacer remain essentially same but good to ensure imports)
-        is QirText -> {
-            Text(
-                text = node.text,
-                modifier = composeModifier,
-                color = Color.Black // Default to black on white screen
-            )
-        }
-        is QirButton -> {
-            Button(
-                onClick = {}, // Visual only
-                modifier = composeModifier
-            ) {
-                if (node.content != null) {
-                    QirRenderer(node.content)
-                } else {
-                    Text("Button")
-                }
-            }
-        }
-        is QirCard -> {
-            Card(modifier = composeModifier) {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    node.children.forEach { child ->
-                        QirRenderer(child)
-                    }
-                }
-            }
-        }
-        is QirSpacer -> {
-            Spacer(modifier = composeModifier)
-        }
-    }
-}
-
-// --- Mappers ---
-
+// ...
 @Composable
-fun QirArrangement.toCompose(): Arrangement.Vertical {
+fun QirArrangement.toComposeVerticalArrangement(): Arrangement.Vertical {
     return when(this) {
         QirArrangement.Top -> Arrangement.Top
         QirArrangement.Bottom -> Arrangement.Bottom
@@ -155,8 +101,7 @@ fun QirArrangement.toCompose(): Arrangement.Vertical {
 }
 
 @Composable
-@JvmName("toComposeHorizontalArrangement")
-fun QirArrangement.toCompose(): Arrangement.Horizontal {
+fun QirArrangement.toComposeHorizontalArrangement(): Arrangement.Horizontal {
     return when(this) {
         QirArrangement.Start -> Arrangement.Start
         QirArrangement.End -> Arrangement.End
@@ -169,7 +114,7 @@ fun QirArrangement.toCompose(): Arrangement.Horizontal {
 }
 
 @Composable
-fun QirAlignment.Horizontal.toCompose(): Alignment.Horizontal {
+fun QirAlignment.Horizontal.toComposeHorizontalAlignment(): Alignment.Horizontal {
     return when(this) {
         QirAlignment.Horizontal.Start -> Alignment.Start
         QirAlignment.Horizontal.CenterHorizontally -> Alignment.CenterHorizontally
@@ -178,7 +123,7 @@ fun QirAlignment.Horizontal.toCompose(): Alignment.Horizontal {
 }
 
 @Composable
-fun QirAlignment.Vertical.toCompose(): Alignment.Vertical {
+fun QirAlignment.Vertical.toComposeVerticalAlignment(): Alignment.Vertical {
     return when(this) {
         QirAlignment.Vertical.Top -> Alignment.Top
         QirAlignment.Vertical.CenterVertically -> Alignment.CenterVertically
