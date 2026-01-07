@@ -15,5 +15,6 @@ data class LessonState(
     val currentCode: String = "",
     val executionOutput: String = "",
     val isExecuting: Boolean = false,
-    val error: String? = null
+    val error: String? = null,
+    val codeError: com.example.codelearnapp.presentation.tutor.analysis.CodeError? = null
 ) : UiState

@@ -13,6 +13,7 @@ import com.example.codelearnapp.data.local.PreferencesManager
 import com.example.codelearnapp.domain.codeexecution.CodeExecutor
 import com.example.codelearnapp.domain.codeexecution.CodeExecutionResult
 import com.example.codelearnapp.domain.model.CourseCategory
+import com.example.codelearnapp.presentation.tutor.analysis.RuleBasedErrorDetector
 import kotlinx.coroutines.flow.combine
 
 class LessonViewModel(
@@ -22,7 +23,9 @@ class LessonViewModel(
     private val preferencesManager: PreferencesManager,
     private val codeExecutor: CodeExecutor
 ) : MviViewModel<LessonIntent, LessonState, LessonEffect>(LessonState()) {
-    
+
+    private val errorDetector = RuleBasedErrorDetector()
+
     override fun handleIntent(intent: LessonIntent) {
         when (intent) {
             is LessonIntent.LoadLesson -> loadLesson(intent.lessonId)
@@ -30,7 +33,10 @@ class LessonViewModel(
             is LessonIntent.CompleteLesson -> completeLesson()
             is LessonIntent.BackPressed -> sendEffect(LessonEffect.NavigateBack)
             is LessonIntent.DismissCelebration -> dismissCelebration()
-            is LessonIntent.UpdateCode -> setState { copy(currentCode = intent.code) }
+            is LessonIntent.UpdateCode -> {
+                val error = errorDetector.detect(intent.code)
+                setState { copy(currentCode = intent.code, codeError = error) }
+            }
             is LessonIntent.RunCode -> runCode()
         }
     }
