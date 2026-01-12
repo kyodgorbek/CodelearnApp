@@ -43,7 +43,7 @@ fun PrivacyPolicyScreen(
             )
             
             Text(
-                text = "Last updated: January 4, 2026",
+                text = "Last updated: January 12, 2026",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -113,7 +113,7 @@ fun PrivacyPolicyScreen(
             SectionTitle("9. Contact Us")
             SectionContent(
                 "If you have any questions about this Privacy Policy, please contact us at:\n\n" +
-                "Email: privacy@codelearnapp.com"
+                "Email: kyodgorbek@gmail.com"
             )
             
             Spacer(modifier = Modifier.height(32.dp))

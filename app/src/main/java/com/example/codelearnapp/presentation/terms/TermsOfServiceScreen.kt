@@ -43,7 +43,7 @@ fun TermsOfServiceScreen(
             )
             
             Text(
-                text = "Last updated: January 4, 2026",
+                text = "Last updated: January 12, 2026",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -141,7 +141,7 @@ fun TermsOfServiceScreen(
             SectionTitle("13. Contact Information")
             SectionContent(
                 "For questions about these Terms of Service, please contact us at:\n\n" +
-                "Email: support@codelearnapp.com"
+                "Email: kyodgorbek@gmail.com"
             )
             
             Spacer(modifier = Modifier.height(32.dp))

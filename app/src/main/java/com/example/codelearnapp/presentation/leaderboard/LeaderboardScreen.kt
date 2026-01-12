@@ -167,7 +167,7 @@ fun LeaderboardItem(
             // User info
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = entry.userName,
+                    text = entry.userName.substringBefore("@"),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = if (isCurrentUser) FontWeight.Bold else FontWeight.Normal,
                     color = contentColor
