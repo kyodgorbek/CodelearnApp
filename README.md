@@ -377,3 +377,50 @@ studio .
 
 **Built with ❤️ for aspiring developers**
 **Happy Learning! 🚀📱**
+
+---
+
+# 📱 About CodeLearn App
+
+CodeLearn is your ultimate companion for mastering programming on the go. Designed with the "learn by doing" philosophy, it brings the power of interactive coding education directly to your fingertips. Whether you are a complete beginner or looking to sharpen your skills, CodeLearn offers a structured, engaging, and effective way to learn code.
+
+## 🌟 Key Features
+
+*   **Interactive Lessons:** Bite-sized theory coupled with hands-on practice.
+*   **Real-time Feedback:** Instant validation of your code and quiz answers.
+*   **Progress Tracking:** Visual indicators of your journey through each course.
+*   **Gamified Experience:** Earn achievements and streaks to stay motivated.
+*   **Clean & Modern UI:** A beautiful, distraction-free interface built with Jetpack Compose.
+*   **Offline Capability:** Learn generic concepts effectively.
+*   **Multi-Language Support:** Diverse courses covering the most popular programming languages.
+
+## 📚 Comprehensive Course Catalog
+
+CodeLearn currently features **5 complete courses** with over **150 lessons**:
+
+### 1. 🐍 Python Basics
+Master the language of data science and AI.
+*   **Topics:** Variables, Loops, Functions, OOP, File Handling.
+*   **Best for:** Beginners, Data Science enthusiasts.
+
+### 2. 🤖 Kotlin for Android
+Build modern Android applications.
+*   **Topics:** Kotlin Syntax, Coroutines, Android SDK, Jetpack Compose.
+*   **Best for:** Aspiring Mobile Developers.
+
+### 3. ☕ Java Programming
+The foundation of enterprise software.
+*   **Topics:** OOP Principles, Collections, Streams, JVM fundamentals.
+*   **Best for:** Computer Science students, Backend development.
+
+### 4. 🌐 Web Development
+Create dynamic websites and applications.
+*   **Topics:** HTML5, CSS3, Modern JavaScript (ES6+), DOM Manipulation.
+*   **Best for:** Frontend Developers, Creative coders.
+
+### 5. 🗄️ SQL Mastery
+Manage and query databases effectively.
+*   **Topics:** Relational Databases, Complex Queries, Joins, Transactions.
+*   **Best for:** Backend Developers, Data Analysts.
+
+Start your coding journey today with CodeLearn! 🚀
