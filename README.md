@@ -1,16 +1,17 @@
 # CodeLearn - Complete Mimo-Style Learning App 📚
 
-A production-ready Android app with **150 interactive programming lessons** across **5 courses** (Python, Kotlin, Java, JavaScript, SQL).
+A production-ready Android app with **200+ interactive programming lessons** across **6 courses** (Python, Kotlin, Algorithms, Java, JavaScript, SQL).
 Built with **Jetpack Compose**, **Clean Architecture**, and **MVI pattern**.
 
 ---
 
 ## 📱 Features
 
-### 🎯 5 Complete Courses - 150 Lessons Total
+### 🎯 6 Complete Courses - 200+ Lessons Total
 
 * **Python Basics (30 lessons)** – Variables, data structures, OOP, file I/O
-* **Kotlin for Android (30 lessons)** – Kotlin fundamentals, coroutines, Android development
+* **Kotlin for Android (60 lessons)** – Kotlin fundamentals, coroutines, Android development
+* **Algorithms & Data Structures (60 lessons)** – Sorting, searching, trees, stacks, queues, graphs
 * **Java Programming (30 lessons)** – Core Java, OOP, collections, streams
 * **Web Development (30 lessons)** – HTML, CSS, JavaScript, APIs, async programming
 * **SQL Mastery (30 lessons)** – Queries, joins, transactions, database design
@@ -396,29 +397,34 @@ CodeLearn is your ultimate companion for mastering programming on the go. Design
 
 ## 📚 Comprehensive Course Catalog
 
-CodeLearn currently features **5 complete courses** with over **150 lessons**:
+CodeLearn currently features **6 complete courses** with over **200+ lessons**:
 
 ### 1. 🐍 Python Basics
 Master the language of data science and AI.
 *   **Topics:** Variables, Loops, Functions, OOP, File Handling.
 *   **Best for:** Beginners, Data Science enthusiasts.
 
-### 2. 🤖 Kotlin for Android
-Build modern Android applications.
-*   **Topics:** Kotlin Syntax, Coroutines, Android SDK, Jetpack Compose.
+### 2. 🤖 Kotlin for Android (60 Lessons)
+Build modern Android applications with a deep dive into the language.
+*   **Topics:** Kotlin Syntax, Coroutines, Android SDK, Jetpack Compose, Advanced Concepts.
 *   **Best for:** Aspiring Mobile Developers.
 
-### 3. ☕ Java Programming
+### 3. 🧠 Algorithms & Data Structures (60 Lessons)
+Master the fundamentals of computer science and technical interviews.
+*   **Topics:** Arrays, Linked Lists, Trees, Graphs, Sorting, Searching, Dynamic Programming.
+*   **Best for:** Technical Interview Prep, CS Students.
+
+### 4. ☕ Java Programming
 The foundation of enterprise software.
 *   **Topics:** OOP Principles, Collections, Streams, JVM fundamentals.
 *   **Best for:** Computer Science students, Backend development.
 
-### 4. 🌐 Web Development
+### 5. 🌐 Web Development
 Create dynamic websites and applications.
 *   **Topics:** HTML5, CSS3, Modern JavaScript (ES6+), DOM Manipulation.
 *   **Best for:** Frontend Developers, Creative coders.
 
-### 5. 🗄️ SQL Mastery
+### 6. 🗄️ SQL Mastery
 Manage and query databases effectively.
 *   **Topics:** Relational Databases, Complex Queries, Joins, Transactions.
 *   **Best for:** Backend Developers, Data Analysts.
