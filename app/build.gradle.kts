@@ -8,11 +8,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.codelearnapp"
+    namespace = "com.yodgorbek.codelearnapp"
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.example.codelearnapp"
+        applicationId = "com.yodgorbek.codelearnapp"
         minSdk = 26
         targetSdk = 36
         versionCode = 1

@@ -212,7 +212,7 @@ Lesson(
     order = 31,
     isCompleted = false,
     codeExample = """
-        # Your code example
+        # Your code yodgorbek
         print("Hello!")
     """.trimIndent(),
     quiz = Quiz(...) // optional

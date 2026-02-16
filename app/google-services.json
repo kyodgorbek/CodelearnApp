@@ -7,9 +7,9 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:108528417484:android:6255fe4881eb028258a069",
+        "mobilesdk_app_id": "1:108528417484:android:bc5441d2d1d2732b58a069",
         "android_client_info": {
-          "package_name": "com.example.codelearnapp"
+          "package_name": "com.yodgorbek.codelearnapp"
         }
       },
       "oauth_client": [],
