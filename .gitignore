@@ -43,3 +43,8 @@ backend/node_modules/
 # Logs
 # =========================
 *.log
+
+# =========================
+# Archives
+# =========================
+CodelearnApp.rar
