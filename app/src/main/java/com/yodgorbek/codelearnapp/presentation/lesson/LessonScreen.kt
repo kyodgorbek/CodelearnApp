@@ -203,26 +203,6 @@ fun LessonScreen(
                                             }
                                         }
 
-                                        // Input (Stdin) Section
-                                        if (!isCompose) {
-                                            Text("Input (Stdin):", style = MaterialTheme.typography.labelMedium)
-                                            OutlinedTextField(
-                                                value = state.codeInput,
-                                                onValueChange = { viewModel.sendIntent(LessonIntent.UpdateCodeInput(it)) },
-                                                modifier = Modifier
-                                                    .fillMaxWidth()
-                                                    .height(80.dp),
-                                                textStyle = MaterialTheme.typography.bodyMedium.copy(
-                                                    fontFamily = FontFamily.Monospace
-                                                ),
-                                                placeholder = { Text("Enter input for your program...") },
-                                                colors = OutlinedTextFieldDefaults.colors(
-                                                    focusedBorderColor = MaterialTheme.colorScheme.primary,
-                                                    unfocusedBorderColor = MaterialTheme.colorScheme.outline
-                                                )
-                                            )
-                                        }
-
                                         // Standard Run Code Button & Console (Always Available)
                                         Button(
                                             onClick = { viewModel.sendIntent(LessonIntent.RunCode) },
@@ -243,7 +223,7 @@ fun LessonScreen(
                                             }
                                         }
 
-                                        if (state.executionOutput.isNotEmpty()) {
+                                        if (state.executionOutput.isNotBlank()) {
                                             Surface(
                                                 modifier = Modifier.fillMaxWidth(),
                                                 color = Color(0xFF121212),
@@ -276,7 +256,7 @@ fun LessonScreen(
                                                         color = Color.Gray
                                                     )
                                                     Text(
-                                                        "Program completed with no output.",
+                                                        "⚠️ No output produced by this lesson.",
                                                         style = MaterialTheme.typography.bodySmall,
                                                         fontFamily = FontFamily.Monospace,
                                                         color = Color(0xFF9E9E9E)

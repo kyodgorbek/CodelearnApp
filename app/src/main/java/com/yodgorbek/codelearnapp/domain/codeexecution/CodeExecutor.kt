@@ -11,23 +11,26 @@ class CodeExecutor {
         code: String,
         language: String,
         stdin: String = "",
+        fileName: String? = null,
         localExecutor: suspend (String, String) -> CodeExecutionResult
     ): CodeExecutionResult {
         return withContext(Dispatchers.IO) {
             android.util.Log.d("CodeExecutor", "Starting execution for $language. Code length: ${code.length}")
+
+            val safeStdin = ""
 
             // Uncomment to force local execution for debugging or if backend is not running
             // return@withContext localExecutor(code)
 
             try {
                 val response = CodeExecutionService.executeCode(
-                    CodeExecutionRequest(script = code, language = language, stdin = stdin)
+                    CodeExecutionRequest(script = code, language = language, stdin = safeStdin, fileName = fileName)
                 )
 
                 if (response.error != null) {
                     // Network error or backend unreachable -> Fallback to local
                     android.util.Log.e("CodeExecutor", "Piston execution failed: ${response.error}. Using Local Fallback.")
-                    localExecutor(code, stdin)
+                    localExecutor(code, safeStdin)
                 } else {
                     // Successful cloud execution
                     android.util.Log.d("CodeExecutor", "Piston execution success. Output: ${response.output}")
@@ -36,17 +39,25 @@ class CodeExecutor {
             } catch (e: Exception) {
                 android.util.Log.e("CodeExecutor", "Exception during Piston call: ${e.message}. Using Local Fallback.")
                 e.printStackTrace()
-                localExecutor(code, stdin)
+                localExecutor(code, safeStdin)
             }
         }
     }
 
     suspend fun executeKotlinCode(code: String, stdin: String = ""): CodeExecutionResult {
-        return executeWithFallback(code, "kotlin", stdin) { c, s -> executeLocalKotlinCode(c) }
+        val prepared = prepareKotlinCode(code)
+        return executeWithFallback(prepared, "kotlin", stdin) { c, s -> executeLocalKotlinCode(c) }
     }
 
     suspend fun executeJavaCode(code: String, stdin: String = ""): CodeExecutionResult {
-        return executeWithFallback(code, "java", stdin) { c, s -> executeLocalJavaCode(c) }
+        val className = extractJavaClassName(code) ?: "Main"
+        val finalCode = if (hasJavaMainMethod(code)) {
+            code
+        } else {
+            generateJavaWrapper(code)
+        }
+        android.util.Log.d("PISTON_FINAL_CODE", finalCode)
+        return executeWithFallback(finalCode, "java", stdin, fileName = "$className.java") { c, s -> executeLocalJavaCode(c) }
     }
 
     suspend fun executePythonCode(code: String, stdin: String = ""): CodeExecutionResult {
@@ -59,6 +70,146 @@ class CodeExecutor {
 
     suspend fun executeSqlCode(code: String, stdin: String = ""): CodeExecutionResult {
         return executeWithFallback(code, "sql", stdin) { c, s -> executeLocalSqlCode(c) }
+    }
+
+    private fun prepareKotlinCode(code: String): String {
+        if (Regex("\\bfun\\s+main\\s*\\(").containsMatchIn(code)) return code
+
+        val fnMatch = Regex("\\bfun\\s+([A-Za-z_][A-Za-z0-9_]*)\\s*\\(([^)]*)\\)")
+            .findAll(code)
+            .map { it.groupValues }
+            .firstOrNull { it[1] != "main" }
+
+        val fnName = fnMatch?.get(1)
+        val params = fnMatch?.get(2)?.trim().orEmpty()
+        val paramCount = if (params.isBlank()) 0 else params.split(",").size
+
+        val callExpr = when {
+            fnName == null -> "input"
+            paramCount == 0 -> "$fnName()"
+            paramCount == 1 -> "$fnName(input)"
+            else -> "input"
+        }
+
+        val mainBlock = buildString {
+            append("fun main() {\n")
+            append("    val input = 5\n")
+            append("    val result = $callExpr\n")
+            append("    println(\"Input: ${'$'}input\")\n")
+            append("    println(\"Output: ${'$'}result\")\n")
+            append("}\n")
+        }
+
+        return code.trimEnd() + "\n\n" + mainBlock
+    }
+
+    private data class JavaStaticIntMethod(
+        val className: String?,
+        val name: String
+    )
+
+    private fun hasJavaMainMethod(code: String): Boolean {
+        return Regex("\\bpublic\\s+static\\s+void\\s+main\\s*\\(").containsMatchIn(code)
+    }
+
+    private fun extractJavaClassName(code: String): String? {
+        val publicMatch = Regex("\\bpublic\\s+class\\s+([A-Za-z_][A-Za-z0-9_]*)").find(code)
+        if (publicMatch != null) return publicMatch.groupValues[1]
+        val classMatch = Regex("\\bclass\\s+([A-Za-z_][A-Za-z0-9_]*)").find(code)
+        return classMatch?.groupValues?.get(1)
+    }
+
+    private fun generateJavaWrapper(code: String): String {
+        val (header, bodyRaw) = splitJavaHeader(code)
+        val body = removePublicClassModifier(bodyRaw)
+        val methodInfo = findFirstStaticIntMethod(body)
+
+        val callExpr = if (methodInfo != null) {
+            val target = if (methodInfo.className != null) {
+                "${methodInfo.className}.${methodInfo.name}"
+            } else {
+                methodInfo.name
+            }
+            "$target(input)"
+        } else {
+            null
+        }
+
+        val mainMethod = buildString {
+            append("public static void main(String[] args) {\n")
+            append("    int input = 5;\n")
+            if (callExpr != null) {
+                append("    int result = $callExpr;\n")
+                append("    System.out.println(\"Input: \" + input);\n")
+                append("    System.out.println(\"Output: \" + result);\n")
+            } else {
+                append("    System.out.println(\"This lesson defines structures only.\");\n")
+            }
+            append("}\n")
+        }
+
+        val wrappedBody = buildString {
+            append(body.trimEnd())
+            if (body.isNotBlank()) append("\n\n")
+            append("public class Main {\n")
+            append(indentCode(mainMethod))
+            append("\n}\n")
+        }
+
+        return buildString {
+            if (header.isNotBlank()) {
+                append(header.trimEnd()).append("\n\n")
+            }
+            append(wrappedBody.trimEnd())
+        }
+    }
+
+    private fun splitJavaHeader(code: String): Pair<String, String> {
+        val lines = code.lines()
+        val headerLines = mutableListOf<String>()
+        var i = 0
+        while (i < lines.size) {
+            val trimmed = lines[i].trim()
+            if (trimmed.startsWith("package ") || trimmed.startsWith("import ") || trimmed.isEmpty()) {
+                headerLines.add(lines[i])
+                i++
+            } else {
+                break
+            }
+        }
+        val header = headerLines.joinToString("\n").trimEnd()
+        val body = lines.drop(i).joinToString("\n").trimEnd()
+        return header to body
+    }
+
+    private fun removePublicClassModifier(code: String): String {
+        return code.replace(Regex("\\bpublic\\s+class\\s+"), "class ")
+    }
+
+    private fun findFirstStaticIntMethod(code: String): JavaStaticIntMethod? {
+        val classRegex = Regex("\\bclass\\s+([A-Za-z_][A-Za-z0-9_]*)")
+        val methodRegex = Regex("\\bstatic\\s+int\\s+([A-Za-z_][A-Za-z0-9_]*)\\s*\\(\\s*int\\s+[A-Za-z_][A-Za-z0-9_]*\\s*\\)")
+        var currentClass: String? = null
+
+        for (line in code.lines()) {
+            val classMatch = classRegex.find(line)
+            if (classMatch != null) {
+                currentClass = classMatch.groupValues[1]
+            }
+            val methodMatch = methodRegex.find(line)
+            if (methodMatch != null) {
+                val methodName = methodMatch.groupValues[1]
+                return JavaStaticIntMethod(currentClass, methodName)
+            }
+        }
+        return null
+    }
+
+    private fun indentCode(code: String, spaces: Int = 4): String {
+        val prefix = " ".repeat(spaces)
+        return code.lines().joinToString("\n") { line ->
+            if (line.isBlank()) "" else prefix + line
+        }.trimEnd()
     }
 
     // --- Local Simulation Logic (Preserved as Fallback) ---

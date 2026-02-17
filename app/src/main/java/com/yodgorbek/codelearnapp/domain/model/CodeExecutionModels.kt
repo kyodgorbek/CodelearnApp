@@ -7,7 +7,8 @@ data class CodeExecutionRequest(
     val script: String,
     val language: String,
     val versionIndex: String = "0",
-    val stdin: String = ""
+    val stdin: String = "",
+    val fileName: String? = null
 )
 
 @Serializable

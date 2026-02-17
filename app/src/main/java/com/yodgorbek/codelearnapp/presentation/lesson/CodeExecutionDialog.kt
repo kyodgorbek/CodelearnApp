@@ -22,9 +22,9 @@ fun CodeExecutionDialog(
     onDismiss: () -> Unit
 ) {
     var code by remember { mutableStateOf(initialCode) }
-    var stdin by remember { mutableStateOf("") }
     var output by remember { mutableStateOf("") }
     var isExecuting by remember { mutableStateOf(false) }
+    var hasExecuted by remember { mutableStateOf(false) }
     val codeExecutor = remember { CodeExecutor() }
     val scope = rememberCoroutineScope()
 
@@ -62,36 +62,21 @@ fun CodeExecutionDialog(
 
                 Spacer(modifier = Modifier.height(8.dp))
 
-                // Input (Stdin)
-                Text("Input (Stdin):", style = MaterialTheme.typography.labelMedium)
-                OutlinedTextField(
-                    value = stdin,
-                    onValueChange = { stdin = it },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(80.dp),
-                    textStyle = MaterialTheme.typography.bodyMedium.copy(
-                        fontFamily = FontFamily.Monospace
-                    ),
-                    placeholder = { Text("Enter input for your program...") }
-                )
-
-                Spacer(modifier = Modifier.height(8.dp))
-
                 // Run Button
                 Button(
                     onClick = {
                         if (isExecuting) return@Button
                         isExecuting = true
+                        hasExecuted = true
                         output = "Executing..."
 
                         scope.launch {
                              val result = when (language.lowercase()) {
-                                "kotlin" -> codeExecutor.executeKotlinCode(code, stdin)
-                                "javascript", "js", "nodejs" -> codeExecutor.executeJavaScriptCode(code, stdin)
-                                "python", "python3" -> codeExecutor.executePythonCode(code, stdin)
-                                "java" -> codeExecutor.executeJavaCode(code, stdin)
-                                "sql", "sqlite" -> codeExecutor.executeSqlCode(code, stdin)
+                                "kotlin" -> codeExecutor.executeKotlinCode(code, "")
+                                "javascript", "js", "nodejs" -> codeExecutor.executeJavaScriptCode(code, "")
+                                "python", "python3" -> codeExecutor.executePythonCode(code, "")
+                                "java" -> codeExecutor.executeJavaCode(code, "")
+                                "sql", "sqlite" -> codeExecutor.executeSqlCode(code, "")
                                 else -> CodeExecutionResult.Error("Unsupported language: $language")
                             }
 
@@ -119,7 +104,7 @@ fun CodeExecutionDialog(
                 Spacer(modifier = Modifier.height(8.dp))
 
                 // Output
-                if (output.isNotEmpty()) {
+                if (output.isNotBlank()) {
                     Text("Output:", style = MaterialTheme.typography.titleSmall)
                     Spacer(modifier = Modifier.height(4.dp))
                     Surface(
@@ -137,6 +122,26 @@ fun CodeExecutionDialog(
                             style = MaterialTheme.typography.bodySmall,
                             fontFamily = FontFamily.Monospace,
                             color = Color.White
+                        )
+                    }
+                } else if (hasExecuted && !isExecuting) {
+                    Text("Output:", style = MaterialTheme.typography.titleSmall)
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Surface(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(0.6f),
+                        color = Color(0xFF1E1E1E),
+                        shape = MaterialTheme.shapes.small
+                    ) {
+                        Text(
+                            text = "⚠️ No output produced by this lesson.",
+                            modifier = Modifier
+                                .padding(12.dp)
+                                .verticalScroll(rememberScrollState()),
+                            style = MaterialTheme.typography.bodySmall,
+                            fontFamily = FontFamily.Monospace,
+                            color = Color(0xFF9E9E9E)
                         )
                     }
                 }

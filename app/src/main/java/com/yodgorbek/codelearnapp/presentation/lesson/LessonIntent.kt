@@ -9,6 +9,5 @@ sealed class LessonIntent : UiIntent {
     object BackPressed : LessonIntent()
     object DismissCelebration : LessonIntent()
     data class UpdateCode(val code: String) : LessonIntent()
-    data class UpdateCodeInput(val input: String) : LessonIntent()
     object RunCode : LessonIntent()
 }

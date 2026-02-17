@@ -37,9 +37,6 @@ class LessonViewModel(
                 val error = errorDetector.detect(intent.code)
                 setState { copy(currentCode = intent.code, codeError = error) }
             }
-            is LessonIntent.UpdateCodeInput -> {
-                setState { copy(codeInput = intent.input) }
-            }
             is LessonIntent.RunCode -> runCode()
         }
     }
@@ -62,7 +59,6 @@ class LessonViewModel(
                         lesson = lesson,
                         autoPlayVideo = autoPlay,
                         currentCode = lesson?.codeExample ?: "",
-                        codeInput = lesson?.defaultInput ?: "",
                         error = null
                     )
                 }
@@ -73,11 +69,27 @@ class LessonViewModel(
     private fun runCode() {
         val lesson = state.value.lesson ?: return
         val code = state.value.currentCode
-        val input = state.value.codeInput
+        val input = ""
 
         setState { copy(isExecuting = true, executionOutput = "") }
 
         viewModelScope.launch {
+            val isCompose = code.contains("@Composable") ||
+                code.contains("Modifier") ||
+                code.contains("setContent") ||
+                code.contains("NavHost")
+
+            if (isCompose) {
+                setState {
+                    copy(
+                        isExecuting = false,
+                        hasExecuted = true,
+                        executionOutput = "This lesson contains UI code and cannot run in the console."
+                    )
+                }
+                return@launch
+            }
+
             // Use explicit language from lesson, fallback to reliable detection if needed
             val language = lesson.language.lowercase()
             
