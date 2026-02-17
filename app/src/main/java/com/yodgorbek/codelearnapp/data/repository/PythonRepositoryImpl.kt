@@ -296,7 +296,7 @@ object PythonRepositoryImpl {
 
                 # While with break
                 while True:
-                    user_input = input("Enter 'quit' to exit: ")
+                    user_input = "quit"
                     if user_input == "quit":
                         break
             """.trimIndent()
@@ -464,7 +464,7 @@ object PythonRepositoryImpl {
 
                 # Multiple exceptions
                 try:
-                    number = int(input("Enter a number: "))
+                    number = 5
                     result = 10 / number
                 except ValueError:
                     print("Invalid input!")
@@ -626,9 +626,9 @@ object PythonRepositoryImpl {
                     print("Operations: +, -, *, /")
 
                     try:
-                        num1 = float(input("Enter first number: "))
-                        operation = input("Enter operation: ")
-                        num2 = float(input("Enter second number: "))
+                        num1 = 10.0
+                        operation = "+"
+                        num2 = 5.0
 
                         if operation == '+':
                             result = num1 + num2

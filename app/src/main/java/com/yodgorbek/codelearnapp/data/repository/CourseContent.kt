@@ -38,7 +38,6 @@ object CourseContent {
             """.trimIndent()),
         Lesson("jd-3", "java-dsa", "Input & Output (Scanner)", "Learn how to print to the console and read user input using the Scanner class.", LessonType.CODE_PRACTICE, 3, false,
             codeExample = """
-                import java.util.Scanner;
                 public class Main {
                     public static void main(String[] args) {
                         System.out.println("Enter name (simulated):");
