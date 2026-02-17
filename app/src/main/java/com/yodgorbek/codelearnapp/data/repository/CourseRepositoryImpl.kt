@@ -3360,7 +3360,7 @@ object CourseRepositoryImpl {
             type = LessonType.THEORY,
             order = 8,
             isCompleted = false,
-            codeExample = "name = input('What is your name? ')\nprint('Hi ' + name)"
+            codeExample = "name = 'Kid Coder'\nprint('Hi ' + name)"
         ),
         Lesson(
             id = "pk-9",
