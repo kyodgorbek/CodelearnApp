@@ -40,7 +40,8 @@ object CodeExecutionService {
             val pistonRequest = PistonRequest(
                 language = languageConfig.language,
                 version = languageConfig.version,
-                files = listOf(PistonFile(content = request.script))
+                files = listOf(PistonFile(content = request.script)),
+                stdin = request.stdin
             )
 
             val response: PistonResponse = client.post("$PISTON_URL/execute") {
@@ -121,7 +122,8 @@ object CodeExecutionService {
     private data class PistonRequest(
         val language: String,
         val version: String,
-        val files: List<PistonFile>
+        val files: List<PistonFile>,
+        val stdin: String = ""
     )
 
     @kotlinx.serialization.Serializable

@@ -155,13 +155,7 @@ fun LessonScreen(
 
                             // Code Section (Theory Example or Interactive Practice)
                             lesson.codeExample?.let {
-                                val language = when {
-                                    lesson.courseId.contains("python") || lesson.courseId.contains("data-science") -> "python"
-                                    lesson.courseId.contains("kotlin") -> "kotlin"
-                                    lesson.courseId.contains("java") -> "java"
-                                    lesson.courseId.contains("web-dev") || lesson.courseId.contains("js") -> "javascript"
-                                    else -> "kotlin"
-                                }
+                                val language = lesson.language
 
                                 Text(
                                     if (lesson.type == LessonType.CODE_PRACTICE) "Interactive Practice" else "Code Example",
@@ -209,6 +203,26 @@ fun LessonScreen(
                                             }
                                         }
 
+                                        // Input (Stdin) Section
+                                        if (!isCompose) {
+                                            Text("Input (Stdin):", style = MaterialTheme.typography.labelMedium)
+                                            OutlinedTextField(
+                                                value = state.codeInput,
+                                                onValueChange = { viewModel.sendIntent(LessonIntent.UpdateCodeInput(it)) },
+                                                modifier = Modifier
+                                                    .fillMaxWidth()
+                                                    .height(80.dp),
+                                                textStyle = MaterialTheme.typography.bodyMedium.copy(
+                                                    fontFamily = FontFamily.Monospace
+                                                ),
+                                                placeholder = { Text("Enter input for your program...") },
+                                                colors = OutlinedTextFieldDefaults.colors(
+                                                    focusedBorderColor = MaterialTheme.colorScheme.primary,
+                                                    unfocusedBorderColor = MaterialTheme.colorScheme.outline
+                                                )
+                                            )
+                                        }
+
                                         // Standard Run Code Button & Console (Always Available)
                                         Button(
                                             onClick = { viewModel.sendIntent(LessonIntent.RunCode) },
@@ -246,6 +260,26 @@ fun LessonScreen(
                                                         style = MaterialTheme.typography.bodySmall,
                                                         fontFamily = FontFamily.Monospace,
                                                         color = Color.White
+                                                    )
+                                                }
+                                            }
+                                        } else if (state.hasExecuted && !state.isExecuting) {
+                                            Surface(
+                                                modifier = Modifier.fillMaxWidth(),
+                                                color = Color(0xFF121212),
+                                                shape = RoundedCornerShape(8.dp)
+                                            ) {
+                                                Column(modifier = Modifier.padding(12.dp)) {
+                                                    Text(
+                                                        "Output:",
+                                                        style = MaterialTheme.typography.labelSmall,
+                                                        color = Color.Gray
+                                                    )
+                                                    Text(
+                                                        "Program completed with no output.",
+                                                        style = MaterialTheme.typography.bodySmall,
+                                                        fontFamily = FontFamily.Monospace,
+                                                        color = Color(0xFF9E9E9E)
                                                     )
                                                 }
                                             }

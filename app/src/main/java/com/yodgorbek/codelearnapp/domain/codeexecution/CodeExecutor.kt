@@ -10,7 +10,8 @@ class CodeExecutor {
     private suspend fun executeWithFallback(
         code: String,
         language: String,
-        localExecutor: suspend (String) -> CodeExecutionResult
+        stdin: String = "",
+        localExecutor: suspend (String, String) -> CodeExecutionResult
     ): CodeExecutionResult {
         return withContext(Dispatchers.IO) {
             android.util.Log.d("CodeExecutor", "Starting execution for $language. Code length: ${code.length}")
@@ -20,13 +21,13 @@ class CodeExecutor {
 
             try {
                 val response = CodeExecutionService.executeCode(
-                    CodeExecutionRequest(script = code, language = language)
+                    CodeExecutionRequest(script = code, language = language, stdin = stdin)
                 )
 
                 if (response.error != null) {
                     // Network error or backend unreachable -> Fallback to local
                     android.util.Log.e("CodeExecutor", "Piston execution failed: ${response.error}. Using Local Fallback.")
-                    localExecutor(code)
+                    localExecutor(code, stdin)
                 } else {
                     // Successful cloud execution
                     android.util.Log.d("CodeExecutor", "Piston execution success. Output: ${response.output}")
@@ -35,29 +36,29 @@ class CodeExecutor {
             } catch (e: Exception) {
                 android.util.Log.e("CodeExecutor", "Exception during Piston call: ${e.message}. Using Local Fallback.")
                 e.printStackTrace()
-                localExecutor(code)
+                localExecutor(code, stdin)
             }
         }
     }
 
-    suspend fun executeKotlinCode(code: String): CodeExecutionResult {
-        return executeWithFallback(code, "kotlin") { executeLocalKotlinCode(it) }
+    suspend fun executeKotlinCode(code: String, stdin: String = ""): CodeExecutionResult {
+        return executeWithFallback(code, "kotlin", stdin) { c, s -> executeLocalKotlinCode(c) }
     }
 
-    suspend fun executeJavaCode(code: String): CodeExecutionResult {
-        return executeWithFallback(code, "java") { executeLocalJavaCode(it) }
+    suspend fun executeJavaCode(code: String, stdin: String = ""): CodeExecutionResult {
+        return executeWithFallback(code, "java", stdin) { c, s -> executeLocalJavaCode(c) }
     }
 
-    suspend fun executePythonCode(code: String): CodeExecutionResult {
-        return executeWithFallback(code, "python3") { executeLocalPythonCode(it) }
+    suspend fun executePythonCode(code: String, stdin: String = ""): CodeExecutionResult {
+        return executeWithFallback(code, "python3", stdin) { c, s -> executeLocalPythonCode(c, s) }
     }
 
-    suspend fun executeJavaScriptCode(code: String): CodeExecutionResult {
-        return executeWithFallback(code, "nodejs") { executeLocalJavaScriptCode(it) }
+    suspend fun executeJavaScriptCode(code: String, stdin: String = ""): CodeExecutionResult {
+        return executeWithFallback(code, "nodejs", stdin) { c, s -> executeLocalJavaScriptCode(c) }
     }
 
-    suspend fun executeSqlCode(code: String): CodeExecutionResult {
-        return executeWithFallback(code, "sql") { executeLocalSqlCode(it) }
+    suspend fun executeSqlCode(code: String, stdin: String = ""): CodeExecutionResult {
+        return executeWithFallback(code, "sql", stdin) { c, s -> executeLocalSqlCode(c) }
     }
 
     // --- Local Simulation Logic (Preserved as Fallback) ---
@@ -340,12 +341,22 @@ class CodeExecutor {
         }
     }
 
-    private suspend fun executeLocalPythonCode(code: String): CodeExecutionResult {
+    private suspend fun executeLocalPythonCode(code: String, stdin: String = ""): CodeExecutionResult {
         return withContext(Dispatchers.Default) {
             try {
                 val output = StringBuilder()
                 val variables = mutableMapOf<String, String>()
                 val collections = mutableMapOf<String, Any>()
+                val stdinLines = stdin.lines().toMutableList()
+                var stdinIndex = 0
+
+                fun readInput(): String {
+                    return if (stdinIndex < stdinLines.size) {
+                        stdinLines[stdinIndex++]
+                    } else {
+                        ""
+                    }
+                }
 
                 fun eval(expr: String): String {
                     val trimmed = expr.trim().trim('"').trim('\'')
@@ -354,6 +365,10 @@ class CodeExecutor {
                         var content = expr.trim().substring(2, expr.trim().length - 1)
                         variables.forEach { (k, v) -> content = content.replace("{$k}", v) }
                         return content
+                    }
+                    // Handle input() call
+                    if (trimmed.contains("input(")) {
+                        return readInput()
                     }
                     // Simple arithmetic for Python
                     if (trimmed.contains("+") || trimmed.contains("-") || trimmed.contains("*")) {
@@ -379,7 +394,7 @@ class CodeExecutor {
                         } else {
                             output.append(eval(expr).replace("true", "True").replace("false", "False").replace("null", "None")).append("\n")
                         }
-                    } else if (t.contains("=") && !t.contains("(")) {
+                    } else if (t.contains("=") && (!t.contains("(") || t.contains("input("))) {
                         val name = t.substringBefore("=").trim()
                         val value = t.substringAfter("=").trim()
                         if (value == "{}") collections[name] = mutableMapOf<String, String>()

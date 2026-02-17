@@ -7,6 +7,8 @@ import com.yodgorbek.codelearnapp.domain.model.Lesson
 import com.yodgorbek.codelearnapp.domain.model.LessonType
 import com.yodgorbek.codelearnapp.domain.model.Quiz
 import com.yodgorbek.codelearnapp.domain.repository.CourseRepository
+import com.yodgorbek.codelearnapp.data.repository.JavaDpLeetcodeRepositoryImpl
+import com.yodgorbek.codelearnapp.data.repository.LeetcodePatternsRepositoryImpl
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
@@ -114,20 +116,42 @@ object CourseRepositoryImpl {
             totalLessons = 30,
             completedLessons = 0,
             category = CourseCategory.JETPACK_COMPOSE
+        ),
+        Course(
+            id = "java-dp-patterns",
+            title = "Java DP Patterns",
+            description = "Master Dynamic Programming patterns in Java. 30 Comprehensive Lessons.",
+            icon = "📊",
+            progress = 0.0f,
+            totalLessons = 30,
+            completedLessons = 0,
+            category = CourseCategory.JAVA_DSA
+        ),
+        Course(
+            id = "leetcode-patterns",
+            title = "LeetCode Patterns",
+            description = "Master common LeetCode patterns for interviews. 30 Comprehensive Lessons.",
+            icon = "🎯",
+            progress = 0.0f,
+            totalLessons = 30,
+            completedLessons = 0,
+            category = CourseCategory.JAVA_DSA
         )
     )
 
     fun getMockLessons(): List<Lesson> {
         return getPythonLessons() +
-                getKotlinLessons() +
-                getJavaLessons() +
-                getJavaScriptLessons() +
-                getSqlLessons() +
-                getDataScienceLessons() +
-                getPythonKidsLessons() +
-                getJavaDsaLessons() +
-                getKotlinDsaLessons() +
-                getComposeLessons()
+            getKotlinLessons() +
+            getJavaLessons() +
+            getJavaScriptLessons() +
+            getSqlLessons() +
+            getDataScienceLessons() +
+            getPythonKidsLessons() +
+            getJavaDsaLessons() +
+            getKotlinDsaLessons() +
+            getComposeLessons() +
+            getJavaDpLessons() +
+            getLeetcodePatternLessons()
     }
 
     // PYTHON LESSONS (30)
@@ -148,6 +172,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "java-1",
             courseId = "java-programming",
+            language = "java",
             title = "Introduction to Java",
             content = "Java is a powerful, object-oriented programming language used for building enterprise applications, Android apps, and more.",
             type = LessonType.THEORY,
@@ -165,6 +190,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "java-2",
             courseId = "java-programming",
+            language = "java",
             title = "Variables and Data Types",
             content = "Java is statically typed, meaning you must declare variable types.",
             type = LessonType.THEORY,
@@ -190,6 +216,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "java-3",
             courseId = "java-programming",
+            language = "java",
             title = "Practice: Variables",
             content = "Create variables for a product's name, price, and quantity.",
             type = LessonType.CODE_PRACTICE,
@@ -200,6 +227,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "java-4",
             courseId = "java-programming",
+            language = "java",
             title = "Operators",
             content = "Java supports arithmetic, comparison, and logical operators.",
             type = LessonType.THEORY,
@@ -231,6 +259,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "java-5",
             courseId = "java-programming",
+            language = "java",
             title = "Quiz: Java Basics",
             content = "Test your understanding of Java fundamentals",
             type = LessonType.QUIZ,
@@ -247,6 +276,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "java-6",
             courseId = "java-programming",
+            language = "java",
             title = "If-Else Statements",
             content = "Control flow with conditional statements.",
             type = LessonType.THEORY,
@@ -275,6 +305,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "java-7",
             courseId = "java-programming",
+            language = "java",
             title = "Switch Statement",
             content = "Handle multiple conditions efficiently.",
             type = LessonType.THEORY,
@@ -308,6 +339,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "java-8",
             courseId = "java-programming",
+            language = "java",
             title = "For Loop",
             content = "Iterate with for loops.",
             type = LessonType.THEORY,
@@ -333,6 +365,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "java-9",
             courseId = "java-programming",
+            language = "java",
             title = "While and Do-While Loops",
             content = "Loop while a condition is true.",
             type = LessonType.THEORY,
@@ -361,6 +394,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "java-10",
             courseId = "java-programming",
+            language = "java",
             title = "Practice: Loops",
             content = "Print numbers from 1 to 10 using a for loop.",
             type = LessonType.CODE_PRACTICE,
@@ -372,6 +406,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "java-11",
             courseId = "java-programming",
+            language = "java",
             title = "Quiz: Control Flow",
             content = "Test your knowledge of loops and conditionals",
             type = LessonType.QUIZ,
@@ -388,6 +423,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "java-12",
             courseId = "java-programming",
+            language = "java",
             title = "Methods",
             content = "Methods are reusable blocks of code.",
             type = LessonType.THEORY,
@@ -417,6 +453,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "java-13",
             courseId = "java-programming",
+            language = "java",
             title = "Method Overloading",
             content = "Multiple methods with the same name but different parameters.",
             type = LessonType.THEORY,
@@ -447,6 +484,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "java-14",
             courseId = "java-programming",
+            language = "java",
             title = "Arrays",
             content = "Store multiple values in a single variable.",
             type = LessonType.THEORY,
@@ -475,6 +513,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "java-15",
             courseId = "java-programming",
+            language = "java",
             title = "Practice: Arrays",
             content = "Create an array of 5 numbers and print each element.",
             type = LessonType.CODE_PRACTICE,
@@ -485,6 +524,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "java-16",
             courseId = "java-programming",
+            language = "java",
             title = "Classes and Objects",
             content = "Object-oriented programming with classes.",
             type = LessonType.THEORY,
@@ -522,6 +562,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "java-17",
             courseId = "java-programming",
+            language = "java",
             title = "Constructors",
             content = "Special methods that initialize new objects.",
             type = LessonType.THEORY,
@@ -559,6 +600,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "java-18",
             courseId = "java-programming",
+            language = "java",
             title = "Quiz: OOP Basics",
             content = "Test your understanding of classes and objects",
             type = LessonType.QUIZ,
@@ -575,6 +617,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "java-19",
             courseId = "java-programming",
+            language = "java",
             title = "Inheritance",
             content = "Create new classes based on existing ones.",
             type = LessonType.THEORY,
@@ -615,6 +658,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "java-20",
             courseId = "java-programming",
+            language = "java",
             title = "Abstract Classes",
             content = "Classes that cannot be instantiated directly.",
             type = LessonType.THEORY,
@@ -657,6 +701,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "java-21",
             courseId = "java-programming",
+            language = "java",
             title = "Practice: Inheritance",
             content = "Create a Rectangle class that extends Shape.",
             type = LessonType.CODE_PRACTICE,
@@ -667,6 +712,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "java-22",
             courseId = "java-programming",
+            language = "java",
             title = "Interfaces",
             content = "Define contracts that classes must implement.",
             type = LessonType.THEORY,
@@ -706,6 +752,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "java-23",
             courseId = "java-programming",
+            language = "java",
             title = "Quiz: Advanced OOP",
             content = "Test your understanding of inheritance and interfaces",
             type = LessonType.QUIZ,
@@ -722,6 +769,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "java-24",
             courseId = "java-programming",
+            language = "java",
             title = "Exception Handling",
             content = "Handle runtime errors gracefully.",
             type = LessonType.THEORY,
@@ -758,6 +806,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "java-25",
             courseId = "java-programming",
+            language = "java",
             title = "Collections Framework: ArrayList",
             content = "Dynamic arrays that can grow and shrink.",
             type = LessonType.THEORY,
@@ -799,6 +848,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "java-26",
             courseId = "java-programming",
+            language = "java",
             title = "Collections: HashMap",
             content = "Store key-value pairs for efficient lookups.",
             type = LessonType.THEORY,
@@ -837,6 +887,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "java-27",
             courseId = "java-programming",
+            language = "java",
             title = "Practice: Collections",
             content = "Create a HashMap to store phone numbers.",
             type = LessonType.CODE_PRACTICE,
@@ -847,6 +898,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "java-28",
             courseId = "java-programming",
+            language = "java",
             title = "File I/O",
             content = "Read from and write to files.",
             type = LessonType.THEORY,
@@ -882,6 +934,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "java-29",
             courseId = "java-programming",
+            language = "java",
             title = "Quiz: Advanced Java",
             content = "Test your understanding of collections and file I/O",
             type = LessonType.QUIZ,
@@ -898,6 +951,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "java-30",
             courseId = "java-programming",
+            language = "java",
             title = "Final Challenge: Bank System",
             content = "Create a simple banking system with accounts and transactions.",
             type = LessonType.CHALLENGE,
@@ -952,6 +1006,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "js-1",
             courseId = "web-dev",
+            language = "javascript",
             title = "Introduction to JavaScript",
             content = "JavaScript is a versatile programming language that makes web pages interactive.",
             type = LessonType.THEORY,
@@ -969,6 +1024,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "js-2",
             courseId = "web-dev",
+            language = "javascript",
             title = "Variables and Data Types",
             content = "JavaScript has dynamic typing - variables can hold any type of data.",
             type = LessonType.THEORY,
@@ -992,19 +1048,21 @@ object CourseRepositoryImpl {
         Lesson(
             id = "js-3",
             courseId = "web-dev",
+            language = "javascript",
             title = "Practice: Variables",
             content = "Create variables for a shopping cart item.",
             type = LessonType.CODE_PRACTICE,
             order = 3,
             isCompleted = false,
             codeExample = "const itemName = \"Laptop\";\n" +
-                    "let price = 999.99;\n" +
-                    "let quantity = 2;\n" +
-                    "console.log(`${'$'}{itemName}: ${'$'}${'$'}{price} x ${'$'}{quantity}`);"
+                "let price = 999.99;\n" +
+                "let quantity = 2;\n" +
+                "console.log(`${'$'}{itemName}: ${'$'}${'$'}{price} x ${'$'}{quantity}`);"
         ),
         Lesson(
             id = "js-4",
             courseId = "web-dev",
+            language = "javascript",
             title = "Operators",
             content = "JavaScript has arithmetic, comparison, and logical operators.",
             type = LessonType.THEORY,
@@ -1032,6 +1090,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "js-5",
             courseId = "web-dev",
+            language = "javascript",
             title = "Quiz: JavaScript Basics",
             content = "Test your understanding of JavaScript fundamentals",
             type = LessonType.QUIZ,
@@ -1048,6 +1107,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "js-6",
             courseId = "web-dev",
+            language = "javascript",
             title = "Conditional Statements",
             content = "Make decisions in your code with if/else statements.",
             type = LessonType.THEORY,
@@ -1081,6 +1141,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "js-7",
             courseId = "web-dev",
+            language = "javascript",
             title = "Loops",
             content = "Repeat code with different types of loops.",
             type = LessonType.THEORY,
@@ -1116,6 +1177,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "js-8",
             courseId = "web-dev",
+            language = "javascript",
             title = "Practice: Loops",
             content = "Print numbers 1 to 5 using a for loop.",
             type = LessonType.CODE_PRACTICE,
@@ -1126,6 +1188,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "js-9",
             courseId = "web-dev",
+            language = "javascript",
             title = "Functions",
             content = "Create reusable blocks of code with functions.",
             type = LessonType.THEORY,
@@ -1160,6 +1223,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "js-10",
             courseId = "web-dev",
+            language = "javascript",
             title = "Quiz: Functions",
             content = "Test your understanding of JavaScript functions",
             type = LessonType.QUIZ,
@@ -1177,6 +1241,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "js-11",
             courseId = "web-dev",
+            language = "javascript",
             title = "Arrays",
             content = "Store and manipulate collections of data.",
             type = LessonType.THEORY,
@@ -1206,6 +1271,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "js-12",
             courseId = "web-dev",
+            language = "javascript",
             title = "Objects",
             content = "Store key-value pairs for complex data.",
             type = LessonType.THEORY,
@@ -1241,6 +1307,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "js-13",
             courseId = "web-dev",
+            language = "javascript",
             title = "Practice: Objects",
             content = "Create an object for a book with title and author.",
             type = LessonType.CODE_PRACTICE,
@@ -1264,6 +1331,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "js-14",
             courseId = "web-dev",
+            language = "javascript",
             title = "DOM Manipulation",
             content = "Interact with HTML elements using JavaScript.",
             type = LessonType.THEORY,
@@ -1294,6 +1362,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "js-15",
             courseId = "web-dev",
+            language = "javascript",
             title = "Quiz: Arrays and Objects",
             content = "Test your knowledge of data structures",
             type = LessonType.QUIZ,
@@ -1310,6 +1379,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "js-16",
             courseId = "web-dev",
+            language = "javascript",
             title = "Events",
             content = "Handle user interactions like clicks and key presses.",
             type = LessonType.THEORY,
@@ -1347,6 +1417,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "js-17",
             courseId = "web-dev",
+            language = "javascript",
             title = "Async Programming: Callbacks",
             content = "Handle asynchronous operations with callback functions.",
             type = LessonType.THEORY,
@@ -1391,6 +1462,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "js-18",
             courseId = "web-dev",
+            language = "javascript",
             title = "Promises",
             content = "Handle asynchronous operations more cleanly.",
             type = LessonType.THEORY,
@@ -1431,6 +1503,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "js-19",
             courseId = "web-dev",
+            language = "javascript",
             title = "Practice: Promises",
             content = "Create a promise that simulates loading data.",
             type = LessonType.CODE_PRACTICE,
@@ -1441,6 +1514,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "js-20",
             courseId = "web-dev",
+            language = "javascript",
             title = "Async/Await",
             content = "Write asynchronous code that looks synchronous.",
             type = LessonType.THEORY,
@@ -1486,6 +1560,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "js-21",
             courseId = "web-dev",
+            language = "javascript",
             title = "Quiz: Async Programming",
             content = "Test your understanding of asynchronous JavaScript",
             type = LessonType.QUIZ,
@@ -1502,6 +1577,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "js-22",
             courseId = "web-dev",
+            language = "javascript",
             title = "Classes",
             content = "Object-oriented programming with ES6 classes.",
             type = LessonType.THEORY,
@@ -1558,6 +1634,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "js-23",
             courseId = "web-dev",
+            language = "javascript",
             title = "Modules",
             content = "Organize code into reusable modules.",
             type = LessonType.THEORY,
@@ -1592,11 +1669,12 @@ object CourseRepositoryImpl {
                 */
             """.trimIndent()
         ),
-         // <-- Closing parenthesis added here
+        // <-- Closing parenthesis added here
 
-                Lesson(
+        Lesson(
             id = "js-25",
             courseId = "web-dev",
+            language = "javascript",
             title = "Spread and Rest Operators",
             content = "Work with arrays and function parameters more flexibly.",
             type = LessonType.THEORY,
@@ -1629,6 +1707,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "js-26",
             courseId = "web-dev",
+            language = "javascript",
             title = "Practice: Modern JS Features",
             content = "Use destructuring and spread operators.",
             type = LessonType.CODE_PRACTICE,
@@ -1639,6 +1718,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "js-27",
             courseId = "web-dev",
+            language = "javascript",
             title = "Local Storage",
             content = "Store data in the browser persistently.",
             type = LessonType.THEORY,
@@ -1676,6 +1756,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "js-28",
             courseId = "web-dev",
+            language = "javascript",
             title = "Fetch API",
             content = "Make HTTP requests to APIs.",
             type = LessonType.THEORY,
@@ -1728,6 +1809,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "js-29",
             courseId = "web-dev",
+            language = "javascript",
             title = "Quiz: Advanced JavaScript",
             content = "Test your knowledge of modern JavaScript features",
             type = LessonType.QUIZ,
@@ -1744,6 +1826,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "js-30",
             courseId = "web-dev",
+            language = "javascript",
             title = "Final Challenge: Weather App",
             content = "Build a weather application using JavaScript and APIs.",
             type = LessonType.CHALLENGE,
@@ -1813,6 +1896,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "sql-1",
             courseId = "sql-basics",
+            language = "sql",
             title = "Introduction to SQL",
             content = "SQL (Structured Query Language) is used to manage and query relational databases.",
             type = LessonType.THEORY,
@@ -1837,6 +1921,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "sql-2",
             courseId = "sql-basics",
+            language = "sql",
             title = "SELECT Statement",
             content = "Retrieve data from database tables.",
             type = LessonType.THEORY,
@@ -1864,6 +1949,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "sql-3",
             courseId = "sql-basics",
+            language = "sql",
             title = "Practice: SELECT",
             content = "Write a SELECT statement to get employee names and salaries.",
             type = LessonType.CODE_PRACTICE,
@@ -1874,6 +1960,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "sql-4",
             courseId = "sql-basics",
+            language = "sql",
             title = "WHERE Clause",
             content = "Filter results based on conditions.",
             type = LessonType.THEORY,
@@ -1907,6 +1994,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "sql-5",
             courseId = "sql-basics",
+            language = "sql",
             title = "Quiz: SQL Basics",
             content = "Test your understanding of SQL fundamentals",
             type = LessonType.QUIZ,
@@ -1923,6 +2011,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "sql-6",
             courseId = "sql-basics",
+            language = "sql",
             title = "ORDER BY",
             content = "Sort query results.",
             type = LessonType.THEORY,
@@ -1950,6 +2039,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "sql-7",
             courseId = "sql-basics",
+            language = "sql",
             title = "INSERT Statement",
             content = "Add new records to a table.",
             type = LessonType.THEORY,
@@ -1976,6 +2066,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "sql-8",
             courseId = "sql-basics",
+            language = "sql",
             title = "UPDATE Statement",
             content = "Modify existing records.",
             type = LessonType.THEORY,
@@ -2005,6 +2096,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "sql-9",
             courseId = "sql-basics",
+            language = "sql",
             title = "DELETE Statement",
             content = "Remove records from a table.",
             type = LessonType.THEORY,
@@ -2029,6 +2121,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "sql-10",
             courseId = "sql-basics",
+            language = "sql",
             title = "Practice: CRUD Operations",
             content = "Insert a new product and update its price.",
             type = LessonType.CODE_PRACTICE,
@@ -2040,6 +2133,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "sql-11",
             courseId = "sql-basics",
+            language = "sql",
             title = "Quiz: CRUD Operations",
             content = "Test your knowledge of basic SQL operations",
             type = LessonType.QUIZ,
@@ -2056,6 +2150,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "sql-12",
             courseId = "sql-basics",
+            language = "sql",
             title = "Aggregate Functions",
             content = "Perform calculations on multiple rows.",
             type = LessonType.THEORY,
@@ -2087,6 +2182,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "sql-13",
             courseId = "sql-basics",
+            language = "sql",
             title = "GROUP BY",
             content = "Group rows that have the same values.",
             type = LessonType.THEORY,
@@ -2122,6 +2218,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "sql-14",
             courseId = "sql-basics",
+            language = "sql",
             title = "Practice: Aggregations",
             content = "Find the average salary per department.",
             type = LessonType.CODE_PRACTICE,
@@ -2132,6 +2229,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "sql-15",
             courseId = "sql-basics",
+            language = "sql",
             title = "JOIN Operations",
             content = "Combine rows from two or more tables.",
             type = LessonType.THEORY,
@@ -2162,6 +2260,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "sql-16",
             courseId = "sql-basics",
+            language = "sql",
             title = "Quiz: Joins and Aggregations",
             content = "Test your understanding of advanced SQL concepts",
             type = LessonType.QUIZ,
@@ -2178,6 +2277,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "sql-17",
             courseId = "sql-basics",
+            language = "sql",
             title = "Subqueries",
             content = "Nested queries within other queries.",
             type = LessonType.THEORY,
@@ -2217,6 +2317,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "sql-18",
             courseId = "sql-basics",
+            language = "sql",
             title = "CREATE TABLE",
             content = "Create new database tables.",
             type = LessonType.THEORY,
@@ -2251,6 +2352,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "sql-19",
             courseId = "sql-basics",
+            language = "sql",
             title = "ALTER TABLE",
             content = "Modify existing table structure.",
             type = LessonType.THEORY,
@@ -2285,6 +2387,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "sql-20",
             courseId = "sql-basics",
+            language = "sql",
             title = "Practice: Table Operations",
             content = "Create a table for storing customer orders.",
             type = LessonType.CODE_PRACTICE,
@@ -2296,6 +2399,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "sql-21",
             courseId = "sql-basics",
+            language = "sql",
             title = "Quiz: Table Operations",
             content = "Test your knowledge of table creation and modification",
             type = LessonType.QUIZ,
@@ -2312,6 +2416,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "sql-22",
             courseId = "sql-basics",
+            language = "sql",
             title = "Indexes",
             content = "Improve query performance with indexes.",
             type = LessonType.THEORY,
@@ -2350,6 +2455,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "sql-23",
             courseId = "sql-basics",
+            language = "sql",
             title = "Views",
             content = "Virtual tables based on query results.",
             type = LessonType.THEORY,
@@ -2389,6 +2495,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "sql-24",
             courseId = "sql-basics",
+            language = "sql",
             title = "Practice: Views and Indexes",
             content = "Create a view for active employees.",
             type = LessonType.CODE_PRACTICE,
@@ -2399,6 +2506,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "sql-25",
             courseId = "sql-basics",
+            language = "sql",
             title = "Transactions",
             content = "Group SQL statements into atomic operations.",
             type = LessonType.THEORY,
@@ -2445,6 +2553,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "sql-26",
             courseId = "sql-basics",
+            language = "sql",
             title = "Stored Procedures",
             content = "Reusable SQL code stored in the database.",
             type = LessonType.THEORY,
@@ -2484,6 +2593,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "sql-27",
             courseId = "sql-basics",
+            language = "sql",
             title = "Quiz: Advanced SQL",
             content = "Test your knowledge of transactions and procedures",
             type = LessonType.QUIZ,
@@ -2500,6 +2610,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "sql-28",
             courseId = "sql-basics",
+            language = "sql",
             title = "Database Normalization",
             content = "Organize data to reduce redundancy and improve integrity.",
             type = LessonType.THEORY,
@@ -2555,6 +2666,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "sql-29",
             courseId = "sql-basics",
+            language = "sql",
             title = "Practice: Database Design",
             content = "Design normalized tables for a library system.",
             type = LessonType.CODE_PRACTICE,
@@ -2565,6 +2677,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "sql-30",
             courseId = "sql-basics",
+            language = "sql",
             title = "Final Challenge: E-commerce Database",
             content = "Design and implement a complete e-commerce database.",
             type = LessonType.CHALLENGE,
@@ -2657,6 +2770,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "ds-1",
             courseId = "data-science",
+            language = "python",
             title = "What is Data Science?",
             content = "Data Science is the field of study that combines domain expertise, programming skills, and knowledge of mathematics and statistics to extract meaningful insights from data.",
             type = LessonType.THEORY,
@@ -2675,6 +2789,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "ds-2",
             courseId = "data-science",
+            language = "python",
             title = "Intro to NumPy",
             content = "NumPy is the fundamental package for scientific computing in Python. It provides a powerful N-dimensional array object.",
             type = LessonType.THEORY,
@@ -2692,6 +2807,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "ds-3",
             courseId = "data-science",
+            language = "python",
             title = "Practice: NumPy Arrays",
             content = "Create a NumPy array of 10 zeros and print it.",
             type = LessonType.CODE_PRACTICE,
@@ -2702,6 +2818,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "ds-4",
             courseId = "data-science",
+            language = "python",
             title = "Intro to Pandas",
             content = "Pandas is a fast, powerful, flexible and easy to use open source data analysis and manipulation tool.",
             type = LessonType.THEORY,
@@ -2723,6 +2840,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "ds-5",
             courseId = "data-science",
+            language = "python",
             title = "Quiz: Library Basics",
             content = "Test your knowledge of NumPy and Pandas",
             type = LessonType.QUIZ,
@@ -2739,6 +2857,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "ds-6",
             courseId = "data-science",
+            language = "python",
             title = "Pandas: Reading Data",
             content = "You can read data from various formats like CSV, Excel, and SQL using Pandas.",
             type = LessonType.THEORY,
@@ -2757,6 +2876,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "ds-7",
             courseId = "data-science",
+            language = "python",
             title = "Pandas: Selection & Filtering",
             content = "Learn how to select specific columns and filter rows based on conditions.",
             type = LessonType.THEORY,
@@ -2781,6 +2901,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "ds-8",
             courseId = "data-science",
+            language = "python",
             title = "Practice: Pandas Filtering",
             content = "Filter a DataFrame to only show rows where 'Age' is greater than 20.",
             type = LessonType.CODE_PRACTICE,
@@ -2791,6 +2912,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "ds-9",
             courseId = "data-science",
+            language = "python",
             title = "Introduction to Matplotlib",
             content = "Matplotlib is a comprehensive library for creating static, animated, and interactive visualizations in Python.",
             type = LessonType.THEORY,
@@ -2808,6 +2930,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "ds-10",
             courseId = "data-science",
+            language = "python",
             title = "Quiz: Visualization",
             content = "Test your knowledge of visualization basics",
             type = LessonType.QUIZ,
@@ -2825,6 +2948,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "ds-11",
             courseId = "data-science",
+            language = "python",
             title = "Data Cleaning: Missing Values",
             content = "Handling missing data is a crucial step in data science. You can drop them or fill them with values.",
             type = LessonType.THEORY,
@@ -2847,6 +2971,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "ds-12",
             courseId = "data-science",
+            language = "python",
             title = "Groupby Operations",
             content = "Split-apply-combine strategy for data analysis.",
             type = LessonType.THEORY,
@@ -2867,6 +2992,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "ds-13",
             courseId = "data-science",
+            language = "python",
             title = "Practice: Groupby",
             content = "Calculate the sum of 'Sales' grouped by 'Region'.",
             type = LessonType.CODE_PRACTICE,
@@ -2877,6 +3003,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "ds-14",
             courseId = "data-science",
+            language = "python",
             title = "Intro to Seaborn",
             content = "Seaborn is a Python data visualization library based on matplotlib. It provides a high-level interface for drawing attractive and informative statistical graphics.",
             type = LessonType.THEORY,
@@ -2895,6 +3022,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "ds-15",
             courseId = "data-science",
+            language = "python",
             title = "Statistical Concepts",
             content = "Brief intro to Mean, Median, Mode, Variance, and Standard Deviation.",
             type = LessonType.THEORY,
@@ -2911,6 +3039,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "ds-16",
             courseId = "data-science",
+            language = "python",
             title = "Correlation",
             content = "Correlation measures how closely two variables change together.",
             type = LessonType.THEORY,
@@ -2928,6 +3057,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "ds-17",
             courseId = "data-science",
+            language = "python",
             title = "Quiz: Statistics",
             content = "Test your statistical understanding",
             type = LessonType.QUIZ,
@@ -2944,6 +3074,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "ds-18",
             courseId = "data-science",
+            language = "python",
             title = "Scikit-Learn Basics",
             content = "Scikit-learn is a simple and efficient tool for predictive data analysis.",
             type = LessonType.THEORY,
@@ -2960,6 +3091,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "ds-19",
             courseId = "data-science",
+            language = "python",
             title = "Linear Regression",
             content = "Predicting a continuous value based on independent variables.",
             type = LessonType.THEORY,
@@ -2980,6 +3112,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "ds-20",
             courseId = "data-science",
+            language = "python",
             title = "Practice: Linear Regression",
             content = "Fit a linear regression model to predict y from X.",
             type = LessonType.CODE_PRACTICE,
@@ -2991,6 +3124,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "ds-21",
             courseId = "data-science",
+            language = "python",
             title = "Classification & Logistics Regression",
             content = "Predicting a categorical label (e.g., spam vs. not spam).",
             type = LessonType.THEORY,
@@ -3004,6 +3138,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "ds-22",
             courseId = "data-science",
+            language = "python",
             title = "Evaluation Metrics: Classification",
             content = "Accuracy, Precision, Recall, and F1-Score.",
             type = LessonType.THEORY,
@@ -3017,6 +3152,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "ds-23",
             courseId = "data-science",
+            language = "python",
             title = "Quiz: Machine Learning",
             content = "Test your ML basics",
             type = LessonType.QUIZ,
@@ -3033,6 +3169,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "ds-24",
             courseId = "data-science",
+            language = "python",
             title = "K-Means Clustering",
             content = "Unsupervised learning method to group data into K clusters.",
             type = LessonType.THEORY,
@@ -3050,6 +3187,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "ds-25",
             courseId = "data-science",
+            language = "python",
             title = "Feature Engineering",
             content = "The process of creating new features or transforming existing ones to improve model performance.",
             type = LessonType.THEORY,
@@ -3065,6 +3203,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "ds-26",
             courseId = "data-science",
+            language = "python",
             title = "Decision Trees",
             content = "A flowchart-like structure used for both classification and regression.",
             type = LessonType.THEORY,
@@ -3078,6 +3217,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "ds-27",
             courseId = "data-science",
+            language = "python",
             title = "Random Forest",
             content = "An ensemble learning method that operates by constructing a multitude of decision trees.",
             type = LessonType.THEORY,
@@ -3091,6 +3231,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "ds-28",
             courseId = "data-science",
+            language = "python",
             title = "Practice: Random Forest",
             content = "Instantiate a Random Forest Classifier with 100 estimators.",
             type = LessonType.CODE_PRACTICE,
@@ -3101,6 +3242,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "ds-29",
             courseId = "data-science",
+            language = "python",
             title = "Introduction to Deep Learning",
             content = "A subset of machine learning based on artificial neural networks.",
             type = LessonType.THEORY,
@@ -3115,6 +3257,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "ds-30",
             courseId = "data-science",
+            language = "python",
             title = "Final Challenge: Titanic Analysis",
             content = "Analyze the Titanic dataset to find patterns in survivor demographics.",
             type = LessonType.CHALLENGE,
@@ -3133,6 +3276,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "pk-1",
             courseId = "python-kids",
+            language = "python",
             title = "Hello World! 👋",
             content = "Welcome to coding! Let's make the computer say 'Hello' to you. It's like magic!",
             type = LessonType.THEORY,
@@ -3143,6 +3287,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "pk-2",
             courseId = "python-kids",
+            language = "python",
             title = "Chatting with Python 💬",
             content = "You can print anything you want! Try printing your name or your favorite food.",
             type = LessonType.THEORY,
@@ -3153,6 +3298,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "pk-3",
             courseId = "python-kids",
+            language = "python",
             title = "Counting Apples 🍎",
             content = "Computers are great at counting. Let's see how many apples we have.",
             type = LessonType.THEORY,
@@ -3163,6 +3309,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "pk-4",
             courseId = "python-kids",
+            language = "python",
             title = "Adding Toys 🧸",
             content = "If you have 2 teddy bears and you get 3 more, how many do you have? Python knows!",
             type = LessonType.THEORY,
@@ -3173,6 +3320,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "pk-5",
             courseId = "python-kids",
+            language = "python",
             title = "Magic Boxes (Variables) 📦",
             content = "Variables are like magic boxes. You can put things inside them and give them a name.",
             type = LessonType.THEORY,
@@ -3183,6 +3331,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "pk-6",
             courseId = "python-kids",
+            language = "python",
             title = "Naming Your Boxes 🏷️",
             content = "Give your boxes fun names like 'apples' or 'name'.",
             type = LessonType.THEORY,
@@ -3193,6 +3342,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "pk-7",
             courseId = "python-kids",
+            language = "python",
             title = "Fun Words (Strings) ✍️",
             content = "Words in coding are called 'strings'. They always go inside quotes like 'this'.",
             type = LessonType.THEORY,
@@ -3203,6 +3353,8 @@ object CourseRepositoryImpl {
         Lesson(
             id = "pk-8",
             courseId = "python-kids",
+            language = "python",
+            defaultInput = "Kid Coder",
             title = "Talking Back 🖐️",
             content = "You can tell the computer something using 'input'. It's like the computer is listening!",
             type = LessonType.THEORY,
@@ -3213,6 +3365,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "pk-9",
             courseId = "python-kids",
+            language = "python",
             title = "Quiz: Basic Talk ❓",
             content = "Do you remember how to print?",
             type = LessonType.QUIZ,
@@ -3229,6 +3382,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "pk-10",
             courseId = "python-kids",
+            language = "python",
             title = "Practice: My Name is... ✍️",
             content = "Create a variable with your name and print it.",
             type = LessonType.CODE_PRACTICE,
@@ -3239,6 +3393,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "pk-11",
             courseId = "python-kids",
+            language = "python",
             title = "True or False? ✅❌",
             content = "Sometimes things are True and sometimes they are False. Like: Is the sky green? False!",
             type = LessonType.THEORY,
@@ -3249,6 +3404,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "pk-12",
             courseId = "python-kids",
+            language = "python",
             title = "Making Choices (If) 🤔",
             content = "If it's sunny, we go outside! 'if' helps the computer make choices.",
             type = LessonType.THEORY,
@@ -3259,6 +3415,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "pk-13",
             courseId = "python-kids",
+            language = "python",
             title = "Otherwise... (Else) ⛈️",
             content = "If it's not sunny, we stay inside. We use 'else' for the other choice.",
             type = LessonType.THEORY,
@@ -3269,6 +3426,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "pk-14",
             courseId = "python-kids",
+            language = "python",
             title = "Too Many Choices? (Elif) 🌈",
             content = "What if it's raining, or snowing, or windy? 'elif' helps with more choices.",
             type = LessonType.THEORY,
@@ -3279,6 +3437,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "pk-15",
             courseId = "python-kids",
+            language = "python",
             title = "Which is Bigger? ⚖️",
             content = "Let's compare numbers. Is 10 bigger than 5? Yes!",
             type = LessonType.THEORY,
@@ -3289,6 +3448,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "pk-16",
             courseId = "python-kids",
+            language = "python",
             title = "My Toy Chest (Lists) 📦📦",
             content = "A list is a big box that holds many things. Like all your favorite toys!",
             type = LessonType.THEORY,
@@ -3299,6 +3459,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "pk-17",
             courseId = "python-kids",
+            language = "python",
             title = "Adding More Toys ➕",
             content = "Got a new toy? Add it to your list with 'append'!",
             type = LessonType.THEORY,
@@ -3309,6 +3470,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "pk-18",
             courseId = "python-kids",
+            language = "python",
             title = "Taking Toys Out ➖",
             content = "Don't want a toy anymore? Remove it from your list!",
             type = LessonType.THEORY,
@@ -3319,6 +3481,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "pk-19",
             courseId = "python-kids",
+            language = "python",
             title = "Repeat After Me 🔄",
             content = "Loops help the computer do the same thing over and over. Like jumping 10 times!",
             type = LessonType.THEORY,
@@ -3329,6 +3492,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "pk-20",
             courseId = "python-kids",
+            language = "python",
             title = "Counting Your Toys 🔟",
             content = "Let's use a loop to count everything in our list.",
             type = LessonType.THEORY,
@@ -3339,6 +3503,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "pk-21",
             courseId = "python-kids",
+            language = "python",
             title = "Until We Finish (While) ⏳",
             content = "While you still have cookies, keep eating! A 'while' loop keeps going until it's done.",
             type = LessonType.THEORY,
@@ -3349,6 +3514,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "pk-22",
             courseId = "python-kids",
+            language = "python",
             title = "Magic Spells (Functions) ✨",
             content = "Functions are like magic spells. You name them and use them whenever you want.",
             type = LessonType.THEORY,
@@ -3359,6 +3525,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "pk-23",
             courseId = "python-kids",
+            language = "python",
             title = "Custom Spells 🪄",
             content = "You can give your spells information to make them do different things.",
             type = LessonType.THEORY,
@@ -3369,6 +3536,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "pk-24",
             courseId = "python-kids",
+            language = "python",
             title = "Magical Results (Return) 🎁",
             content = "Some spells give you something back! Like a present.",
             type = LessonType.THEORY,
@@ -3379,6 +3547,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "pk-25",
             courseId = "python-kids",
+            language = "python",
             title = "Oops! Fixing Bugs 🐛",
             content = "Errors are just 'bugs'. We find them and fix them. It's like a puzzle!",
             type = LessonType.THEORY,
@@ -3389,6 +3558,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "pk-26",
             courseId = "python-kids",
+            language = "python",
             title = "Secret Notes (Comments) 📝",
             content = "Use # to write notes to yourself. The computer will ignore them!",
             type = LessonType.THEORY,
@@ -3399,6 +3569,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "pk-27",
             courseId = "python-kids",
+            language = "python",
             title = "Quiz: Master Coder 🏆",
             content = "Are you ready to be a master?",
             type = LessonType.QUIZ,
@@ -3415,6 +3586,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "pk-28",
             courseId = "python-kids",
+            language = "python",
             title = "Practice: Robot Friend 🤖",
             content = "Make a robot that says your favorite color.",
             type = LessonType.CODE_PRACTICE,
@@ -3425,6 +3597,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "pk-29",
             courseId = "python-kids",
+            language = "python",
             title = "Practice: Fruit List 🍎🍌",
             content = "Create a list of 3 fruits and print the first one.",
             type = LessonType.CODE_PRACTICE,
@@ -3435,6 +3608,7 @@ object CourseRepositoryImpl {
         Lesson(
             id = "pk-30",
             courseId = "python-kids",
+            language = "python",
             title = "Final: Superhero Generator 🦸‍♂️",
             content = "Let's combine everything! Make a superhero name generator.",
             type = LessonType.CHALLENGE,
@@ -3451,4 +3625,8 @@ object CourseRepositoryImpl {
     )
 
     private fun getJavaDsaLessons() = CourseContent.javaDsaLessons
+
+    private fun getJavaDpLessons() = JavaDpLeetcodeRepositoryImpl.javaDpLessons
+
+    private fun getLeetcodePatternLessons() = LeetcodePatternsRepositoryImpl.leetcodePatternLessons
 }

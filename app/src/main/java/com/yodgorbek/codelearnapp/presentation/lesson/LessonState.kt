@@ -13,8 +13,10 @@ data class LessonState(
     val milestoneReached: String? = null,
     val autoPlayVideo: Boolean = true,
     val currentCode: String = "",
+    val codeInput: String = "",
     val executionOutput: String = "",
     val isExecuting: Boolean = false,
+    val hasExecuted: Boolean = false,
     val error: String? = null,
     val codeError: com.yodgorbek.codelearnapp.presentation.tutor.analysis.CodeError? = null
 ) : UiState

@@ -10,6 +10,7 @@ object PythonRepositoryImpl {
         Lesson(
             id = "py-1",
             courseId = "python-basics",
+            language = "python",
             title = "Introduction to Python",
             content = "Python is a versatile, high-level programming language known for its simplicity and readability. It's used in web development, data science, AI, and more.",
             type = LessonType.THEORY,
@@ -24,6 +25,7 @@ object PythonRepositoryImpl {
         Lesson(
             id = "py-2",
             courseId = "python-basics",
+            language = "python",
             title = "Variables and Data Types",
             content = "Variables store data. Python has several data types: strings, integers, floats, and booleans.",
             type = LessonType.THEORY,
@@ -42,6 +44,7 @@ object PythonRepositoryImpl {
         Lesson(
             id = "py-3",
             courseId = "python-basics",
+            language = "python",
             title = "Practice: Create Variables",
             content = "Create a variable called 'greeting' with the value 'Hello World' and print it.",
             type = LessonType.CODE_PRACTICE,
@@ -52,6 +55,7 @@ object PythonRepositoryImpl {
         Lesson(
             id = "py-4",
             courseId = "python-basics",
+            language = "python",
             title = "String Operations",
             content = "Strings can be concatenated, sliced, and formatted in various ways.",
             type = LessonType.THEORY,
@@ -74,6 +78,7 @@ object PythonRepositoryImpl {
         Lesson(
             id = "py-5",
             courseId = "python-basics",
+            language = "python",
             title = "Quiz: Python Basics",
             content = "Test your understanding of Python fundamentals",
             type = LessonType.QUIZ,
@@ -90,6 +95,7 @@ object PythonRepositoryImpl {
         Lesson(
             id = "py-6",
             courseId = "python-basics",
+            language = "python",
             title = "Numbers and Math",
             content = "Python supports various mathematical operations and number types.",
             type = LessonType.THEORY,
@@ -112,6 +118,7 @@ object PythonRepositoryImpl {
         Lesson(
             id = "py-7",
             courseId = "python-basics",
+            language = "python",
             title = "Lists",
             content = "Lists are ordered, mutable collections that can store multiple items.",
             type = LessonType.THEORY,
@@ -136,6 +143,7 @@ object PythonRepositoryImpl {
         Lesson(
             id = "py-8",
             courseId = "python-basics",
+            language = "python",
             title = "List Operations",
             content = "Learn how to manipulate lists with various methods.",
             type = LessonType.THEORY,
@@ -159,6 +167,7 @@ object PythonRepositoryImpl {
         Lesson(
             id = "py-9",
             courseId = "python-basics",
+            language = "python",
             title = "Practice: Working with Lists",
             content = "Create a list of your favorite colors and add a new color to it.",
             type = LessonType.CODE_PRACTICE,
@@ -169,6 +178,7 @@ object PythonRepositoryImpl {
         Lesson(
             id = "py-10",
             courseId = "python-basics",
+            language = "python",
             title = "Quiz: Lists",
             content = "Test your knowledge of Python lists",
             type = LessonType.QUIZ,
@@ -186,6 +196,7 @@ object PythonRepositoryImpl {
         Lesson(
             id = "py-11",
             courseId = "python-basics",
+            language = "python",
             title = "Dictionaries",
             content = "Dictionaries store data in key-value pairs, allowing fast lookups.",
             type = LessonType.THEORY,
@@ -211,6 +222,7 @@ object PythonRepositoryImpl {
         Lesson(
             id = "py-12",
             courseId = "python-basics",
+            language = "python",
             title = "If Statements",
             content = "Conditional statements allow your code to make decisions.",
             type = LessonType.THEORY,
@@ -233,6 +245,7 @@ object PythonRepositoryImpl {
         Lesson(
             id = "py-13",
             courseId = "python-basics",
+            language = "python",
             title = "Practice: Conditionals",
             content = "Write code to check if a number is positive, negative, or zero.",
             type = LessonType.CODE_PRACTICE,
@@ -243,6 +256,7 @@ object PythonRepositoryImpl {
         Lesson(
             id = "py-14",
             courseId = "python-basics",
+            language = "python",
             title = "For Loops",
             content = "Loops allow you to repeat code multiple times.",
             type = LessonType.THEORY,
@@ -266,11 +280,13 @@ object PythonRepositoryImpl {
         Lesson(
             id = "py-15",
             courseId = "python-basics",
+            language = "python",
             title = "While Loops",
             content = "While loops continue executing as long as a condition is true.",
             type = LessonType.THEORY,
             order = 15,
             isCompleted = false,
+            defaultInput = "quit",
             codeExample = """
                 # Basic while loop
                 count = 0
@@ -288,6 +304,7 @@ object PythonRepositoryImpl {
         Lesson(
             id = "py-16",
             courseId = "python-basics",
+            language = "python",
             title = "Quiz: Loops",
             content = "Test your understanding of loops",
             type = LessonType.QUIZ,
@@ -304,6 +321,7 @@ object PythonRepositoryImpl {
         Lesson(
             id = "py-17",
             courseId = "python-basics",
+            language = "python",
             title = "Functions",
             content = "Functions are reusable blocks of code that perform specific tasks.",
             type = LessonType.THEORY,
@@ -329,6 +347,7 @@ object PythonRepositoryImpl {
         Lesson(
             id = "py-18",
             courseId = "python-basics",
+            language = "python",
             title = "Function Parameters",
             content = "Learn about default parameters, keyword arguments, and more.",
             type = LessonType.THEORY,
@@ -352,6 +371,7 @@ object PythonRepositoryImpl {
         Lesson(
             id = "py-19",
             courseId = "python-basics",
+            language = "python",
             title = "Practice: Create a Function",
             content = "Create a function that calculates the area of a rectangle.",
             type = LessonType.CODE_PRACTICE,
@@ -362,6 +382,7 @@ object PythonRepositoryImpl {
         Lesson(
             id = "py-20",
             courseId = "python-basics",
+            language = "python",
             title = "List Comprehensions",
             content = "A concise way to create lists based on existing lists.",
             type = LessonType.THEORY,
@@ -385,6 +406,7 @@ object PythonRepositoryImpl {
         Lesson(
             id = "py-21",
             courseId = "python-basics",
+            language = "python",
             title = "Quiz: Functions",
             content = "Test your knowledge of Python functions",
             type = LessonType.QUIZ,
@@ -401,6 +423,7 @@ object PythonRepositoryImpl {
         Lesson(
             id = "py-22",
             courseId = "python-basics",
+            language = "python",
             title = "File Handling",
             content = "Learn how to read from and write to files in Python.",
             type = LessonType.THEORY,
@@ -425,11 +448,13 @@ object PythonRepositoryImpl {
         Lesson(
             id = "py-23",
             courseId = "python-basics",
+            language = "python",
             title = "Exception Handling",
             content = "Handle errors gracefully using try-except blocks.",
             type = LessonType.THEORY,
             order = 23,
             isCompleted = false,
+            defaultInput = "5",
             codeExample = """
                 # Basic exception handling
                 try:
@@ -452,6 +477,7 @@ object PythonRepositoryImpl {
         Lesson(
             id = "py-24",
             courseId = "python-basics",
+            language = "python",
             title = "Classes and Objects",
             content = "Object-oriented programming allows you to create custom data types.",
             type = LessonType.THEORY,
@@ -476,6 +502,7 @@ object PythonRepositoryImpl {
         Lesson(
             id = "py-25",
             courseId = "python-basics",
+            language = "python",
             title = "Practice: Create a Class",
             content = "Create a Person class with name and age attributes.",
             type = LessonType.CODE_PRACTICE,
@@ -486,6 +513,7 @@ object PythonRepositoryImpl {
         Lesson(
             id = "py-26",
             courseId = "python-basics",
+            language = "python",
             title = "Inheritance",
             content = "Classes can inherit attributes and methods from other classes.",
             type = LessonType.THEORY,
@@ -516,6 +544,7 @@ object PythonRepositoryImpl {
         Lesson(
             id = "py-27",
             courseId = "python-basics",
+            language = "python",
             title = "Quiz: OOP",
             content = "Test your understanding of object-oriented programming",
             type = LessonType.QUIZ,
@@ -532,6 +561,7 @@ object PythonRepositoryImpl {
         Lesson(
             id = "py-28",
             courseId = "python-basics",
+            language = "python",
             title = "Modules and Imports",
             content = "Organize your code using modules and import functionality.",
             type = LessonType.THEORY,
@@ -555,6 +585,7 @@ object PythonRepositoryImpl {
         Lesson(
             id = "py-29",
             courseId = "python-basics",
+            language = "python",
             title = "Lambda Functions",
             content = "Anonymous functions for simple operations.",
             type = LessonType.THEORY,
@@ -582,11 +613,13 @@ object PythonRepositoryImpl {
         Lesson(
             id = "py-30",
             courseId = "python-basics",
+            language = "python",
             title = "Final Challenge: Python Project",
             content = "Create a simple calculator that can add, subtract, multiply, and divide.",
             type = LessonType.CHALLENGE,
             order = 30,
             isCompleted = false,
+            defaultInput = "10\n+\n5",
             codeExample = """
                 def calculator():
                     print("Simple Calculator")

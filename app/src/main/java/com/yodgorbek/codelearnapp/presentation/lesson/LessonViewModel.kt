@@ -37,6 +37,9 @@ class LessonViewModel(
                 val error = errorDetector.detect(intent.code)
                 setState { copy(currentCode = intent.code, codeError = error) }
             }
+            is LessonIntent.UpdateCodeInput -> {
+                setState { copy(codeInput = intent.input) }
+            }
             is LessonIntent.RunCode -> runCode()
         }
     }
@@ -59,6 +62,7 @@ class LessonViewModel(
                         lesson = lesson,
                         autoPlayVideo = autoPlay,
                         currentCode = lesson?.codeExample ?: "",
+                        codeInput = lesson?.defaultInput ?: "",
                         error = null
                     )
                 }
@@ -69,27 +73,29 @@ class LessonViewModel(
     private fun runCode() {
         val lesson = state.value.lesson ?: return
         val code = state.value.currentCode
+        val input = state.value.codeInput
 
         setState { copy(isExecuting = true, executionOutput = "") }
 
         viewModelScope.launch {
-            val courseId = lesson.courseId
-            // Determine language based on course ID or category (simplification for simulation)
-            val result = when {
-                courseId.contains("python") || courseId.contains("data-science") -> codeExecutor.executePythonCode(code)
-                courseId.contains("kotlin") -> codeExecutor.executeKotlinCode(code)
-                courseId.contains("web-dev") || courseId.contains("js") -> codeExecutor.executeJavaScriptCode(code)
-                courseId.contains("java") -> codeExecutor.executeJavaCode(code)
-                courseId.contains("sql") || courseId.contains("database") -> codeExecutor.executeSqlCode(code)
-                else -> CodeExecutionResult.Success("Code executed successfully")
+            // Use explicit language from lesson, fallback to reliable detection if needed
+            val language = lesson.language.lowercase()
+            
+            val result = when (language) {
+                "python", "python3" -> codeExecutor.executePythonCode(code, input)
+                "kotlin" -> codeExecutor.executeKotlinCode(code, input)
+                "javascript", "js", "nodejs" -> codeExecutor.executeJavaScriptCode(code, input)
+                "java" -> codeExecutor.executeJavaCode(code, input)
+                "sql", "sqlite" -> codeExecutor.executeSqlCode(code, input)
+                else -> CodeExecutionResult.Error("Unsupported language: $language")
             }
 
             when (result) {
                 is CodeExecutionResult.Success -> {
-                    setState { copy(isExecuting = false, executionOutput = result.output) }
+                    setState { copy(isExecuting = false, hasExecuted = true, executionOutput = result.output) }
                 }
                 is CodeExecutionResult.Error -> {
-                    setState { copy(isExecuting = false, executionOutput = "Error: ${result.message}") }
+                    setState { copy(isExecuting = false, hasExecuted = true, executionOutput = "Error: ${result.message}") }
                 }
             }
         }
